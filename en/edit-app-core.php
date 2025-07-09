@@ -265,7 +265,7 @@ if (!$app) {
 
           <div class="scope-info">
               <label for="scopes" style="padding:7px;"><h5>JWT Key Pair</h5></label>
-            <span>🔐 Generate and manage your JWT keys</span>
+            <span>The JWT key pair consists of a private key, used by  Buwana  to sign each user login with a secret signature, and a corresponding public key, which any app in the ecosystem can use to verify the JWT’s authenticity by checking the signature against the public registry. Like a magic diamond ring that proves a user's identity, this mystical pairing ensures that only the true Buwana gem master can craft valid tokens, while all village gates can recognize and honor them. 💫🔐💍</span>
           </div>
 
           <?php if(empty($jwt_public_key) && empty($jwt_private_key)): ?>
@@ -274,6 +274,7 @@ if (!$app) {
             </div>
           <?php else: ?>
             <div style="display:flex;flex-direction:column;gap:10px;width:100%;">
+              <p>JWT Public Key</p>
               <div style="display:flex;align-items:center;">
                 <div class="password-wrapper" style="position:relative;flex-grow:1;">
                   <input type="password" id="public_key" readonly value="<?= htmlspecialchars($jwt_public_key) ?>" style="width:100%;">
@@ -281,6 +282,8 @@ if (!$app) {
                 </div>
                 <button type="button" id="copy-public-key">Copy</button>
               </div>
+              <p class="form-caption">  A key listed on the openly shared registry of legit gem cuts (via JWKS) that all Buwana apps consult to verify the mystical integrity of any incoming JWT ring.</p>
+              <p>JWT Private Key</p>
               <div style="display:flex;align-items:center;">
                 <div class="password-wrapper" style="position:relative;flex-grow:1;">
                   <input type="password" id="private_key" readonly value="<?= htmlspecialchars($jwt_private_key) ?>" style="width:100%;">
@@ -288,6 +291,7 @@ if (!$app) {
                 </div>
                 <button type="button" id="copy-private-key">Copy</button>
               </div>
+              <p class="form-caption"> The secret-cut gem geometry used by the Buwana Auth Server to sign JWTs, proving their authenticity and origin — held sacred and unique for each app.</p>
             </div>
           <?php endif; ?>
 
@@ -296,13 +300,13 @@ if (!$app) {
         <?php if(!empty($jwt_public_key) && !empty($jwt_private_key)): ?>
         <p class="form-caption"><a href="#" id="regenerate-keys" style="color:red;">Regenerate Keys</a></p>
         <?php endif; ?>
-        <p id="copy-msg" class="form-caption" style="display:none;color:green;">All good. Key copied! ✅</p>
       </div>
       <?php if(!empty($client_secret)): ?>
       <div class="form-item" style="border-radius:10px 10px 5px 5px;padding-bottom: 10px;">
         <div class="scope-info">
           <label for="client_secret" style="padding:7px;"><h5>Client Secret</h5></label>
         </div>
+        <p>This is the private key for your app:</p>
         <div style="display:flex;align-items:center;">
           <div class="password-wrapper" style="position:relative;flex-grow:1;">
             <input type="password" id="client_secret" readonly value="<?= htmlspecialchars($client_secret) ?>" style="width:100%;">
@@ -310,6 +314,7 @@ if (!$app) {
           </div>
           <button type="button" id="copy-client-secret">Copy</button>
         </div>
+        <p class="form-caption"> A confidential phrase shared only between the Buwana Authorization Server and trusted backend apps, allowing them to request tokens and prove their identity in the sacred dance of OAuth2.</p>
       </div>
       <?php endif; ?>
       <div class="form-item" style="border-radius:10px 10px 5px 5px;padding-bottom: 10px;">
@@ -516,11 +521,14 @@ document.addEventListener('DOMContentLoaded', function () {
         const input = document.getElementById(inputId);
         if (input) {
           navigator.clipboard.writeText(input.value).then(() => {
-            const msg = document.getElementById('copy-msg');
-            if (msg) {
-              msg.style.display = 'block';
-              setTimeout(() => { msg.style.display = 'none'; }, 2000);
-            }
+            const originalText = btn.textContent;
+            const originalBg = btn.style.background;
+            btn.textContent = 'Copied!';
+            btn.style.background = 'green';
+            setTimeout(() => {
+              btn.textContent = originalText;
+              btn.style.background = originalBg;
+            }, 10000);
           });
         }
       });
@@ -550,7 +558,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  toggleKeys();
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
@@ -579,21 +586,6 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 });
 
-function toggleKeys() {
-  document.querySelectorAll('.toggle-password').forEach(icon => {
-    icon.addEventListener('click', () => {
-      const input = document.querySelector(icon.getAttribute('toggle'));
-      if (!input) return;
-      if (input.type === 'password') {
-        input.type = 'text';
-        icon.textContent = '🙉';
-      } else {
-        input.type = 'password';
-        icon.textContent = '🙈';
-      }
-    });
-  });
-}
 </script>
 </body>
 </html>
