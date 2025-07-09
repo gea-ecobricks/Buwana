@@ -293,7 +293,7 @@ document.addEventListener('colorschemechange', updateChartTextColor);
 
 // Toggle password visibility on pages that include password fields
 // Use event delegation so dynamic elements still respond
-document.addEventListener('click', function (e) {
+function togglePasswordVisibility(e) {
     if (e.target && e.target.classList.contains('toggle-password')) {
         const icon = e.target;
         const input = document.querySelector(icon.getAttribute('toggle'));
@@ -307,6 +307,7 @@ document.addEventListener('click', function (e) {
             }
         }
     }
-});
+}
+document.addEventListener('click', togglePasswordVisibility);
 
 
