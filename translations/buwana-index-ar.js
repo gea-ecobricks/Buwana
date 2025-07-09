@@ -11,5 +11,6 @@ const ar_Page_Translations = {
         "000-about": "ℹ️ حول",
         "003-open-source": "الكود المصدري وويكي التوثيق لبوانا موجودان على GitHub",
         "004-view-repo": "عرض المستودع ↗",
+        "009-connect-button": "اتصال",
     };
 

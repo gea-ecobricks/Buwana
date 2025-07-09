@@ -11,5 +11,6 @@ const fr_Page_Translations = {
         "000-about": "ℹ️ À propos",
         "003-open-source": "Le code source et le wiki de documentation de Buwana sont sur Github",
         "004-view-repo": "Voir le dépôt ↗",
+        "009-connect-button": "Se connecter",
     };
 

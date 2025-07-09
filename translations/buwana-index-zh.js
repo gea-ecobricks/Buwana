@@ -11,5 +11,6 @@ const zh_Page_Translations = {
         "000-about": "ℹ️ 关于",
         "003-open-source": "Buwana 的代码库和文档 Wiki 在 Github",
         "004-view-repo": "查看仓库 ↗",
+        "009-connect-button": "连接",
     };
 
