@@ -14,6 +14,7 @@ const en_Page_Translations = {
     "003-code-status": "A code to login will be sent to your email.",
     "004-login-button": '<input type="submit" id="submit-password-button" value="Login" class="login-button-75">',
     "005-password-field-placeholder": '<input type="password" id="password" name="password" required placeholder="Your password...">',
+    "006-too-many-attempts": "⚠️ Too many failed attempts. Try again in 10 minutes."
 
 
 

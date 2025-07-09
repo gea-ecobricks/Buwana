@@ -431,7 +431,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Show the appropriate error div based on the errorType
         if (errorType === 'invalid_password' || errorType === 'too_many_attempts') {
-            document.getElementById('password-error').style.display = 'block'; // Show password error
+            const errorDiv = document.getElementById('password-error');
+
+            if (errorType === 'too_many_attempts') {
+                errorDiv.setAttribute('data-lang-id', '006-too-many-attempts');
+                if (window.translations && window.translations['006-too-many-attempts']) {
+                    errorDiv.textContent = window.translations['006-too-many-attempts'];
+                } else {
+                    errorDiv.textContent = '⚠️ Too many failed attempts. Try again in 10 minutes.';
+                }
+            } else {
+                errorDiv.setAttribute('data-lang-id', '002-password-is-wrong');
+                if (window.translations && window.translations['002-password-is-wrong']) {
+                    errorDiv.textContent = window.translations['002-password-is-wrong'];
+                } else {
+                    errorDiv.textContent = '👉 Password is wrong.';
+                }
+            }
+
+            errorDiv.style.display = 'block'; // Show password error
             shakeElement(document.getElementById('password-form'));
         } else if (errorType === 'invalid_user' || errorType === 'invalid_credential') {
 
