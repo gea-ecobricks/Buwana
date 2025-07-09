@@ -11,5 +11,6 @@ const id_Page_Translations = {
         "000-about": "ℹ️ Tentang",
         "003-open-source": "Kode sumber dan Wiki dokumentasi Buwana ada di Github",
         "004-view-repo": "Lihat repositori ↗",
+        "009-connect-button": "Hubungkan",
     };
 
