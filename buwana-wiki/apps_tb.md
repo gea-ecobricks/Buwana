@@ -50,8 +50,22 @@ It's basically the app passport control of Buwana: no app gets in without it.
 | `app_logo_dark_url`       | `varchar(255)`    | Logo for dark mode. |
 | `app_wordmark_url`        | `varchar(255)`    | Horizontal logo for light mode. |
 | `app_wordmark_dark_url`   | `varchar(255)`    | Horizontal logo for dark mode. |
-| `signup_top_img_url`      | `varchar(255)`    | Top banner image during signup. |
-| `signup_top_img_dark_url` | `varchar(255)`    | Dark mode version of the banner. |
+| `signup_1_top_img_light`  | `text`            | Signup step 1 top image (light mode). |
+| `signup_1_top_img_dark`   | `text`            | Signup step 1 top image (dark mode). |
+| `signup_2_top_img_light`  | `text`            | Signup step 2 top image (light mode). |
+| `signup_2_top_img_dark`   | `text`            | Signup step 2 top image (dark mode). |
+| `signup_3_top_img_light`  | `text`            | Signup step 3 top image (light mode). |
+| `signup_3_top_img_dark`   | `text`            | Signup step 3 top image (dark mode). |
+| `signup_4_top_img_light`  | `text`            | Signup step 4 top image (light mode). |
+| `signup_4_top_img_dark`   | `text`            | Signup step 4 top image (dark mode). |
+| `signup_5_top_img_light`  | `text`            | Signup step 5 top image (light mode). |
+| `signup_5_top_img_dark`   | `text`            | Signup step 5 top image (dark mode). |
+| `signup_6_top_img_light`  | `text`            | Signup step 6 top image (light mode). |
+| `signup_6_top_img_dark`   | `text`            | Signup step 6 top image (dark mode). |
+| `signup_7_top_img_light`  | `text`            | Signup step 7 top image (light mode). |
+| `signup_7_top_img_dark`   | `text`            | Signup step 7 top image (dark mode). |
+| `login_top_img_light`     | `text`            | Image above login form (light mode). |
+| `login_top_img_dark`      | `text`            | Image above login form (dark mode). |
 | `app_emojis_array`        | `text (utf8mb4)`  | JSON array of themed emojis for UI animations. |
 
 ---
