@@ -256,7 +256,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const codeToggle = document.getElementById('code');
     const submitPasswordButton = document.getElementById('submit-password-button');
     const sendCodeButton = document.getElementById('send-code-button');
-    const passwordField = document.getElementById('password-field');
+    const passwordField = document.getElementById('password');
     const form = document.getElementById('login');
 
     // Function to update the form visibility and toggle required attribute based on toggle state
