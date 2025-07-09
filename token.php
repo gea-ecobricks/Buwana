@@ -5,7 +5,7 @@ require_once 'buwanaconn_env.php';
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
-$authLogFile = dirname(__DIR__) . 'logs/auth.log';
+$authLogFile = dirname(__DIR__) . '/logs/auth.log';
 function auth_log($message) {
     global $authLogFile;
     if (!file_exists(dirname($authLogFile))) {
@@ -16,8 +16,14 @@ function auth_log($message) {
 
 auth_log("Token request received");
 
-// CORS (allow Earthcal PKCE flow)
-$allowedOrigins = ["https://earthcal.app"];
+// 🌐 CORS: Allow trusted origins
+$allowedOrigins = [
+    "https://earthcal.app",
+    "https://gobrik.com",
+    "https://ecobricks.org",
+    "https://learning.ecobricks.org",
+    "https://openbooks.ecobricks.org"
+];
 if (isset($_SERVER['HTTP_ORIGIN']) && in_array($_SERVER['HTTP_ORIGIN'], $allowedOrigins)) {
     header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
     header("Access-Control-Allow-Headers: Content-Type");
@@ -72,14 +78,13 @@ $stmt->bind_result($user_id, $stored_redirect_uri, $scope, $nonce, $code_challen
 $stmt->fetch();
 $stmt->close();
 
-// Validate redirect_uri
 if ($redirect_uri !== $stored_redirect_uri) {
     http_response_code(400);
     echo json_encode(["error" => "redirect_uri_mismatch"]);
     exit;
 }
 
-// Hybrid flow check
+// Flow check: confidential vs PKCE
 if (!empty($client_secret)) {
     auth_log("Confidential client flow for $client_id");
     if (empty($expected_secret) || $client_secret !== $expected_secret) {
@@ -89,14 +94,9 @@ if (!empty($client_secret)) {
     }
 } else {
     auth_log("PKCE flow for $client_id");
-    if (empty($code_challenge)) {
+    if (empty($code_challenge) || empty($code_verifier)) {
         http_response_code(400);
-        echo json_encode(["error" => "missing_pkce_challenge"]);
-        exit;
-    }
-    if (empty($code_verifier)) {
-        http_response_code(400);
-        echo json_encode(["error" => "missing_code_verifier"]);
+        echo json_encode(["error" => "missing_code_verifier_or_challenge"]);
         exit;
     }
     $calculated_challenge = ($code_challenge_method === 'S256')
@@ -109,13 +109,13 @@ if (!empty($client_secret)) {
     }
 }
 
-// Delete used authorization code
+// Remove used code
 $stmt = $buwana_conn->prepare("DELETE FROM authorization_codes_tb WHERE code = ?");
 $stmt->bind_param('s', $code);
 $stmt->execute();
 $stmt->close();
 
-// Fetch user info
+// Fetch user data
 $stmt_user = $buwana_conn->prepare("SELECT email, first_name, open_id, earthling_emoji, continent_code, community_id FROM users_tb WHERE buwana_id = ?");
 $stmt_user->bind_param('i', $user_id);
 $stmt_user->execute();
@@ -123,14 +123,11 @@ $stmt_user->bind_result($email, $first_name, $open_id, $earthling_emoji, $contin
 $stmt_user->fetch();
 $stmt_user->close();
 
-
-// Build ID Token payload
+// Build and sign tokens
 $now = time();
 $exp = $now + 3600;
 $sub = $open_id ?? ("buwana_$user_id");
 
-
-// The token that BUwana Apps get
 $id_token_payload = [
     "iss" => "https://buwana.ecobricks.org",
     "sub" => $sub,
@@ -141,14 +138,19 @@ $id_token_payload = [
     "given_name" => $first_name,
     "nonce" => $nonce,
     "buwana_id" => $user_id,
-    // 🌍 Custom claims for Buwana groove
     "buwana:earthlingEmoji" => $earthling_emoji,
     "buwana:community" => "Planet Earth",
     "buwana:location.continent" => $continent_code,
 ];
 
-
-$id_token = JWT::encode($id_token_payload, $jwt_private_key, 'RS256', $client_id);
+try {
+    $id_token = JWT::encode($id_token_payload, $jwt_private_key, 'RS256', $client_id);
+} catch (Exception $e) {
+    auth_log("ID token generation failed: " . $e->getMessage());
+    http_response_code(500);
+    echo json_encode(["error" => "jwt_generation_failed"]);
+    exit;
+}
 
 $access_token_payload = [
     "iss" => "https://buwana.ecobricks.org",
@@ -157,10 +159,17 @@ $access_token_payload = [
     "aud" => $client_id,
     "exp" => $exp,
     "iat" => $now,
-    "buwana_id" => $user_id  // ✅ Optional, for API access convenience
+    "buwana_id" => $user_id
 ];
 
-$access_token = JWT::encode($access_token_payload, $jwt_private_key, 'RS256', $client_id);
+try {
+    $access_token = JWT::encode($access_token_payload, $jwt_private_key, 'RS256', $client_id);
+} catch (Exception $e) {
+    auth_log("Access token generation failed: " . $e->getMessage());
+    http_response_code(500);
+    echo json_encode(["error" => "access_token_generation_failed"]);
+    exit;
+}
 
 header('Content-Type: application/json');
 echo json_encode([
