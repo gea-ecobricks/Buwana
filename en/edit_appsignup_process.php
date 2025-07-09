@@ -21,8 +21,6 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['update_app'])) {
 $buwana_id = intval($_SESSION['buwana_id']);
 $app_id    = isset($_GET['app_id']) ? intval($_GET['app_id']) : 0;
 
-$signup_top_img_url      = $_POST['signup_top_img_url'] ?? '';
-$signup_top_img_dark_url = $_POST['signup_top_img_dark_url'] ?? '';
 $signup_1_top_img_light  = $_POST['signup_1_top_img_light'] ?? '';
 $signup_1_top_img_dark   = $_POST['signup_1_top_img_dark'] ?? '';
 $signup_2_top_img_light  = $_POST['signup_2_top_img_light'] ?? '';
@@ -45,7 +43,7 @@ $error_message = '';
 
 $sql = "UPDATE apps_tb a
         JOIN app_owners_tb ao ON ao.app_id = a.app_id
-        SET a.signup_top_img_url=?, a.signup_top_img_dark_url=?, a.signup_1_top_img_light=?, a.signup_1_top_img_dark=?,
+        SET a.signup_1_top_img_light=?, a.signup_1_top_img_dark=?,
             a.signup_2_top_img_light=?, a.signup_2_top_img_dark=?, a.signup_3_top_img_light=?, a.signup_3_top_img_dark=?,
             a.signup_4_top_img_light=?, a.signup_4_top_img_dark=?, a.signup_5_top_img_light=?, a.signup_5_top_img_dark=?,
             a.signup_6_top_img_light=?, a.signup_6_top_img_dark=?, a.signup_7_top_img_light=?, a.signup_7_top_img_dark=?,
@@ -53,7 +51,7 @@ $sql = "UPDATE apps_tb a
         WHERE a.app_id=? AND ao.buwana_id=?";
 $stmt = $buwana_conn->prepare($sql);
 if ($stmt) {
-    if ($stmt->bind_param('ssssssssssssssssssii', $signup_top_img_url, $signup_top_img_dark_url, $signup_1_top_img_light, $signup_1_top_img_dark, $signup_2_top_img_light, $signup_2_top_img_dark, $signup_3_top_img_light, $signup_3_top_img_dark, $signup_4_top_img_light, $signup_4_top_img_dark, $signup_5_top_img_light, $signup_5_top_img_dark, $signup_6_top_img_light, $signup_6_top_img_dark, $signup_7_top_img_light, $signup_7_top_img_dark, $login_top_img_light, $login_top_img_dark, $app_id, $buwana_id)) {
+    if ($stmt->bind_param('ssssssssssssssssii', $signup_1_top_img_light, $signup_1_top_img_dark, $signup_2_top_img_light, $signup_2_top_img_dark, $signup_3_top_img_light, $signup_3_top_img_dark, $signup_4_top_img_light, $signup_4_top_img_dark, $signup_5_top_img_light, $signup_5_top_img_dark, $signup_6_top_img_light, $signup_6_top_img_dark, $signup_7_top_img_light, $signup_7_top_img_dark, $login_top_img_light, $login_top_img_dark, $app_id, $buwana_id)) {
         $success = $stmt->execute();
         if (!$success) {
             $error_message = $stmt->error;

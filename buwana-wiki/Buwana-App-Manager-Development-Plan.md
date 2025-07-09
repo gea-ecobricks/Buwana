@@ -139,10 +139,6 @@ Allow developers to register and configure new apps within Buwana. Will break do
 
 ** REGISTRATION GRAPHICS
 
-* signup_top_img_url_xxx
-
-* signup_top_img_dark_url
-
 * signup_1_top_img_light
 
 * signup_1_top_img_dark

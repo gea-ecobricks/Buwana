@@ -53,8 +53,22 @@ The `apps_tb` table stores configuration and metadata for third-party or interna
 | `app_logo_dark_url`    | `varchar(255)`  | Logo variant for dark backgrounds. |
 | `app_wordmark_url`     | `varchar(255)`  | Horizontal logo (light mode). |
 | `app_wordmark_dark_url`| `varchar(255)`  | Horizontal logo (dark mode). |
-| `signup_top_img_url`   | `varchar(255)`  | Optional image displayed at the top of the signup form. |
-| `signup_top_img_dark_url`| `varchar(255)`| Dark mode version of the signup top image. |
+| `signup_1_top_img_light` | `text` | Top image for signup step 1 (light mode). |
+| `signup_1_top_img_dark`  | `text` | Top image for signup step 1 (dark mode). |
+| `signup_2_top_img_light` | `text` | Top image for signup step 2 (light mode). |
+| `signup_2_top_img_dark`  | `text` | Top image for signup step 2 (dark mode). |
+| `signup_3_top_img_light` | `text` | Top image for signup step 3 (light mode). |
+| `signup_3_top_img_dark`  | `text` | Top image for signup step 3 (dark mode). |
+| `signup_4_top_img_light` | `text` | Top image for signup step 4 (light mode). |
+| `signup_4_top_img_dark`  | `text` | Top image for signup step 4 (dark mode). |
+| `signup_5_top_img_light` | `text` | Top image for signup step 5 (light mode). |
+| `signup_5_top_img_dark`  | `text` | Top image for signup step 5 (dark mode). |
+| `signup_6_top_img_light` | `text` | Top image for signup step 6 (light mode). |
+| `signup_6_top_img_dark`  | `text` | Top image for signup step 6 (dark mode). |
+| `signup_7_top_img_light` | `text` | Top image for signup step 7 (light mode). |
+| `signup_7_top_img_dark`  | `text` | Top image for signup step 7 (dark mode). |
+| `login_top_img_light`    | `text` | Image above login form (light mode). |
+| `login_top_img_dark`     | `text` | Image above login form (dark mode). |
 | `app_emojis_array`     | `text (utf8mb4)`| JSON-encoded array of emojis to use in animations and UI during auth flow. |
 
 ---

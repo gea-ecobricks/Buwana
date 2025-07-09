@@ -30,14 +30,14 @@ $sql = "INSERT INTO apps_tb (
     app_dashboard_url, app_description, app_version, app_display_name,
     contact_email, app_slogan, app_terms_txt, app_privacy_txt,
     app_emojis_array, app_logo_url, app_logo_dark_url, app_square_icon_url,
-    app_wordmark_url, app_wordmark_dark_url, signup_top_img_url, signup_top_img_dark_url,
+    app_wordmark_url, app_wordmark_dark_url,
     signup_1_top_img_light, signup_1_top_img_dark, signup_2_top_img_light, signup_2_top_img_dark,
     signup_3_top_img_light, signup_3_top_img_dark, signup_4_top_img_light, signup_4_top_img_dark,
     signup_5_top_img_light, signup_5_top_img_dark, signup_6_top_img_light, signup_6_top_img_dark,
     signup_7_top_img_light, signup_7_top_img_dark, login_top_img_light, login_top_img_dark,
     is_active, allow_signup, require_verification, last_used_dt, updated_dt
 ) VALUES (
-    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 1, 1, NOW(), NOW())";
+    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 1, 1, NOW(), NOW())";
 
 $stmt = $buwana_conn->prepare($sql);
 if (!$stmt) {
@@ -53,8 +53,8 @@ $params = [
     $_POST['contact_email'] ?? '', $_POST['app_slogan'] ?? '', $_POST['app_terms_txt'] ?? '',
     $_POST['app_privacy_txt'] ?? '', $_POST['app_emojis_array'] ?? '',
     $_POST['app_logo_url'] ?? '', $_POST['app_logo_dark_url'] ?? '', $_POST['app_square_icon_url'] ?? '',
-    $_POST['app_wordmark_url'] ?? '', $_POST['app_wordmark_dark_url'] ?? '', $_POST['signup_top_img_url'] ?? '',
-    $_POST['signup_top_img_dark_url'] ?? '', $_POST['signup_1_top_img_light'] ?? '', $_POST['signup_1_top_img_dark'] ?? '',
+    $_POST['app_wordmark_url'] ?? '', $_POST['app_wordmark_dark_url'] ?? '',
+    $_POST['signup_1_top_img_light'] ?? '', $_POST['signup_1_top_img_dark'] ?? '',
     $_POST['signup_2_top_img_light'] ?? '', $_POST['signup_2_top_img_dark'] ?? '', $_POST['signup_3_top_img_light'] ?? '',
     $_POST['signup_3_top_img_dark'] ?? '', $_POST['signup_4_top_img_light'] ?? '', $_POST['signup_4_top_img_dark'] ?? '',
     $_POST['signup_5_top_img_light'] ?? '', $_POST['signup_5_top_img_dark'] ?? '', $_POST['signup_6_top_img_light'] ?? '',

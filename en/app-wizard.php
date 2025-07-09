@@ -181,16 +181,6 @@ if ($stmt) {
       <div id="step4" class="wizard-step">
         <h3>Step 4: Signup Graphics</h3>
         <div class="form-item float-label-group">
-          <input type="text" id="signup_top_img_url" name="signup_top_img_url" aria-label="Signup Top Light" placeholder=" ">
-          <label for="signup_top_img_url">Signup Top Image Light</label>
-          <p class="form-caption">Light mode top banner</p>
-        </div>
-        <div class="form-item float-label-group">
-          <input type="text" id="signup_top_img_dark_url" name="signup_top_img_dark_url" aria-label="Signup Top Dark" placeholder=" ">
-          <label for="signup_top_img_dark_url">Signup Top Image Dark</label>
-          <p class="form-caption">Dark mode top banner</p>
-        </div>
-        <div class="form-item float-label-group">
           <input type="text" id="signup_1_top_img_light" name="signup_1_top_img_light" aria-label="Signup 1 Light" placeholder=" ">
           <label for="signup_1_top_img_light">Signup 1 Light</label>
           <p class="form-caption">Image URL</p>
