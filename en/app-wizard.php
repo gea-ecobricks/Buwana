@@ -7,6 +7,30 @@ require_once '../vendor/autoload.php';
 require_once '../buwanaconn_env.php';
 require_once '../fetch_app_info.php';
 
+$scope_options = [
+    'openid',
+    'email',
+    'profile',
+    'address',
+    'phone',
+    'buwana:bioregion',
+    'buwana:earthlingEmoji',
+    'buwana:community',
+    'buwana:location.continent'
+];
+
+$scope_descriptions = [
+    'openid'                  => 'Unique identifier for user login',
+    'email'                   => 'Access to user email address',
+    'profile'                 => 'Basic profile information',
+    'address'                 => 'User postal address details',
+    'phone'                   => 'Telephone number information',
+    'buwana:bioregion'        => 'User watershed & bioregion',
+    'buwana:earthlingEmoji'   => 'Preferred emoji avatar',
+    'buwana:community'        => 'Community membership',
+    'buwana:location.continent' => 'Continent of residence'
+];
+
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
@@ -73,6 +97,33 @@ try {
         border-radius: 10px 10px 5px 5px;
         padding-bottom: 10px;
       }
+      .scopes-list {
+        display: flex;
+        flex-direction: column;
+      }
+      .scope-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 7px 0;
+        border-bottom: 1px solid var(--subdued-text);
+      }
+      .scope-info {
+        display: flex;
+        flex-direction: column;
+        color: var(--text-color);
+      }
+      .scope-caption {
+        font-size: 0.9em;
+        color: grey;
+      }
+      .scope-subscopes {
+        font-size: 0.85em;
+        color: var(--subdued-text);
+      }
+      .hidden-scope {
+        display: none;
+      }
     </style>
 <div id="form-submission-box" class="landing-page-form">
   <div class="form-container">
@@ -116,10 +167,43 @@ try {
           <label for="app_login_url">App Login URL</label>
           <p class="form-caption">Where users login to your app</p>
         </div>
-        <div class="form-item float-label-group">
-          <input type="text" id="scopes" name="scopes" aria-label="Scopes" placeholder=" ">
-          <label for="scopes">Scopes</label>
-          <p class="form-caption">OAuth scopes requested</p>
+        <div class="form-item" style="border-radius:10px 10px 5px 5px;padding-bottom:10px;">
+          <label for="scopes" style="padding:7px;"><h5>Scopes</h5></label>
+          <div id="scopes" class="scopes-list">
+<?php
+  $profile_scopes = ['openid','email','profile','phone','buwana:earthlingEmoji','buwana:location.continent'];
+?>
+            <div class="scope-row">
+              <div class="scope-info">
+                <span>🌐 <b>Buwana Profile</b></span>
+                <span class="scope-caption">Essential user data for logging in and using the app</span>
+                <span class="scope-subscopes">openId, Name, email, profile, phone, buwana:earthlingEmoji, buwana:location_continent</span>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" class="scope-checkbox scope-group" data-scopes="<?= implode(',', $profile_scopes) ?>" />
+                <span class="slider"></span>
+              </label>
+<?php foreach ($profile_scopes as $sc): ?>
+              <input type="checkbox" class="scope-checkbox hidden-scope" name="scopes[]" value="<?= htmlspecialchars($sc) ?>" style="display:none;" />
+<?php endforeach; ?>
+            </div>
+<?php foreach (['buwana:community','buwana:bioregion'] as $scope): ?>
+            <div class="scope-row">
+              <div class="scope-info">
+                <span>ℹ️ <b><?= htmlspecialchars($scope) ?></b></span>
+                <span class="scope-caption">
+                  <?= htmlspecialchars($scope_descriptions[$scope] ?? '') ?>
+                </span>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" class="scope-checkbox" name="scopes[]" value="<?= htmlspecialchars($scope) ?>" />
+                <span class="slider"></span>
+              </label>
+            </div>
+<?php endforeach; ?>
+          </div>
+          <p class="form-caption">OAuth scopes requested by your app</p>
+          <div id="scopes-error-required" class="form-field-error" style="display:none;">This field is required.</div>
         </div>
         <div class="form-item float-label-group">
           <input type="text" id="app_domain" name="app_domain" aria-label="App Domain" placeholder=" ">
@@ -182,7 +266,7 @@ try {
         <div class="form-item float-label-group">
           <textarea id="app_emojis_array" name="app_emojis_array" aria-label="Emoji List" rows="4" placeholder=" "></textarea>
           <label for="app_emojis_array">Emoji List</label>
-          <p class="form-caption">Comma separated emoji list</p>
+          <p class="form-caption">Please format your list of emoji like this "🌒", "🌓", "🌔", "🌕","🌖", "🌗", "🌘", "🌑"</p>
         </div>
       </div>
       <div id="step3" class="wizard-step">
@@ -315,6 +399,8 @@ try {
   const nextBtn = document.getElementById('nextBtn');
   const prevBtn = document.getElementById('prevBtn');
   const submitBtn = document.getElementById('submitBtn');
+  const form = document.getElementById('appWizardForm');
+  const groupToggles = document.querySelectorAll('.scope-group');
 
   function showStep(index) {
     steps.forEach((step,i)=>{
@@ -337,6 +423,38 @@ try {
       currentStep--;
       showStep(currentStep);
     }
+  });
+
+  groupToggles.forEach(tg => {
+    tg.addEventListener('change', () => {
+      const scopes = tg.dataset.scopes.split(',');
+      scopes.forEach(sc => {
+        const cb = document.querySelector('.hidden-scope[value="' + sc + '"]');
+        if (cb) cb.checked = tg.checked;
+      });
+    });
+  });
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const formData = new FormData(form);
+    fetch(form.action, { method: 'POST', body: formData })
+      .then(r => r.json())
+      .then(d => {
+        if (d.success) {
+          form.reset();
+          document.getElementById('form-submission-box').innerHTML = `
+<div id="top-page-image" class="top-page-image" style="min-height:250px;" data-light-img="../svgs/confirmed-day.svg" data-dark-img="../svgs/confirmed-night.svg"></div>
+<h1>Your App is Setup!</h1>
+<p>To continue fine tuning the settings of your app, click through on your dashboard.  There you'll be able to tweak the full app configuation and add any missing details</p>
+<a href="dashboard.php"><button class="kick-ass">Dashboard</button></a>`;
+        } else {
+          document.getElementById('update-error').textContent = d.error || 'Unknown error';
+        }
+      })
+      .catch(err => {
+        document.getElementById('update-error').textContent = err.message;
+      });
   });
 
   showStep(currentStep);
