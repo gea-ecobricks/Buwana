@@ -127,6 +127,7 @@ $stmt->close();
 $selected_scopes = array_filter(array_map('trim', explode(',', $app['scopes'] ?? '')));
 $jwt_public_key  = $app['jwt_public_key'] ?? '';
 $jwt_private_key = $app['jwt_private_key'] ?? '';
+$client_secret   = $app['client_secret'] ?? '';
 
 if (!$app) {
     echo "<p>App not found or access denied.</p>";
@@ -181,7 +182,10 @@ if (!$app) {
       .hidden-scope {
         display: none;
       }
-      #copy-keys, #generate-keys {
+      #copy-public-key,
+      #copy-private-key,
+      #copy-client-secret,
+      #generate-keys {
         background: grey;
         color: white;
         border: none;
@@ -191,7 +195,10 @@ if (!$app) {
         margin-right: 5px;
         cursor: pointer;
       }
-      #copy-keys:hover, #generate-keys:hover {
+      #copy-public-key:hover,
+      #copy-private-key:hover,
+      #copy-client-secret:hover,
+      #generate-keys:hover {
         background: darkgrey;
       }
     </style>
@@ -266,12 +273,21 @@ if (!$app) {
               <button type="button" id="generate-keys">Generate Keys</button>
             </div>
           <?php else: ?>
-            <div style="display:flex;align-items:center;">
-              <div class="password-wrapper" style="position:relative;flex-grow:1;">
-                <input type="password" id="public_key" readonly value="<?= htmlspecialchars($jwt_public_key) ?>" style="width:100%;">
-                <span toggle="#public_key" class="toggle-password" style="cursor:pointer;position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:18px;z-index:1;">🙈</span>
+            <div style="display:flex;flex-direction:column;gap:10px;width:100%;">
+              <div style="display:flex;align-items:center;">
+                <div class="password-wrapper" style="position:relative;flex-grow:1;">
+                  <input type="password" id="public_key" readonly value="<?= htmlspecialchars($jwt_public_key) ?>" style="width:100%;">
+                  <span toggle="#public_key" class="toggle-password" style="cursor:pointer;position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:18px;z-index:1;">🙈</span>
+                </div>
+                <button type="button" id="copy-public-key">Copy</button>
               </div>
-              <button type="button" id="copy-keys">Copy Key</button>
+              <div style="display:flex;align-items:center;">
+                <div class="password-wrapper" style="position:relative;flex-grow:1;">
+                  <input type="password" id="private_key" readonly value="<?= htmlspecialchars($jwt_private_key) ?>" style="width:100%;">
+                  <span toggle="#private_key" class="toggle-password" style="cursor:pointer;position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:18px;z-index:1;">🙈</span>
+                </div>
+                <button type="button" id="copy-private-key">Copy</button>
+              </div>
             </div>
           <?php endif; ?>
 
@@ -282,6 +298,20 @@ if (!$app) {
         <?php endif; ?>
         <p id="copy-msg" class="form-caption" style="display:none;color:green;">All good. Key copied! ✅</p>
       </div>
+      <?php if(!empty($client_secret)): ?>
+      <div class="form-item" style="border-radius:10px 10px 5px 5px;padding-bottom: 10px;">
+        <div class="scope-info">
+          <label for="client_secret" style="padding:7px;"><h5>Client Secret</h5></label>
+        </div>
+        <div style="display:flex;align-items:center;">
+          <div class="password-wrapper" style="position:relative;flex-grow:1;">
+            <input type="password" id="client_secret" readonly value="<?= htmlspecialchars($client_secret) ?>" style="width:100%;">
+            <span toggle="#client_secret" class="toggle-password" style="cursor:pointer;position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:18px;z-index:1;">🙈</span>
+          </div>
+          <button type="button" id="copy-client-secret">Copy</button>
+        </div>
+      </div>
+      <?php endif; ?>
       <div class="form-item" style="border-radius:10px 10px 5px 5px;padding-bottom: 10px;">
         <label for="scopes" style="padding:7px;"><h5>Scopes</h5></label>
         <div id="scopes" class="scopes-list">
@@ -399,7 +429,9 @@ document.addEventListener('DOMContentLoaded', function () {
   const scopeBoxes = document.querySelectorAll('.scope-checkbox');
   const groupToggles = document.querySelectorAll('.scope-group');
   const generateBtn = document.getElementById('generate-keys');
-  const copyBtn = document.getElementById('copy-keys');
+  const copyPublicBtn  = document.getElementById('copy-public-key');
+  const copyPrivateBtn = document.getElementById('copy-private-key');
+  const copySecretBtn  = document.getElementById('copy-client-secret');
   const regenLink = document.getElementById('regenerate-keys');
 
 
@@ -478,20 +510,26 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  if (copyBtn) {
-    copyBtn.addEventListener('click', () => {
-      const keyInput = document.getElementById('public_key');
-      if (keyInput) {
-        navigator.clipboard.writeText(keyInput.value).then(() => {
-          const msg = document.getElementById('copy-msg');
-          if (msg) {
-            msg.style.display = 'block';
-            setTimeout(() => { msg.style.display = 'none'; }, 2000);
-          }
-        });
-      }
-    });
+  function setupCopy(btn, inputId) {
+    if (btn) {
+      btn.addEventListener('click', () => {
+        const input = document.getElementById(inputId);
+        if (input) {
+          navigator.clipboard.writeText(input.value).then(() => {
+            const msg = document.getElementById('copy-msg');
+            if (msg) {
+              msg.style.display = 'block';
+              setTimeout(() => { msg.style.display = 'none'; }, 2000);
+            }
+          });
+        }
+      });
+    }
   }
+
+  setupCopy(copyPublicBtn, 'public_key');
+  setupCopy(copyPrivateBtn, 'private_key');
+  setupCopy(copySecretBtn, 'client_secret');
 
   if (regenLink) {
     regenLink.addEventListener('click', (e) => {
@@ -542,18 +580,18 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function toggleKeys() {
-  const icon = document.querySelector('span[toggle="#public_key"]');
-  if (!icon) return;
-  icon.addEventListener('click', () => {
-    const input = document.querySelector(icon.getAttribute('toggle'));
-    if (!input) return;
-    if (input.type === 'password') {
-      input.type = 'text';
-      icon.textContent = '🙉';
-    } else {
-      input.type = 'password';
-      icon.textContent = '🙈';
-    }
+  document.querySelectorAll('.toggle-password').forEach(icon => {
+    icon.addEventListener('click', () => {
+      const input = document.querySelector(icon.getAttribute('toggle'));
+      if (!input) return;
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.textContent = '🙉';
+      } else {
+        input.type = 'password';
+        icon.textContent = '🙈';
+      }
+    });
   });
 }
 </script>
