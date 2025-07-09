@@ -36,7 +36,6 @@ if (!isset($_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $cs
     exit();
 }
 
-auth_log("Credentials received for: $credential_key");
 
 if (empty($credential_key) || empty($password)) {
     auth_log('Empty credential key or password');
@@ -96,7 +95,6 @@ if ($stmt_credential) {
                 $stmt_user->fetch();
 
                 if (password_verify($password, $password_hash)) {
-                    auth_log("Password verified for buwana_id $buwana_id");
 
                     // Successful login, update login stats
                     $buwana_conn->query("UPDATE users_tb SET last_login = NOW(), login_count = login_count + 1 WHERE buwana_id = $buwana_id");
@@ -130,7 +128,6 @@ if ($stmt_credential) {
                         if (empty($open_id)) {
                             // If no OpenID exists for this user, you can either generate it here or throw error.
                             // For now, we error to be safe.
-                            auth_log("Missing open_id for buwana_id $buwana_id");
                             die("Internal error: open_id missing.");
                         }
 
@@ -148,7 +145,6 @@ if ($stmt_credential) {
                         try {
                             $jwt_token = JWT::encode($payload, $private_key, 'RS256', $client_id);
                             $_SESSION['jwt'] = $jwt_token;
-                            auth_log("JWT issued for buwana_id $buwana_id");
                         } catch (Exception $e) {
                             auth_log('JWT generation failed: ' . $e->getMessage());
                         }

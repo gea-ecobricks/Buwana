@@ -64,7 +64,6 @@ document.addEventListener('DOMContentLoaded', function () {
     function validateCode() {
         const fullCode = [...codeInputs].map(input => input.value.trim()).join('');
         if (fullCode.length === codeInputs.length) {
-            console.log("Code to validate: ", fullCode);
             ajaxValidateCode(fullCode);
         }
     }
@@ -77,8 +76,7 @@ document.addEventListener('DOMContentLoaded', function () {
             body: `code=${code}&credential_key=${credentialKeyInput.value}`
         })
             .then(response => response.json())
-            .then(data => handleAjaxResponse(data))
-            .catch(error => console.error('Error:', error));
+            .then(data => handleAjaxResponse(data));
     }
 
     // Function to handle AJAX response
@@ -339,12 +337,10 @@ document.addEventListener('DOMContentLoaded', function () {
             // If the code option is selected
             passwordField.removeAttribute('required');
             form.action = 'https://buwana.ecobricks.org/processes/code_process.php';
-            console.log("Code is checked.");
         } else if (passwordToggle.checked) {
             // If the password option is selected
             passwordField.setAttribute('required', 'required');
             form.action = 'https://buwana.ecobricks.org/processes/login_process_jwt.php';
-            console.log("Password is checked.");
         }
     }
 });
@@ -830,24 +826,6 @@ function showPasswordReset(type, lang = '<?php echo $lang; ?>', email = '') {
 
 
 
-// Toggle password visibility on pages that include password fields
-// Use event delegation so dynamic elements still respond
-document.addEventListener('click', function (e) {
-    if (e.target && e.target.classList.contains('toggle-password')) {
-        const icon = e.target;
-        const input = document.querySelector(icon.getAttribute('toggle'));
-        if (input) {
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.textContent = '🙉';
-            } else {
-                input.type = 'password';
-                icon.textContent = '🙈';
-            }
-        }
-    }
-});
-
 /* --------------------------------
 
 
@@ -885,7 +863,6 @@ window.onload = function() {
         setTimeout(() => {
             const noBuwanaEmail = document.getElementById('no-buwana-email');
             if (noBuwanaEmail) {
-                console.log("Displaying the 'email not found' error.");
                 noBuwanaEmail.style.display = 'block';
             }
         }, 100);
