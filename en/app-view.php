@@ -167,6 +167,34 @@ if ($stmt) {
       .top-wrapper {
         background: var(--darker-lighter);
       }
+      #owner-results {
+        position: absolute;
+        background: var(--form-field-background);
+        border: 1px solid var(--subdued-text);
+        max-height: 150px;
+        overflow-y: auto;
+        z-index: 5;
+        width: 100%;
+      }
+      #owner-results div {
+        padding: 4px 8px;
+        cursor: pointer;
+      }
+      #owner-results div:hover {
+        background: var(--lighter);
+      }
+      .owner-box {
+        background: var(--lighter);
+        border-radius: 8px;
+        padding: 4px 8px;
+        margin: 2px;
+        display: inline-flex;
+        align-items: center;
+      }
+      .owner-box .remove-owner {
+        cursor: pointer;
+        margin-right: 6px;
+      }
     </style>
 <div id="form-submission-box" class="landing-page-form">
   <div class="form-container">
@@ -251,8 +279,20 @@ if ($stmt) {
           <a href="edit-app-core.php?app_id=<?= intval($app_id) ?>" class="simple-button">Core Data</a>
           <a href="edit-app-texts.php?app_id=<?= intval($app_id) ?>" class="simple-button">App texts</a>
           <a href="edit-app-graphics.php?app_id=<?= intval($app_id) ?>" class="simple-button">Logos &amp; Icons</a>
-          <a href="edit-app-signup.php?app_id=<?= intval($app_id) ?>" class="simple-button">Signup banners</a>
+        <a href="edit-app-signup.php?app_id=<?= intval($app_id) ?>" class="simple-button">Signup banners</a>
         </div>
+      </div>
+
+      <div class="dashboard-module" id="owner-module" style="margin-top:20px; position:relative;">
+        <h5 style="text-align:center;">Set App Owners</h5>
+        <p>Search for Buwana users connected to the App Manager.</p>
+        <div style="display:flex; gap:10px; align-items:center; position:relative;">
+          <input type="text" id="owner-search" placeholder="Type a name" style="flex:1;">
+          <button id="add-owner" class="simple-button" disabled>Add Owner</button>
+          <div id="owner-results" style="display:none;"></div>
+        </div>
+        <div id="selected-owners" style="margin-top:10px; display:flex; flex-wrap:wrap;"></div>
+        <button id="save-owners" class="simple-button" style="margin-top:10px; display:none;">Save</button>
       </div>
 
       <div class="dashboard-module" style="margin-top:20px; border:1px solid red;">
@@ -319,6 +359,81 @@ document.addEventListener('DOMContentLoaded', function() {
     order: [[4, 'desc']]
   });
   $('#userTable_wrapper').addClass('dashboard-module');
+
+  var searchInput = document.getElementById('owner-search');
+  var addBtn = document.getElementById('add-owner');
+  var resultsBox = document.getElementById('owner-results');
+  var selectedBox = document.getElementById('selected-owners');
+  var saveOwners = document.getElementById('save-owners');
+  var selectedOwners = {};
+
+  if (searchInput) {
+    searchInput.addEventListener('input', function() {
+      var q = this.value.trim();
+      addBtn.disabled = true;
+      addBtn.dataset.id = '';
+      if (q.length < 3) { resultsBox.style.display = 'none'; return; }
+      fetch('../api/search_app_users.php?q=' + encodeURIComponent(q))
+        .then(r => r.json())
+        .then(list => {
+          if (!list.length) { resultsBox.style.display = 'none'; return; }
+          resultsBox.innerHTML = list.map(u => '<div data-id="' + u.buwana_id + '">' + u.full_name + '</div>').join('');
+          resultsBox.style.display = 'block';
+        });
+    });
+
+    resultsBox.addEventListener('click', function(e) {
+      var id = e.target.dataset.id;
+      if (!id) return;
+      searchInput.value = e.target.textContent;
+      addBtn.dataset.id = id;
+      addBtn.disabled = false;
+      resultsBox.style.display = 'none';
+    });
+
+    addBtn.addEventListener('click', function() {
+      var id = this.dataset.id;
+      var name = searchInput.value.trim();
+      if (!id || !name || selectedOwners[id]) return;
+      var div = document.createElement('div');
+      div.className = 'owner-box';
+      div.dataset.id = id;
+      div.innerHTML = '<span class="remove-owner">✖</span>' + name;
+      selectedBox.appendChild(div);
+      selectedOwners[id] = true;
+      searchInput.value = '';
+      this.disabled = true;
+      saveOwners.style.display = 'inline-block';
+    });
+
+    selectedBox.addEventListener('click', function(e) {
+      if (e.target.classList.contains('remove-owner')) {
+        var div = e.target.parentElement;
+        delete selectedOwners[div.dataset.id];
+        div.remove();
+        if (!Object.keys(selectedOwners).length) {
+          saveOwners.style.display = 'none';
+        }
+      }
+    });
+
+    saveOwners.addEventListener('click', function() {
+      var ids = Object.keys(selectedOwners);
+      fetch('../api/update_app_owners.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({app_id: <?= intval($app_id) ?>, owners: ids})
+      }).then(r => r.json()).then(d => {
+        if (d.success) {
+          saveOwners.style.display = 'none';
+          selectedOwners = {};
+          selectedBox.innerHTML = '';
+        } else {
+          alert('Error saving owners');
+        }
+      });
+    });
+  }
 
   function updateFlag(field, val) {
     fetch('../api/update_app_flag.php', {
