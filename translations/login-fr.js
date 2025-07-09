@@ -19,5 +19,6 @@ const fr_Page_Translations = {
     "003-code-status": "Un code de connexion sera envoyé à votre adresse e-mail.",
     "004-login-button": '<input type="submit" id="submit-password-button" value="Connexion" class="login-button-75">',
     "005-password-field-placeholder": '<input type="password" id="password" name="password" required placeholder="Votre mot de passe...">',
+    "006-too-many-attempts": "⚠️ Trop de tentatives échouées. Réessayez dans 10 minutes."
 };
 

@@ -19,5 +19,6 @@ const ar_Page_Translations = {
     "003-code-status": "سيتم إرسال رمز لتسجيل الدخول إلى بريدك الإلكتروني.",
     "004-login-button": '<input type="submit" id="submit-password-button" value="تسجيل الدخول" class="login-button-75">',
     "005-password-field-placeholder": '<input type="password" id="password" name="password" required placeholder="كلمة مرورك...">'
+    "006-too-many-attempts": "⚠️ محاولات فاشلة كثيرة. حاول مرة أخرى خلال 10 دقائق."
 };
 
