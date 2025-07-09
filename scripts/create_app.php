@@ -22,11 +22,11 @@ function generateClientId($name) {
 $app_name = trim($_POST['app_name'] ?? '');
 $client_id = generateClientId($app_name ?: 'app');
 $client_secret = bin2hex(random_bytes(16));
-$app_registration_dt = $_POST['app_registration_dt'] ?? date('Y-m-d H:i:s');
+$app_registration_dt = date('Y-m-d H:i:s');
 
 $sql = "INSERT INTO apps_tb (
     app_name, app_registration_dt, client_id, client_secret,
-    redirect_uris, app_login_url, scopes, app_domain, app_url,
+    redirect_uris, app_login_url, scopes, app_domain, app_url, app_favicon,
     app_dashboard_url, app_description, app_version, app_display_name,
     contact_email, app_slogan, app_terms_txt, app_privacy_txt,
     app_emojis_array, app_logo_url, app_logo_dark_url, app_square_icon_url,
@@ -37,7 +37,7 @@ $sql = "INSERT INTO apps_tb (
     signup_7_top_img_light, signup_7_top_img_dark, login_top_img_light, login_top_img_dark,
     is_active, allow_signup, require_verification, last_used_dt, updated_dt
 ) VALUES (
-    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 1, 1, NOW(), NOW())";
+    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 1, 1, NOW(), NOW())";
 
 $stmt = $buwana_conn->prepare($sql);
 if (!$stmt) {
@@ -48,7 +48,7 @@ if (!$stmt) {
 $params = [
     $app_name, $app_registration_dt, $client_id, $client_secret,
     $_POST['redirect_uris'] ?? '', $_POST['app_login_url'] ?? '', $_POST['scopes'] ?? '',
-    $_POST['app_domain'] ?? '', $_POST['app_url'] ?? '', $_POST['app_dashboard_url'] ?? '',
+    $_POST['app_domain'] ?? '', $_POST['app_url'] ?? '', $_POST['app_favicon'] ?? '', $_POST['app_dashboard_url'] ?? '',
     $_POST['app_description'] ?? '', $_POST['app_version'] ?? '', $_POST['app_display_name'] ?? '',
     $_POST['contact_email'] ?? '', $_POST['app_slogan'] ?? '', $_POST['app_terms_txt'] ?? '',
     $_POST['app_privacy_txt'] ?? '', $_POST['app_emojis_array'] ?? '',

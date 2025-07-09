@@ -30,6 +30,15 @@ if ($stmt) {
     <meta charset="UTF-8">
     <?php require_once("../meta/app-wizard-en.php"); ?>
     <?php require_once("../includes/app-wizard-en.php"); ?>
+    <style>
+      .top-wrapper {
+        background: var(--darker-lighter);
+      }
+      .form-item.float-label-group {
+        border-radius: 10px 10px 5px 5px;
+        padding-bottom: 10px;
+      }
+    </style>
 <div id="form-submission-box" class="landing-page-form">
   <div class="form-container">
     <div class="top-wrapper">
@@ -42,7 +51,7 @@ if ($stmt) {
                   <div class="page-name">New App Setup</div>
                   <div class="client-id">Create New App</div>
                 </div>
-                <img src="../svgs/b-logo.svg" alt="New App" title="New App" width="60" height="60">
+                <span style="font-size:60px;">✨</span>
           </div>
       </div>
     </div>
@@ -61,11 +70,6 @@ if ($stmt) {
           <input type="text" id="app_name" name="app_name" aria-label="App Name" required placeholder=" ">
           <label for="app_name">App Name</label>
           <p class="form-caption">Internal name for your app</p>
-        </div>
-        <div class="form-item float-label-group">
-          <input type="date" id="app_registration_dt" name="app_registration_dt" aria-label="Registration Date" required placeholder=" ">
-          <label for="app_registration_dt">Registration Date</label>
-          <p class="form-caption">When was your app registered?</p>
         </div>
         <div class="form-item float-label-group">
           <input type="text" id="redirect_uris" name="redirect_uris" aria-label="Redirect URIs" required placeholder=" ">
@@ -91,6 +95,11 @@ if ($stmt) {
           <input type="text" id="app_url" name="app_url" aria-label="App URL" placeholder=" ">
           <label for="app_url">App URL</label>
           <p class="form-caption">Public homepage of your app</p>
+        </div>
+        <div class="form-item float-label-group">
+          <input type="text" id="app_favicon" name="app_favicon" aria-label="App Favicon URL" placeholder=" ">
+          <label for="app_favicon">Set App Favicon</label>
+          <p class="form-caption">URL for your app's favicon</p>
         </div>
         <div class="form-item float-label-group">
           <input type="text" id="app_dashboard_url" name="app_dashboard_url" aria-label="App Dashboard URL" placeholder=" ">

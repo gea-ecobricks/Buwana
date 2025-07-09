@@ -31,6 +31,7 @@ It's basically the app passport control of Buwana: no app gets in without it.
 | `scopes`                  | `text`            | App permissions (like `email`, `profile`). |
 | `app_domain`              | `varchar(255)`    | Primary domain (like `earthcal.com`). |
 | `app_url`                 | `varchar(255)`    | App's public homepage URL. |
+| `app_favicon`             | `varchar(255)`    | URL of the app's favicon. |
 | `app_login_url`           | `varchar(255)`    | Where Buwana sends users to log in. |
 | `app_description`         | `text`            | Description of what this app does. |
 | `app_logo_url`            | `varchar(255)`    | Logo for light mode. |

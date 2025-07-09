@@ -34,6 +34,7 @@ The `apps_tb` table stores configuration and metadata for third-party or interna
 | `scopes`               | `text`          | JSON or comma-separated list of scopes requested by this app (e.g., `profile`, `email`). |
 | `app_domain`           | `varchar(255)`  | Primary domain (e.g. `gobrik.com`). |
 | `app_url`              | `varchar(255)`  | Public landing/homepage URL of the app. |
+| `app_favicon`          | `varchar(255)`  | URL to the app's favicon image. |
 | `app_login_url`        | `varchar(255)`  | URL to redirect for login. |
 | `app_description`      | `text`          | Short description of what this app does. |
 | `app_logo_url`         | `varchar(255)`  | URL to the logo shown in Buwana login screens. |
