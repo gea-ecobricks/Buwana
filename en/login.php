@@ -1,7 +1,5 @@
 <?php
 require_once '../earthenAuth_helper.php'; // Include the authentication helper functions
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
 
 require_once '../buwanaconn_env.php';         // Sets up $buwana_conn
 
@@ -90,7 +88,6 @@ $code = isset($_GET['code']) ? filter_var($_GET['code'], FILTER_SANITIZE_SPECIAL
 $credential_key = ''; // Initialize $credential_key as empty
 $first_name = '';  // Initialize the first_name variable
 $redirect = isset($_GET['redirect']) ? filter_var($_GET['redirect'], FILTER_SANITIZE_SPECIAL_CHARS) : '';
-auth_log("Query parameters - status: $status, id: $buwana_id, redirect: $redirect");
 
 // Check if buwana_id is available and valid to fetch corresponding email and first_name from users_tb
 if (!empty($buwana_id)) {
@@ -112,7 +109,6 @@ if (!empty($buwana_id)) {
             if ($stmt->fetch()) {
                 $credential_key = $fetched_email;  // Store the fetched email
                 $first_name = $fetched_first_name;  // Store the fetched first_name
-                auth_log("Fetched user info for buwana_id $buwana_id");
             }
         }
 
