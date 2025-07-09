@@ -1,27 +1,62 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 session_start();
-if (empty($_SESSION['buwana_id'])) {
-    header('Location: login.php');
-    exit();
-}
 
+require_once '../vendor/autoload.php';
 require_once '../buwanaconn_env.php';
+require_once '../fetch_app_info.php';
+
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 
 $lang = basename(dirname($_SERVER['SCRIPT_NAME']));
 $page = 'app-wizard.php';
 $version = '0.2';
 $lastModified = date('Y-m-d\TH:i:s\Z', filemtime(__FILE__));
 
-$buwana_id = intval($_SESSION['buwana_id']);
-$first_name = '';
-$earthling_emoji = '';
-$stmt = $buwana_conn->prepare("SELECT first_name, earthling_emoji FROM users_tb WHERE buwana_id = ?");
-if ($stmt) {
-    $stmt->bind_param('i', $buwana_id);
-    $stmt->execute();
-    $stmt->bind_result($first_name, $earthling_emoji);
-    $stmt->fetch();
-    $stmt->close();
+// Grab JWT and client_id from session
+$jwt = $_SESSION['jwt'] ?? null;
+$client_id = $_SESSION['client_id'] ?? ($_GET['app'] ?? ($_GET['client_id'] ?? null));
+
+if (!$jwt || !$client_id) {
+    $query = ['status' => 'loggedout', 'redirect' => $page];
+    if ($client_id) $query['app'] = $client_id;
+    header('Location: login.php?' . http_build_query($query));
+    exit();
+}
+
+// Get the app's public key
+$stmt = $buwana_conn->prepare("SELECT jwt_public_key FROM apps_tb WHERE client_id = ?");
+$stmt->bind_param("s", $client_id);
+$stmt->execute();
+$stmt->bind_result($public_key);
+$stmt->fetch();
+$stmt->close();
+
+try {
+    $decoded = JWT::decode($jwt, new Key($public_key, 'RS256'));
+    $sub = $decoded->sub ?? '';
+    $buwana_id = 0;
+    if (preg_match('/^buwana_(\d+)$/', $sub, $m)) {
+        $buwana_id = (int)$m[1];
+    } else {
+        $stmt = $buwana_conn->prepare("SELECT buwana_id FROM users_tb WHERE open_id = ? LIMIT 1");
+        $stmt->bind_param('s', $sub);
+        $stmt->execute();
+        $stmt->bind_result($buwana_id);
+        $stmt->fetch();
+        $stmt->close();
+    }
+    $_SESSION['buwana_id'] = $buwana_id;
+    $first_name = $decoded->given_name ?? '';
+    $earthling_emoji = $decoded->{'buwana:earthlingEmoji'} ?? '';
+} catch (Exception $e) {
+    error_log("JWT Decode Error: " . $e->getMessage());
+    $query = ['status' => 'loggedout', 'redirect' => $page];
+    if ($client_id) $query['app'] = $client_id;
+    header('Location: login.php?' . http_build_query($query));
+    exit();
 }
 ?>
 <!DOCTYPE html>

@@ -519,33 +519,6 @@ document.getElementById('user-signup-form').addEventListener('submit', function(
 
 
 
-/* MODALS  */
-
-
-// function openAboutKeyWord() {
-//
-//
-//     const modal = document.getElementById('form-modal-message');
-//     const modalBox = document.getElementById('modal-content-box');
-//
-//     modal.style.display = 'flex';
-//     modalBox.style.flexFlow = 'column';
-//     document.getElementById('page-content')?.classList.add('blurred');
-//     document.getElementById('footer-full')?.classList.add('blurred');
-//     document.body.classList.add('modal-open');
-//
-//     modalBox.style.maxHeight = '80vh';
-//     modalBox.style.overflowY = 'auto';
-//
-//     modalBox.innerHTML = `
-//         <div style="text-align: center;margin:auto;padding:10%;">
-//             <h2 data-lang-id="3000-ecobrick-title">"Ecobrick"</h2>
-//
-//
-//         <p data-lang-id="3001-ecobrick-text">An ecobrick is a PET bottle packed solid with used plastic to the standards of plastic sequestration in order to make a reusable building block. It prevents plastic from degrading into toxins and microplastics, and turns it into a useful, durable building material.  In 2016, plastic transition leaders around the world agreed to use the non-hyphenated, non-capitalized term 'ecobrick' as the consistent, standardized term of reference in the guidebook and their materials.</p>
-//         </div>
-//     `;
-// }
 
 
 
