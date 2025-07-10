@@ -181,11 +181,11 @@ if ($is_owner) {
       }
       #owner-results {
         position: absolute;
-        background: var(--form-field-background);
+        background: var(--table-background-1);
         border: 1px solid var(--subdued-text);
         max-height: 150px;
         overflow-y: auto;
-        z-index: 5;
+        z-index: 20;
         width: 100%;
         top: 100%;
         left: 0;
@@ -217,9 +217,23 @@ if ($is_owner) {
         cursor: pointer;
         margin-right: 6px;
       }
+      #add-owner {
+        background: var(--table-background-heading);
+      }
+
+      #add-owner:hover:not(:disabled) {
+        background: var(--button-2-1);
+        cursor: pointer;
+      }
+
       .save-owner-btn {
-        background: var(--emblem-green);
+        background: var(--button-2-2);
         color: #fff;
+      }
+
+      .save-owner-btn:hover {
+        background: var(--button-2-2-over);
+        cursor: pointer;
       }
     </style>
 <div id="form-submission-box" class="landing-page-form">
@@ -316,14 +330,14 @@ if ($is_owner) {
             <div class="owner-box current-owner" data-id="<?= intval($co['buwana_id']) ?>"><span class="remove-current-owner">✖</span><?= htmlspecialchars($co['full_name']) ?></div>
           <?php endforeach; ?>
         </div>
-        <p>Search for Buwana users connected to the App Manager.</p>
+        <p>Search, select and add app managers as owners of <?= htmlspecialchars($app['app_display_name']) ?>. Careful, owners will have full master admin privileges to edit the core settings, visibility and status of the app.</p>
         <div style="display:flex; gap:10px; align-items:center; position:relative;">
           <input type="text" id="owner-search" placeholder="Type a name" style="flex:1;">
-          <button id="add-owner" class="simple-button" disabled>Add Owner</button>
+          <button id="add-owner" class="simple-button" disabled>+ Select Admin</button>
           <div id="owner-results" style="display:none;"></div>
         </div>
         <div id="selected-owners" style="margin-top:10px; display:flex; flex-wrap:wrap;"></div>
-        <button id="save-owners" class="simple-button save-owner-btn" style="margin-top:10px; display:none;">Set as owner</button>
+        <button id="save-owners" class="simple-button save-owner-btn" style="margin-top:10px; display:none;">✅ Make Owner</button>
       </div>
 
       <div class="dashboard-module" style="margin-top:20px; border:1px solid red;">
