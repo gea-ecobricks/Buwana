@@ -152,6 +152,18 @@ if ($stmt) {
     $recent_users = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
     $stmt->close();
 }
+
+$current_owners = [];
+if ($is_owner) {
+    $stmt = $buwana_conn->prepare("SELECT u.buwana_id, u.full_name FROM app_owners_tb ao JOIN users_tb u ON ao.buwana_id = u.buwana_id WHERE ao.app_id = ?");
+    if ($stmt) {
+        $stmt->bind_param('i', $app_id);
+        $stmt->execute();
+        $res = $stmt->get_result();
+        $current_owners = $res ? $res->fetch_all(MYSQLI_ASSOC) : [];
+        $stmt->close();
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="<?= htmlspecialchars($lang) ?>">
@@ -175,6 +187,8 @@ if ($stmt) {
         overflow-y: auto;
         z-index: 5;
         width: 100%;
+        top: 100%;
+        left: 0;
       }
       #owner-results div {
         padding: 4px 8px;
@@ -191,9 +205,21 @@ if ($stmt) {
         display: inline-flex;
         align-items: center;
       }
+      .current-owner {
+        background: var(--emblem-green);
+        color: #fff;
+      }
       .owner-box .remove-owner {
         cursor: pointer;
         margin-right: 6px;
+      }
+      .remove-current-owner {
+        cursor: pointer;
+        margin-right: 6px;
+      }
+      .save-owner-btn {
+        background: var(--emblem-green);
+        color: #fff;
       }
     </style>
 <div id="form-submission-box" class="landing-page-form">
@@ -284,7 +310,12 @@ if ($stmt) {
       </div>
 
       <div class="dashboard-module" id="owner-module" style="margin-top:20px; position:relative;">
-        <h5 style="text-align:center;">Set App Owners</h5>
+        <h5 style="text-align:center;">App Owners</h5>
+        <div id="current-owners" style="margin-bottom:10px;display:flex;flex-wrap:wrap;">
+          <?php foreach ($current_owners as $co): ?>
+            <div class="owner-box current-owner" data-id="<?= intval($co['buwana_id']) ?>"><span class="remove-current-owner">✖</span><?= htmlspecialchars($co['full_name']) ?></div>
+          <?php endforeach; ?>
+        </div>
         <p>Search for Buwana users connected to the App Manager.</p>
         <div style="display:flex; gap:10px; align-items:center; position:relative;">
           <input type="text" id="owner-search" placeholder="Type a name" style="flex:1;">
@@ -292,7 +323,7 @@ if ($stmt) {
           <div id="owner-results" style="display:none;"></div>
         </div>
         <div id="selected-owners" style="margin-top:10px; display:flex; flex-wrap:wrap;"></div>
-        <button id="save-owners" class="simple-button" style="margin-top:10px; display:none;">Save</button>
+        <button id="save-owners" class="simple-button save-owner-btn" style="margin-top:10px; display:none;">Set as owner</button>
       </div>
 
       <div class="dashboard-module" style="margin-top:20px; border:1px solid red;">
@@ -366,6 +397,7 @@ document.addEventListener('DOMContentLoaded', function() {
   var selectedBox = document.getElementById('selected-owners');
   var saveOwners = document.getElementById('save-owners');
   var selectedOwners = {};
+  var currentOwners = <?php echo json_encode(array_column($current_owners,'full_name','buwana_id')); ?>;
 
   if (searchInput) {
     searchInput.addEventListener('input', function() {
@@ -400,7 +432,7 @@ document.addEventListener('DOMContentLoaded', function() {
       div.dataset.id = id;
       div.innerHTML = '<span class="remove-owner">✖</span>' + name;
       selectedBox.appendChild(div);
-      selectedOwners[id] = true;
+      selectedOwners[id] = name;
       searchInput.value = '';
       this.disabled = true;
       saveOwners.style.display = 'inline-block';
@@ -418,7 +450,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     saveOwners.addEventListener('click', function() {
-      var ids = Object.keys(selectedOwners);
+      var ids = Object.keys(currentOwners).concat(Object.keys(selectedOwners));
       fetch('../api/update_app_owners.php', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -426,12 +458,43 @@ document.addEventListener('DOMContentLoaded', function() {
       }).then(r => r.json()).then(d => {
         if (d.success) {
           saveOwners.style.display = 'none';
+          for (var k in selectedOwners) {
+            currentOwners[k] = selectedOwners[k];
+            var div = document.createElement('div');
+            div.className = 'owner-box current-owner';
+            div.dataset.id = k;
+            div.innerHTML = '<span class="remove-current-owner">✖</span>' + selectedOwners[k];
+            document.getElementById('current-owners').appendChild(div);
+          }
           selectedOwners = {};
           selectedBox.innerHTML = '';
         } else {
           alert('Error saving owners');
         }
       });
+    });
+
+    document.getElementById('current-owners').addEventListener('click', function(e){
+      if(e.target.classList.contains('remove-current-owner')){
+        var div = e.target.parentElement;
+        var id = div.dataset.id;
+        if(confirm('Are you sure that want to remove this user from full administrative control of this app?')){
+          delete currentOwners[id];
+          var ids = Object.keys(currentOwners).concat(Object.keys(selectedOwners));
+          fetch('../api/update_app_owners.php', {
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({app_id: <?= intval($app_id) ?>, owners: ids})
+          }).then(r=>r.json()).then(d=>{
+            if(d.success){
+              div.remove();
+            }else{
+              alert('Error removing owner');
+              currentOwners[id] = div.textContent.trim();
+            }
+          });
+        }
+      }
     });
   }
 
