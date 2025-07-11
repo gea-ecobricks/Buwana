@@ -34,6 +34,27 @@ if ($client_id) {
         $login_url .= '&id=' . urlencode($buwana_id);
     }
 }
+
+$app_login_url = $app_info['app_login_url'] ?? 'login.php?app=buwana_mgr_001';
+
+$connected_apps = [];
+if ($is_logged_in && isset($buwana_conn) && $buwana_id) {
+    $sql = "SELECT a.app_display_name, a.app_login_url
+            FROM apps_tb a
+            JOIN user_app_connections_tb c ON a.client_id = c.client_id
+            WHERE c.buwana_id = ?";
+    $stmt = $buwana_conn->prepare($sql);
+    if ($stmt) {
+        $stmt->bind_param('i', $buwana_id);
+        if ($stmt->execute()) {
+            $result = $stmt->get_result();
+            if ($result) {
+                $connected_apps = $result->fetch_all(MYSQLI_ASSOC);
+            }
+        }
+        $stmt->close();
+    }
+}
     ?>
 
 
@@ -500,7 +521,7 @@ max-height: 200px;
       <!-- Login Services -->
       <button type="button"
               class="top-login-button"
-              onclick="showLoginSelector()"
+              onclick="loginOrMenu('<?php echo htmlspecialchars($app_login_url); ?>', <?php echo $is_logged_in ? 'true' : 'false'; ?>)"
               aria-haspopup="true"
               aria-expanded="false"
               aria-controls="login-menu-slider"
@@ -536,9 +557,14 @@ max-height: 200px;
 
 <!-- LOGIN SELECTOR -->
 <div id="login-menu-slider" class="top-slider-menu" tabindex="-1" role="menu">
-  <div class="login-selector-box">
-    <a class="login-selector" target="_blank" href="https://buwana.ecobricks.org/en/signup-1.php?gbrk_f2c61a85a4cd4b8b89a7">🌍 GoBrik</a>
-    <a class="login-selector" target="_blank" href="https://buwana.ecobricks.org/en/signup-1.php?app=ecal_7f3da821d0a54f8a9b58">🌒 EarthCal</a>
+  <div class="login-selector-box" id="login-selector-box">
+    <?php if ($is_logged_in && !empty($connected_apps)): ?>
+        <?php foreach ($connected_apps as $app): ?>
+            <a class="login-selector" target="_blank" href="<?= htmlspecialchars($app['app_login_url']) ?>">
+                <?= htmlspecialchars($app['app_display_name']) ?>
+            </a>
+        <?php endforeach; ?>
+    <?php endif; ?>
   </div>
 </div>
 
