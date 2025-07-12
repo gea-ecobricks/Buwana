@@ -559,9 +559,10 @@ max-height: 200px;
 <div id="login-menu-slider" class="top-slider-menu" tabindex="-1" role="menu">
   <div class="login-selector-box" id="login-selector-box">
     <?php if ($is_logged_in && !empty($connected_apps)): ?>
-        <?php foreach ($connected_apps as $app): ?>
-            <a class="login-selector" target="_blank" href="<?= htmlspecialchars($app['app_login_url']) ?>">
-                <?= htmlspecialchars($app['app_display_name']) ?>
+        <?php foreach ($connected_apps as $connected_app): ?>
+            <a class="login-selector" target="_blank" href="<?= htmlspecialchars($connected_app['app_login_url']) ?>">
+                <?= htmlspecialchars($connected_app['app_display_name']) ?>
+
             </a>
         <?php endforeach; ?>
     <?php endif; ?>
