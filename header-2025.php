@@ -562,6 +562,7 @@ max-height: 200px;
         <?php foreach ($connected_apps as $connected_app): ?>
             <a class="login-selector" target="_blank" href="<?= htmlspecialchars($connected_app['app_login_url']) ?>">
                 <?= htmlspecialchars($connected_app['app_display_name']) ?>
+
             </a>
         <?php endforeach; ?>
     <?php endif; ?>
