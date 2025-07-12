@@ -151,9 +151,9 @@ font-size: 1.1em;
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(function() {
+    const redirectToLang = () => {
         const userLang = navigator.language || navigator.userLanguage;
-        let langDir = 'en/';
+        let langDir = 'en/index.php';
 
         if (userLang.includes('fr')) {
             langDir = 'fr/index.php';
@@ -163,11 +163,16 @@ document.addEventListener('DOMContentLoaded', function() {
             langDir = 'es/index.php';
         } else if (userLang.includes('en')) {
             langDir = 'en/index.php';
-        } else {
-            langDir = 'en/index.php';
         }
         window.location.href = langDir;
-    }, 2000); // 2 seconds
+    };
+
+    setTimeout(redirectToLang, 2000); // 2 seconds
+
+    const earthIcon = document.getElementById('earth-animation');
+    if (earthIcon) {
+        earthIcon.addEventListener('click', redirectToLang);
+    }
 });
 /* Rotating Earth-emoji parade
  * Shows 🌍, 🌎, 🌏 for 0.2 s each, on an infinite loop.

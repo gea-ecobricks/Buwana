@@ -157,6 +157,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    window.loginOrMenu = (loginUrl, loggedIn) => {
+        if (loggedIn) {
+            showLoginSelector();
+        } else {
+            window.location.href = loginUrl;
+        }
+    };
+
     window.hideLoginSelector = () => {
         if (loginMenu.classList.contains('menu-slider-visible')) {
             loginMenu.classList.remove('menu-slider-visible');
@@ -185,6 +193,25 @@ document.addEventListener('DOMContentLoaded', () => {
     settingsPanel.addEventListener('click', (e) => {
         e.stopPropagation();
     });
+
+    fetch('/api/check_user_app_connections.php')
+        .then(resp => resp.json())
+        .then(data => {
+            if (data.logged_in && Array.isArray(data.apps)) {
+                const box = document.getElementById('login-selector-box');
+                if (box) {
+                    box.innerHTML = '';
+                    data.apps.forEach(app => {
+                        const a = document.createElement('a');
+                        a.className = 'login-selector';
+                        a.target = '_blank';
+                        a.href = app.app_login_url;
+                        a.textContent = app.app_display_name;
+                        box.appendChild(a);
+                    });
+                }
+            }
+        });
 });
 
 // 🔻 Hide dropdowns on scroll
