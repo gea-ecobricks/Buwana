@@ -262,7 +262,7 @@ padding-top: 10px !important;
 
 
        <p style="margin-top:15px;margin-bottom:20px;">
-            <?= htmlspecialchars($first_name) ?>, <span data-lang-id="002-looks-like"> it looks like you are trying to login to </span><?= htmlspecialchars($app_info['app_display_name']) ?><span data-lang-id="002b-first-time"> for the first time!  Nice. 👍</span>
+            <?= htmlspecialchars($first_name) ?>, <span data-lang-id="002-looks-like"> it looks like you are trying to login to </span> <?= htmlspecialchars($app_info['app_display_name']) ?><span data-lang-id="002b-first-time"> for the first time!  Nice. 👍</span>
             <span data-lang-id="003-to-do-so">To do so, we will connect your Buwana account to </span> <?= htmlspecialchars($app_info['app_display_name']) ?> <span data-lang-id="003b-and">and allow it to access the following scopes:</span>
        </p>
 
