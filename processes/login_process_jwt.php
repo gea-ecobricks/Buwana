@@ -104,6 +104,10 @@ if ($stmt_credential) {
                     $_SESSION['user_id'] = $buwana_id;
                     $_SESSION['buwana_id'] = $buwana_id;
 
+                    // Verify user has already connected to this application
+                    require_once __DIR__ . '/../api/check_user_app_connection.php';
+                    check_user_app_connection($buwana_conn, $buwana_id, $client_id, $lang);
+
                     // ------------------------------------------------------------------
                     // Generate JWT for session based auth
                     // ------------------------------------------------------------------

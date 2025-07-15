@@ -1,6 +1,27 @@
 <?php
 session_start();
 header('Content-Type: application/json');
+
+// Allow cross-origin requests from trusted apps
+$allowed_origins = [
+    'https://earthcal.app',
+    'https://gobrik.com',
+    'https://ecobricks.org',
+    'https://learning.ecobricks.org',
+    'https://openbooks.ecobricks.org'
+];
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+if (in_array($origin, $allowed_origins)) {
+    header("Access-Control-Allow-Origin: $origin");
+    header('Access-Control-Allow-Credentials: true');
+    header('Access-Control-Allow-Methods: GET, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type');
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    exit(0);
+}
+
 require_once '../buwanaconn_env.php';
 
 $buwana_id = $_SESSION['buwana_id'] ?? null;
