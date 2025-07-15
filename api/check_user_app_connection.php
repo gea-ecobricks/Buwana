@@ -44,4 +44,12 @@ if ($buwana_id && $client_id) {
 
         if ($connection_id) {
             $_SESSION['connection_id'] = $connection_id;
-            $resp
+            $response['connected'] = true;
+            unset($response['app_login_url']); // not needed if connected
+        }
+    }
+}
+
+// 🍃 Echo the truth
+header('Content-Type: application/json');
+echo json_encode($response);
