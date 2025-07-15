@@ -7,7 +7,9 @@ function check_user_app_connection($buwana_conn, $buwana_id, $client_id, $lang =
         return false;
     }
 
-    $check_sql = "SELECT connection_id FROM user_app_connections_tb WHERE buwana_id = ? AND client_id = ? LIMIT 1";
+    // Ensure we check for an existing registered connection only
+    $check_sql = "SELECT id FROM user_app_connections_tb WHERE buwana_id = ? AND client_id = ? AND status = 'registered' LIMIT 1";
+
     $check_stmt = $buwana_conn->prepare($check_sql);
     if ($check_stmt) {
         $check_stmt->bind_param('is', $buwana_id, $client_id);
