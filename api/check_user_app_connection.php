@@ -19,7 +19,9 @@ function check_user_app_connection($buwana_conn, $buwana_id, $client_id, $lang =
         $check_stmt->close();
 
         if (!$connection_id) {
-            header("Location: ../$lang/app-connect.php?id=$buwana_id&client_id=$client_id");
+            // Use an absolute path so this redirect works no matter where the
+            // script was called from.
+            header("Location: /$lang/app-connect.php?id=$buwana_id&client_id=$client_id");
             exit();
         } else {
             $_SESSION['connection_id'] = $connection_id;
