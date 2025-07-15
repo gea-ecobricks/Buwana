@@ -18,6 +18,6 @@ const id_Page_Translations = {
     "000-reset-it": "Atur ulang.",
     "003-code-status": "Kode untuk masuk akan dikirim ke email Anda.",
     "004-login-button": '<input type="submit" id="submit-password-button" value="Masuk" class="login-button-75">',
-    "005-password-field-placeholder": '<input type="password" id="password" name="password" required placeholder="Kata sandi Anda...">'
+    "005-password-field-placeholder": '<input type="password" id="password" name="password" required placeholder="Kata sandi Anda...">',
     "006-too-many-attempts": "⚠️ Terlalu banyak percobaan gagal. Coba lagi dalam 10 menit."
 };
