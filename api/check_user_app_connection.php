@@ -2,6 +2,26 @@
 require_once __DIR__ . '/../earthenAuth_helper.php';
 require_once __DIR__ . '/../buwanaconn_env.php';
 
+// Allow cross-origin requests from trusted apps
+$allowed_origins = [
+    'https://earthcal.app',
+    'https://gobrik.com',
+    'https://ecobricks.org',
+    'https://learning.ecobricks.org',
+    'https://openbooks.ecobricks.org'
+];
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+if (in_array($origin, $allowed_origins)) {
+    header("Access-Control-Allow-Origin: $origin");
+    header('Access-Control-Allow-Credentials: true');
+    header('Access-Control-Allow-Methods: GET, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type');
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    exit(0);
+}
+
 function check_user_app_connection($buwana_conn, $buwana_id, $client_id, $lang = 'en') {
     if (!$buwana_id || !$client_id) {
         return false;
