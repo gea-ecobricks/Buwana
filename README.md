@@ -37,3 +37,10 @@ vendor/bin/phpunit
 ```
 
 The configuration file `phpunit.xml` is provided in the repository.
+
+## Helper Functions
+
+`check_user_app_connection()` verifies that a logged-in user has an active
+connection to the requesting application. If no connection record exists the
+function now redirects using an absolute path (`/$lang/app-connect.php`) so that
+the redirect works even when called from nested scripts.
