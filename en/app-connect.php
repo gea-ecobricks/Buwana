@@ -263,7 +263,7 @@ padding-top: 10px !important;
 
        <p style="margin-top:15px;margin-bottom:20px;">
             <?= htmlspecialchars($first_name) ?>, <span data-lang-id="002-looks-like"> it looks like you are trying to login to </span><?= htmlspecialchars($app_info['app_display_name']) ?><span data-lang-id="002b-first-time"> for the first time!  Nice. 👍</span>
-            <span data-lang-id="003-to-do-so">To do so, we will connect your Buwana account to </span><?= htmlspecialchars($app_info['app_display_name']) ?> <span data-lang-id="003b-and">and allow it to access the following scopes:</span>
+            <span data-lang-id="003-to-do-so">To do so, we will connect your Buwana account to </span> <?= htmlspecialchars($app_info['app_display_name']) ?> <span data-lang-id="003b-and">and allow it to access the following scopes:</span>
        </p>
 
         <?php
@@ -306,7 +306,7 @@ padding-top: 10px !important;
         </ul>
         <?php endif; ?>
 
-        <p><span data-lang-id="004-will-be-granted">Connect to authorize and get rocking on </span><?= htmlspecialchars($app_info['app_display_name']) ?></span>.</p>
+        <p><span data-lang-id="004-will-be-granted">Connect to authorize and get rocking on </span> <?= htmlspecialchars($app_info['app_display_name']) ?></span>.</p>
 
 
 
@@ -333,7 +333,7 @@ padding-top: 10px !important;
     </div>
   </div>
   <div id="browser-back-link" style="font-size: small; text-align: center; margin: auto; align-self: center; padding-top: 40px; padding-bottom: 40px; margin-top: -20px;">
-      <p style="line-height:1.3em;"><span data-lang-id="010-no-connect"> ↩ Or return to the </span><a href="<?= htmlspecialchars($app_info['app_url']) ?>"><?= htmlspecialchars($app_info['app_display_name']) ?> <span data-lang-id="000-home">home</span></a>
+      <p style="line-height:1.3em;"><span data-lang-id="010-no-connect"> ↩ Or return to the </span> <a href="<?= htmlspecialchars($app_info['app_url']) ?>"><?= htmlspecialchars($app_info['app_display_name']) ?> <span data-lang-id="000-home">home</span></a>
       </p>
   </div>
 </div>
