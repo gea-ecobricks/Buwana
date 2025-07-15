@@ -31,7 +31,7 @@ $login_url = 'login.php';
 if ($client_id) {
     $login_url .= '?app=' . urlencode($client_id);
     if ($buwana_id) {
-        $login_url .= '&id=' . urlencode($buwana_id);
+        $login_url .= '&buwana=' . urlencode($buwana_id);
     }
 }
 
@@ -354,7 +354,7 @@ max-height: 200px;
     // Append query parameters if they are available
     $params = [];
     if (!empty($buwana_id)) {
-        $params[] = 'id=' . urlencode($buwana_id);
+        $params[] = 'buwana=' . urlencode($buwana_id);
     }
     if (!empty($client_id)) {
         $params[] = 'app=' . urlencode($client_id);
@@ -382,7 +382,7 @@ max-height: 200px;
     $params = [];
 
     if (!empty($buwana_id)) {
-        $params[] = 'id=' . urlencode($buwana_id);
+        $params[] = 'buwana=' . urlencode($buwana_id);
     }
 
     if (!empty($client_id)) {
