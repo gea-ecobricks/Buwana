@@ -22,14 +22,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit(0);
 }
 
-function check_user_app_connection($buwana_conn, $buwana_id, $client_id, $lang = 'en') {
-    if (!$buwana_id || !$client_id) {
-        return false;
-    }
+// 🌿 Retrieve query params
+$buwana_id = intval($_GET['buwana_id'] ?? 0);
+$client_id = $_GET['client_id'] ?? '';
+$lang = $_GET['lang'] ?? 'en';
 
-    // Ensure we check for an existing registered connection only
+$response = [
+    'connected' => false,
+    'app_login_url' => "/$lang/app-connect.php?id=$buwana_id&client_id=$client_id"
+];
+
+if ($buwana_id && $client_id) {
     $check_sql = "SELECT id FROM user_app_connections_tb WHERE buwana_id = ? AND client_id = ? AND status = 'registered' LIMIT 1";
-
     $check_stmt = $buwana_conn->prepare($check_sql);
     if ($check_stmt) {
         $check_stmt->bind_param('is', $buwana_id, $client_id);
@@ -38,16 +42,6 @@ function check_user_app_connection($buwana_conn, $buwana_id, $client_id, $lang =
         $check_stmt->fetch();
         $check_stmt->close();
 
-        if (!$connection_id) {
-            // Use an absolute path so this redirect works no matter where the
-            // script was called from.
-            header("Location: /$lang/app-connect.php?id=$buwana_id&client_id=$client_id");
-            exit();
-        } else {
+        if ($connection_id) {
             $_SESSION['connection_id'] = $connection_id;
-            return true;
-        }
-    }
-    return false;
-}
-?>
+            $resp
