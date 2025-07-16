@@ -482,6 +482,14 @@ echo '<!DOCTYPE html>
     </div>
 </div>
 
+<!-- CONNECTED APPS -->
+<div class="form-container" style="padding-top:20px;" id="connected-apps-container">
+    <h2>Your Apps</h2>
+    <p>You've connected to the following Buwana apps:</p>
+    <div id="connected-apps-row" class="connected-apps-row"></div>
+</div>
+
+
 
 
 <!-- DELETE ACCOUNT FORM -->
@@ -596,6 +604,47 @@ document.addEventListener('DOMContentLoaded', function () {
     if (status) {
         updateStatusMessage(status);
     }
+
+
+    // 🔗 Fetch connected apps and display logos
+    function updateConnectedAppLogos() {
+        const mode = document.documentElement.getAttribute('data-theme') || 'light';
+        document.querySelectorAll('.connected-app-logo').forEach(el => {
+            const lightLogo = el.getAttribute('data-light-logo');
+            const darkLogo = el.getAttribute('data-dark-logo');
+            el.style.backgroundImage = mode === 'dark' ? `url('${darkLogo}')` : `url('${lightLogo}')`;
+        });
+    }
+
+    fetch('../api/get_user_app_connections.php')
+        .then(resp => resp.json())
+        .then(data => {
+            if (data.logged_in && Array.isArray(data.apps)) {
+                const row = document.getElementById('connected-apps-row');
+                if (row) {
+                    row.innerHTML = '';
+                    data.apps.forEach(app => {
+                        const link = document.createElement('a');
+                        link.className = 'connected-app-logo';
+                        link.setAttribute('data-light-logo', app.app_icon_url);
+                        link.setAttribute('data-dark-logo', app.app_icon_url);
+                        link.setAttribute('alt', app.app_display_name + ' App Logo');
+                        link.setAttribute('title', `${app.app_display_name} ${app.app_version} | ${app.app_slogan}`);
+                        link.href = app.app_login_url;
+                        link.target = '_blank';
+                        row.appendChild(link);
+                    });
+                    updateConnectedAppLogos();
+                }
+            }
+        });
+
+    const toggle = document.getElementById('dark-mode-toggle-5');
+    if (toggle) {
+        toggle.addEventListener('colorschemechange', updateConnectedAppLogos);
+    }
+
+    updateConnectedAppLogos();
 
 });
 </script>
