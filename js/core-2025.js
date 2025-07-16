@@ -148,7 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
             hideLoginSelector();
         } else {
             loginMenu.classList.add('menu-slider-visible');
-            loginMenu.style.maxHeight = '400px';
+            loginMenu.style.maxHeight = loginMenu.scrollHeight + 'px';
             loginMenu.style.overflow = 'hidden';
             loginMenu.style.transition = 'max-height 0.4s ease';
 
@@ -167,9 +167,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.hideLoginSelector = () => {
         if (loginMenu.classList.contains('menu-slider-visible')) {
-            loginMenu.classList.remove('menu-slider-visible');
+            loginMenu.style.maxHeight = '0';
+            loginMenu.style.overflow = 'hidden';
+            loginMenu.style.transition = 'max-height 0.4s ease';
+
+            setTimeout(() => {
+                loginMenu.classList.remove('menu-slider-visible');
+                loginMenu.style.removeProperty('max-height');
+                loginMenu.style.removeProperty('overflow');
+                loginMenu.style.removeProperty('transition');
+                updateHeaderVisuals();
+            }, 400);
+
             document.removeEventListener('click', documentClickListenerLogin);
-            updateHeaderVisuals(); // ✅ Update visuals when hidden
         }
     };
 
