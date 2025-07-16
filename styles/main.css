@@ -1936,6 +1936,7 @@ Sign up process
 .connected-apps-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+
   gap: 10px;
   align-items: center;
 }
@@ -1948,4 +1949,5 @@ Sign up process
   background-repeat: no-repeat;
   background-position: center;
   cursor: pointer;
+
 }

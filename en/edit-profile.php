@@ -633,6 +633,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         link.href = app.app_login_url;
                         link.target = '_blank';
                         row.appendChild(link);
+
                     });
                     updateConnectedAppLogos();
                 }
