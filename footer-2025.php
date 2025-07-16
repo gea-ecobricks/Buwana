@@ -70,11 +70,19 @@
     try {
         var savedTheme = localStorage.getItem('dark-mode-toggle');
         const toggle = document.getElementById('dark-mode-toggle-5');
-const bannerElement = document.getElementById('top-page-image');
-        if (savedTheme && toggle) {
-            toggle.mode = savedTheme;
-            document.documentElement.setAttribute('data-theme', savedTheme);
+        const bannerElement = document.getElementById('top-page-image');
+
+        let initialMode = 'light';
+        if (savedTheme) {
+            initialMode = savedTheme;
+        } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            initialMode = 'dark';
         }
+
+        if (toggle) {
+            toggle.mode = initialMode;
+        }
+        document.documentElement.setAttribute('data-theme', initialMode);
 
         document.addEventListener('DOMContentLoaded', function() {
             const logoElement = document.querySelector('.the-app-logo');
