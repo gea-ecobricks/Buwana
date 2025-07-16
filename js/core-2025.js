@@ -194,7 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
         e.stopPropagation();
     });
 
-    fetch('/api/check_user_app_connections.php')
+    fetch('/api/get_user_app_connections.php')
         .then(resp => resp.json())
         .then(data => {
             if (data.logged_in && Array.isArray(data.apps)) {
