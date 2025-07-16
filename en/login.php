@@ -65,11 +65,19 @@ if ($is_logged_in) {
 $connected = check_user_app_connection($buwana_conn, $_SESSION['buwana_id'], $_SESSION['client_id'], $lang, false);
 
 if (!$connected) {
-    // Redirect user to app-connect if not connected
     $connect_url = "/$lang/app-connect.php?id=" . urlencode($_SESSION['buwana_id']) . "&client_id=" . urlencode($_SESSION['client_id']);
-    header("Location: $connect_url");
+
+    echo "<script>
+        alert('DEBUG: User is NOT connected to this app. Redirecting to: $connect_url');
+        window.location.href = '$connect_url';
+    </script>";
     exit();
+} else {
+    echo "<script>
+        alert('DEBUG: User IS connected to this app. Proceeding to dashboard.');
+    </script>";
 }
+
 
 
     if (isset($_SESSION['pending_oauth_request'])) {
