@@ -1934,8 +1934,9 @@ Sign up process
 
 /* Connected apps list */
 .connected-apps-row {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
   gap: 10px;
   align-items: center;
 }
@@ -1947,4 +1948,6 @@ Sign up process
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
+  cursor: pointer;
+
 }

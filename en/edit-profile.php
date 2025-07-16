@@ -624,13 +624,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (row) {
                     row.innerHTML = '';
                     data.apps.forEach(app => {
-                        const div = document.createElement('div');
-                        div.className = 'connected-app-logo';
-                        div.setAttribute('data-light-logo', app.app_logo_url);
-                        div.setAttribute('data-dark-logo', app.app_logo_dark_url);
-                        div.setAttribute('alt', app.app_display_name + ' App Logo');
-                        div.setAttribute('title', `${app.app_display_name} ${app.app_version} | ${app.app_slogan}`);
-                        row.appendChild(div);
+                        const link = document.createElement('a');
+                        link.className = 'connected-app-logo';
+                        link.setAttribute('data-light-logo', app.app_logo_url);
+                        link.setAttribute('data-dark-logo', app.app_logo_dark_url);
+                        link.setAttribute('alt', app.app_display_name + ' App Logo');
+                        link.setAttribute('title', `${app.app_display_name} ${app.app_version} | ${app.app_slogan}`);
+                        link.href = app.app_login_url;
+                        link.target = '_blank';
+                        row.appendChild(link);
+
                     });
                     updateConnectedAppLogos();
                 }
