@@ -203,6 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+
     fetch('/api/get_user_app_connections.php')
         .then(resp => resp.json())
         .then(data => {
