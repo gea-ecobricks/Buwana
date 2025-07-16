@@ -105,10 +105,10 @@ https://github.com/gea-ecobricks/buwana/-->
             name="credential"
             aria-label="Preferred Credential"
             required title="We'll send your account confirmation messages this way and you'll use this to login.">
-        <option value="" disabled selected data-lang-id="006-credential-choice">
+        <option value="" disabled data-lang-id="006-credential-choice">
             Select how you register...
         </option>
-        <option value="email">E-mail</option>
+        <option value="email" selected>E-mail</option>
         <option value="phone" disabled>Phone number</option>
         <option value="peer" disabled>Peer</option>
     </select>
@@ -254,6 +254,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // ✅ Validation passed — manually dispatch a custom event that your global script expects
     const submitEvent = new Event('kickAssSubmit', { bubbles: true });
     form.dispatchEvent(submitEvent);
+  });
+
+  // 🔥 Trigger submit when user hits Enter
+  form.addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      submitButton.click();
+    }
   });
 
 
