@@ -62,7 +62,15 @@ $is_logged_in = isLoggedIn(); // Check if the user is logged in using the helper
 // Check if user is logged in and session active
 if ($is_logged_in) {
     require_once '../api/check_user_app_connection.php';
-    check_user_app_connection($buwana_conn, $_SESSION['buwana_id'], $_SESSION['client_id'], $lang);
+$connected = check_user_app_connection($buwana_conn, $_SESSION['buwana_id'], $_SESSION['client_id'], $lang, false);
+
+if (!$connected) {
+    // Redirect user to app-connect if not connected
+    $connect_url = "/$lang/app-connect.php?id=" . urlencode($_SESSION['buwana_id']) . "&client_id=" . urlencode($_SESSION['client_id']);
+    header("Location: $connect_url");
+    exit();
+}
+
 
     if (isset($_SESSION['pending_oauth_request'])) {
         // Redirect to authorize.php to continue the flow
