@@ -39,10 +39,14 @@ $app_login_url = $app_info['app_login_url'] ?? 'login.php?app=buwana_mgr_001';
 
 $connected_apps = [];
 if ($is_logged_in && isset($buwana_conn) && $buwana_id) {
-    $sql = "SELECT a.app_display_name, a.app_login_url
-            FROM apps_tb a
-            JOIN user_app_connections_tb c ON a.client_id = c.client_id
-            WHERE c.buwana_id = ?";
+$sql = "SELECT a.app_display_name,
+            a.app_login_url,
+            a.app_square_icon_url AS app_icon_url,
+            a.app_version,
+            a.app_slogan
+        FROM apps_tb a
+        JOIN user_app_connections_tb c ON a.client_id = c.client_id
+        WHERE c.buwana_id = ?";
     $stmt = $buwana_conn->prepare($sql);
     if ($stmt) {
         $stmt->bind_param('i', $buwana_id);
@@ -560,9 +564,11 @@ max-height: 200px;
   <div class="login-selector-box" id="login-selector-box">
     <?php if ($is_logged_in && !empty($connected_apps)): ?>
         <?php foreach ($connected_apps as $connected_app): ?>
-            <a class="login-selector" target="_blank" href="<?= htmlspecialchars($connected_app['app_login_url']) ?>">
-                <?= htmlspecialchars($connected_app['app_display_name']) ?>
-
+            <a class="login-app-logo" target="_blank" href="<?= htmlspecialchars($connected_app['app_login_url']) ?>"
+               alt="<?= htmlspecialchars($connected_app['app_display_name']) ?> App Logo"
+               title="<?= htmlspecialchars($connected_app['app_display_name']) ?> <?= htmlspecialchars($connected_app['app_version']) ?> | <?= htmlspecialchars($connected_app['app_slogan']) ?>"
+               data-light-logo="<?= htmlspecialchars($connected_app['app_icon_url']) ?>"
+               data-dark-logo="<?= htmlspecialchars($connected_app['app_icon_url']) ?>">
             </a>
         <?php endforeach; ?>
     <?php endif; ?>

@@ -194,6 +194,16 @@ document.addEventListener('DOMContentLoaded', () => {
         e.stopPropagation();
     });
 
+    function updateLogoElements(selector) {
+        const mode = document.documentElement.getAttribute('data-theme') || 'light';
+        document.querySelectorAll(selector).forEach(el => {
+            const light = el.getAttribute('data-light-logo');
+            const dark = el.getAttribute('data-dark-logo');
+            el.style.backgroundImage = mode === 'dark' ? `url('${dark}')` : `url('${light}')`;
+        });
+    }
+
+
     fetch('/api/get_user_app_connections.php')
         .then(resp => resp.json())
         .then(data => {
@@ -203,15 +213,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     box.innerHTML = '';
                     data.apps.forEach(app => {
                         const a = document.createElement('a');
-                        a.className = 'login-selector';
+                        a.className = 'login-app-logo';
                         a.target = '_blank';
                         a.href = app.app_login_url;
-                        a.textContent = app.app_display_name;
+                        a.setAttribute('data-light-logo', app.app_icon_url);
+                        a.setAttribute('data-dark-logo', app.app_icon_url);
+                        a.setAttribute('alt', app.app_display_name + ' App Logo');
+                        a.setAttribute('title', `${app.app_display_name} ${app.app_version} | ${app.app_slogan}`);
                         box.appendChild(a);
                     });
+                    updateLogoElements('.login-app-logo');
                 }
             }
         });
+
+    document.addEventListener('colorschemechange', () => updateLogoElements('.login-app-logo'));
 });
 
 // 🔻 Hide dropdowns on scroll

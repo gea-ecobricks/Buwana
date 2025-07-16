@@ -30,7 +30,12 @@ if (!$buwana_id) {
     exit();
 }
 
-$sql = "SELECT a.app_display_name, a.app_login_url, a.app_logo_url, a.app_logo_dark_url, a.app_version, a.app_slogan
+$sql = "SELECT a.app_display_name,
+               a.app_login_url,
+               a.app_square_icon_url AS app_icon_url,
+               a.app_version,
+               a.app_slogan
+
         FROM apps_tb a
         JOIN user_app_connections_tb c ON a.client_id = c.client_id
         WHERE c.buwana_id = ?";

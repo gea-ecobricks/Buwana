@@ -626,8 +626,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     data.apps.forEach(app => {
                         const link = document.createElement('a');
                         link.className = 'connected-app-logo';
-                        link.setAttribute('data-light-logo', app.app_logo_url);
-                        link.setAttribute('data-dark-logo', app.app_logo_dark_url);
+                        link.setAttribute('data-light-logo', app.app_icon_url);
+                        link.setAttribute('data-dark-logo', app.app_icon_url);
+
                         link.setAttribute('alt', app.app_display_name + ' App Logo');
                         link.setAttribute('title', `${app.app_display_name} ${app.app_version} | ${app.app_slogan}`);
                         link.href = app.app_login_url;
