@@ -220,6 +220,7 @@ padding-top: 10px !important;
 }
 .scope-name {
   font-weight: 600;
+  color: var(--text-color);
 }
 .scope-desc {
   font-size: 0.85em;
