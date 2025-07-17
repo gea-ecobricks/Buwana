@@ -251,7 +251,6 @@ https://github.com/gea-ecobricks/buwana/-->
         <input type="text" maxlength="1" class="code-box" required placeholder="-">
         <input type="text" maxlength="1" class="code-box" required placeholder="-">
         <input type="text" maxlength="1" class="code-box" required placeholder="-">
-    </form>
 
     <p id="code-feedback"></p>
 
@@ -295,6 +294,14 @@ document.addEventListener('DOMContentLoaded', function() {
     let timeLeft = 60;
     const sendEmailForm = document.getElementById('send-email-code');
     const buwana_id = <?php echo json_encode($buwana_id); ?>;
+    let codeSent = <?php echo json_encode($code_sent_flag ?? false); ?>;
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !codeSent) {
+            e.preventDefault();
+            sendEmailForm.submit();
+        }
+    });
 
     const messages = {
         en: { confirmed: "👍 Code confirmed!", incorrect: "😕 Code incorrect. Try again." },
@@ -390,7 +397,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     // Show/Hide Divs after email is sent
-    var codeSent = <?php echo json_encode($code_sent_flag ?? false); ?>;  // Only set once
     if (codeSent) {
         document.getElementById('first-send-form').style.display = 'none';
         document.getElementById('second-code-confirm').style.display = 'block';
