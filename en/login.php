@@ -185,7 +185,8 @@ echo '</script>';
    <!-- Form starts here-->
 <form id="login" method="post" action="../processes/login_process_jwt.php">
     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
-    <input type="hidden" name="redirect" value="<?php echo htmlspecialchars($redirect); ?>"> <!-- Add this line -->
+    <input type="hidden" name="redirect" value="<?php echo htmlspecialchars($redirect); ?>">
+    <input type="hidden" name="status" value="<?php echo htmlspecialchars($status); ?>">
     <input type="hidden" name="client_id" value="<?= htmlspecialchars($app_info['client_id']) ?>">
     <input type="hidden" name="response_type" value="id_token">
     <input type="hidden" name="scope" value="openid email profile">
