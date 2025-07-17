@@ -303,6 +303,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    sendEmailForm.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !codeSent) {
+            e.preventDefault();
+            this.submit();
+        }
+    });
+
     const messages = {
         en: { confirmed: "👍 Code confirmed!", incorrect: "😕 Code incorrect. Try again." },
         fr: { confirmed: "👍 Code confirmé!", incorrect: "😕 Code incorrect. Réessayez." },
