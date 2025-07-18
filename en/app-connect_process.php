@@ -21,6 +21,14 @@ if (!$buwana_id || !$client_id) {
 $app_name = $app_info['app_name'] ?? 'default_app';
 $app_dashboard_url = $app_info['app_dashboard_url'] ?? '/';
 
+// 🌟 SPECIAL MOODLE HANDLING
+if ($client_id === 'lear_a30d677a7b08') {
+    // Redirect to Moodle's OpenID Connect plugin login path
+    $moodle_oidc_url = "https://learning.ecobricks.org/auth/oidc/";
+    $redirect_param = !empty($redirect) ? '&redirect=' . urlencode($redirect) : '';
+    header("Location: {$moodle_oidc_url}?from_buwana=1{$redirect_param}");
+    exit;
+}
 
 // --- STEP 5: Load client connection file ---
 $client_env_path = "../config/{$app_name}_env.php";
@@ -40,8 +48,6 @@ if (!isset($client_conn) || !($client_conn instanceof mysqli) || $client_conn->c
 }
 
 error_log("✅ Client DB connection ($app_name) established successfully.");
-
-
 
 // 🧠 Fetch full user data from Buwana
 $stmt = $buwana_conn->prepare("SELECT * FROM users_tb WHERE buwana_id = ?");
@@ -96,5 +102,4 @@ if (!empty($redirect)) {
 
 header("Location: $redirect_url");
 exit;
-
 ?>
