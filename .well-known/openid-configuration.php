@@ -5,7 +5,7 @@ $issuer = 'https://buwana.ecobricks.org';
 
 echo json_encode([
     'issuer' => $issuer,
-    'authorization_endpoint' => "$issuerauthorize",
+    'authorization_endpoint' => "$issuer/authorize",
     'token_endpoint' => "$issuer/token",
     'userinfo_endpoint' => "$issuer/userinfo",
     'jwks_uri' => "$issuer/.well-known/jwks.php",
