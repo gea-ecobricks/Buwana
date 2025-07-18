@@ -26,7 +26,7 @@ while ($stmt->fetch()) {
         'kty' => 'RSA',
         'use' => 'sig',
         'alg' => 'RS256',
-        'kid' => $client_id,
+        'kid' => $client_id, // Must match the 'kid' set in JWT token header
         'n' => $modulus,
         'e' => $exponent
     ];
