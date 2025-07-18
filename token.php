@@ -1,5 +1,4 @@
 <?php
-file_put_contents('/tmp/token_touched.log', date('c') . " - token.php accessed\n", FILE_APPEND);
 ob_start(); // 🚿 Buffer any accidental output early
 
 session_start();
