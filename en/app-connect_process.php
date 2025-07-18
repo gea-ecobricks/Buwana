@@ -21,7 +21,7 @@ if (!$buwana_id || !$client_id) {
 $app_name = $app_info['app_name'] ?? 'default_app';
 $app_dashboard_url = $app_info['app_dashboard_url'] ?? '/';
 
-// 🌟 SPECIAL MOODLE HANDLING
+// 🌟 SPECIAL MOODLE HANDLING PLEASE
 if ($client_id === 'lear_a30d677a7b08') {
     // Redirect to Moodle's login page to initiate the proper OIDC flow
     $moodle_login_url = "https://learning.ecobricks.org/login/index.php";
