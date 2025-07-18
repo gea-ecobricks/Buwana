@@ -172,6 +172,16 @@ try {
 }
 
 header('Content-Type: application/json');
+
+auth_log("Returning tokens for user_id: $user_id");
+auth_log(json_encode([
+    "access_token" => $access_token,
+    "id_token" => $id_token,
+    "token_type" => "Bearer",
+    "expires_in" => 3600
+], JSON_PRETTY_PRINT));
+
+
 echo json_encode([
     "access_token" => $access_token,
     "id_token" => $id_token,
