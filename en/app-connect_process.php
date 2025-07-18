@@ -24,7 +24,7 @@ $app_dashboard_url = $app_info['app_dashboard_url'] ?? '/';
 // 🌟 SPECIAL MOODLE HANDLING
 if ($client_id === 'lear_a30d677a7b08') {
     // Redirect to Moodle's OpenID Connect plugin login path
-    $moodle_oidc_url = "https://learning.ecobricks.org/auth/oidc/";
+    $moodle_oidc_url = "https://learning.ecobricks.org/auth/oidc/index.php";
     $redirect_param = !empty($redirect) ? '&redirect=' . urlencode($redirect) : '';
     header("Location: {$moodle_oidc_url}?from_buwana=1{$redirect_param}");
     exit;
