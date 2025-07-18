@@ -573,6 +573,7 @@ max-height: 200px;
         <?php endforeach; ?>
     <?php endif; ?>
   </div>
+  <button type="button" class="login-selector-close" id="login-selector-close" onclick="hideLoginSelector()" aria-label="Close login selector"></button>
 </div>
 
 
