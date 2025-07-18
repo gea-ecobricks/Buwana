@@ -1,11 +1,15 @@
 <?php
+ob_start(); // 🚿 Buffer any accidental output early
+
 session_start();
 require_once 'vendor/autoload.php';
 require_once 'buwanaconn_env.php';
+
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
 $authLogFile = dirname(__DIR__) . '/logs/auth.log';
+
 function auth_log($message) {
     global $authLogFile;
     if (!file_exists(dirname($authLogFile))) {
@@ -24,6 +28,7 @@ $allowedOrigins = [
     "https://learning.ecobricks.org",
     "https://openbooks.ecobricks.org"
 ];
+
 if (isset($_SERVER['HTTP_ORIGIN']) && in_array($_SERVER['HTTP_ORIGIN'], $allowedOrigins)) {
     header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
     header("Access-Control-Allow-Headers: Content-Type");
@@ -36,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-// Read incoming POST
+// 📥 Gather POST input
 $grant_type = $_POST['grant_type'] ?? '';
 $code = $_POST['code'] ?? '';
 $redirect_uri = $_POST['redirect_uri'] ?? '';
@@ -50,7 +55,7 @@ if ($grant_type !== 'authorization_code' || !$code || !$redirect_uri || !$client
     exit;
 }
 
-// Lookup client
+// 🔍 Lookup client
 $stmt = $buwana_conn->prepare("SELECT client_secret, jwt_private_key FROM apps_tb WHERE client_id = ?");
 $stmt->bind_param('s', $client_id);
 $stmt->execute();
@@ -64,7 +69,7 @@ $stmt->bind_result($expected_secret, $jwt_private_key);
 $stmt->fetch();
 $stmt->close();
 
-// Lookup authorization code
+// 🔑 Validate authorization code
 $stmt = $buwana_conn->prepare("SELECT user_id, redirect_uri, scope, nonce, code_challenge, code_challenge_method FROM authorization_codes_tb WHERE code = ? AND client_id = ?");
 $stmt->bind_param('ss', $code, $client_id);
 $stmt->execute();
@@ -84,7 +89,7 @@ if ($redirect_uri !== $stored_redirect_uri) {
     exit;
 }
 
-// Flow check: confidential vs PKCE
+// 🔄 Auth flow logic
 if (!empty($client_secret)) {
     auth_log("Confidential client flow for $client_id");
     if (empty($expected_secret) || $client_secret !== $expected_secret) {
@@ -109,13 +114,13 @@ if (!empty($client_secret)) {
     }
 }
 
-// Remove used code
+// 🧹 Clean up used code
 $stmt = $buwana_conn->prepare("DELETE FROM authorization_codes_tb WHERE code = ?");
 $stmt->bind_param('s', $code);
 $stmt->execute();
 $stmt->close();
 
-// Fetch user data
+// 👤 Fetch user info
 $stmt_user = $buwana_conn->prepare("SELECT email, first_name, open_id, earthling_emoji, continent_code, community_id FROM users_tb WHERE buwana_id = ?");
 $stmt_user->bind_param('i', $user_id);
 $stmt_user->execute();
@@ -123,7 +128,7 @@ $stmt_user->bind_result($email, $first_name, $open_id, $earthling_emoji, $contin
 $stmt_user->fetch();
 $stmt_user->close();
 
-// Build and sign tokens
+// 📅 Prepare token claims
 $now = time();
 $exp = $now + 3600;
 $sub = $open_id ?? ("buwana_$user_id");
@@ -137,6 +142,7 @@ $id_token_payload = [
     "email" => $email,
     "given_name" => $first_name,
     "nonce" => $nonce,
+    "scope" => $scope,
     "buwana_id" => $user_id,
     "buwana:earthlingEmoji" => $earthling_emoji,
     "buwana:community" => "Planet Earth",
@@ -171,21 +177,19 @@ try {
     exit;
 }
 
+// 🧽 Clean output & respond
+ob_clean();
 header('Content-Type: application/json');
 
+$response = [
+    "access_token" => $access_token,
+    "id_token" => $id_token,
+    "token_type" => "Bearer",
+    "expires_in" => 3600
+];
+
 auth_log("Returning tokens for user_id: $user_id");
-auth_log(json_encode([
-    "access_token" => $access_token,
-    "id_token" => $id_token,
-    "token_type" => "Bearer",
-    "expires_in" => 3600
-], JSON_PRETTY_PRINT));
+auth_log(json_encode($response, JSON_PRETTY_PRINT));
 
-
-echo json_encode([
-    "access_token" => $access_token,
-    "id_token" => $id_token,
-    "token_type" => "Bearer",
-    "expires_in" => 3600
-]);
+echo json_encode($response);
 exit;
