@@ -1,7 +1,6 @@
 <?php
 require_once '../buwanaconn_env.php';
 require_once '../fetch_app_info.php';
-session_start();
 
 $success = false;
 
