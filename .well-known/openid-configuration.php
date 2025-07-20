@@ -1,19 +1,4 @@
 <?php
-// 🌐 CORS: Allow trusted origins
-$allowedOrigins = [
-    "https://earthcal.app",
-    "https://gobrik.com",
-    "https://ecobricks.org",
-    "https://learning.ecobricks.org",
-    "https://openbooks.ecobricks.org"
-];
-
-if (isset($_SERVER['HTTP_ORIGIN']) && in_array($_SERVER['HTTP_ORIGIN'], $allowedOrigins)) {
-    header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
-    header("Access-Control-Allow-Headers: Content-Type");
-    header("Access-Control-Allow-Methods: GET");
-}
-
 header('Content-Type: application/json');
 
 $issuer = 'https://buwana.ecobricks.org';
