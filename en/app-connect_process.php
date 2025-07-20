@@ -23,6 +23,26 @@ $app_dashboard_url = $app_info['app_dashboard_url'] ?? '/';
 
 // 🌟 SPECIAL MOODLE HANDLING PLEASE
 if ($client_id === 'lear_a30d677a7b08') {
+    // ✅ Ensure the connection is recorded in Buwana before redirecting
+    $check_sql = "SELECT 1 FROM user_app_connections_tb WHERE buwana_id = ? AND client_id = ? LIMIT 1";
+    $check_stmt = $buwana_conn->prepare($check_sql);
+    $check_stmt->bind_param('is', $buwana_id, $client_id);
+    $check_stmt->execute();
+    $check_stmt->store_result();
+
+    if ($check_stmt->num_rows === 0) {
+        $check_stmt->close();
+        $status = 'registered';
+        $connected_at = date('Y-m-d H:i:s');
+        $insert_sql = "INSERT INTO user_app_connections_tb (buwana_id, client_id, status, connected_at) VALUES (?, ?, ?, ?)";
+        $insert_stmt = $buwana_conn->prepare($insert_sql);
+        $insert_stmt->bind_param('isss', $buwana_id, $client_id, $status, $connected_at);
+        $insert_stmt->execute();
+        $insert_stmt->close();
+    } else {
+        $check_stmt->close();
+    }
+
     // Redirect to Moodle's login page to initiate the proper OIDC flow
     $moodle_login_url = "https://learning.ecobricks.org/login/index.php";
     $redirect_param = !empty($redirect) ? '&redirect=' . urlencode($redirect) : '';
