@@ -2,6 +2,19 @@
 header('Content-Type: application/json');
 require_once '../buwanaconn_env.php';
 
+// 🌐 CORS: Allow trusted origins for browser clients (for future readiness or diagnostics)
+$allowedOrigins = [
+    "https://earthcal.app",
+    "https://gobrik.com",
+    "https://ecobricks.org",
+    "https://learning.ecobricks.org",
+    "https://openbooks.ecobricks.org"
+];
+
+if (isset($_SERVER['HTTP_ORIGIN']) && in_array($_SERVER['HTTP_ORIGIN'], $allowedOrigins)) {
+    header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
+}
+
 // Prepare JWKS array
 $jwks = ['keys' => []];
 
