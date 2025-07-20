@@ -1,8 +1,5 @@
 <?php
-header('Content-Type: application/json');
-require_once '../buwanaconn_env.php';
-
-// 🌐 CORS: Allow trusted origins for browser clients (for future readiness or diagnostics)
+// 🌐 CORS: Allow trusted origins
 $allowedOrigins = [
     "https://earthcal.app",
     "https://gobrik.com",
@@ -11,10 +8,21 @@ $allowedOrigins = [
     "https://openbooks.ecobricks.org"
 ];
 
-
 if (isset($_SERVER['HTTP_ORIGIN']) && in_array($_SERVER['HTTP_ORIGIN'], $allowedOrigins)) {
     header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
+    header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+    header("Access-Control-Allow-Headers: Content-Type");
+    header("Access-Control-Max-Age: 86400"); // cache for 1 day
 }
+
+// 🧪 Respond early to OPTIONS preflight
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(204); // No Content
+    exit;
+}
+
+header('Content-Type: application/json');
+require_once '../buwanaconn_env.php';
 
 // Prepare JWKS array
 $jwks = ['keys' => []];
@@ -40,7 +48,7 @@ while ($stmt->fetch()) {
         'kty' => 'RSA',
         'use' => 'sig',
         'alg' => 'RS256',
-        'kid' => $client_id, // Must match the 'kid' set in JWT token header
+        'kid' => $client_id,
         'n' => $modulus,
         'e' => $exponent
     ];
