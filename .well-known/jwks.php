@@ -1,4 +1,25 @@
 <?php
+// 🌐 CORS: Allow trusted origins
+$allowedOrigins = [
+    "https://earthcal.app",
+    "https://gobrik.com",
+    "https://ecobricks.org",
+    "https://learning.ecobricks.org",
+    "https://openbooks.ecobricks.org"
+];
+
+if (isset($_SERVER['HTTP_ORIGIN']) && in_array($_SERVER['HTTP_ORIGIN'], $allowedOrigins)) {
+    header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
+    header("Access-Control-Allow-Headers: Content-Type");
+    header("Access-Control-Allow-Methods: POST");
+}
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    echo json_encode(["error" => "method_not_allowed"]);
+    exit;
+}
+
 header('Content-Type: application/json');
 require_once '../buwanaconn_env.php';
 
