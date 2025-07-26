@@ -340,6 +340,11 @@ echo '<!DOCTYPE html>
         <div id="community-pin" class="pin-icon">📌</div>
     </div>
     <div id="community-suggestions" class="suggestions-box"></div>
+    <p class="form-caption"><span data-lang-id="008-start-typing-community">
+        Start typing to see and select a community. There's a good chance someone local to you has already set one up!</span>
+    <br> ➕
+        <a href="#" onclick="openAddCommunityModal(); return false;" style="color: #007BFF; text-decoration: underline;" data-lang-id="009-add-community"></a>
+    </p>
 </div>
 
 
@@ -832,7 +837,106 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 </script>
+<script>
 
+document.addEventListener('DOMContentLoaded', function () {
+    const userLanguageId = "<?php echo $current_lang_dir; ?>";
+    const userCountryId = "<?php echo htmlspecialchars($country_id ?? '', ENT_QUOTES, 'UTF-8'); ?>";
+
+    window.openAddCommunityModal = function () {
+        const modal = document.getElementById('form-modal-message');
+        const modalBox = document.getElementById('modal-content-box');
+
+        modal.style.display = 'flex';
+        modalBox.style.flexFlow = 'column';
+        document.getElementById('page-content')?.classList.add('blurred');
+        document.getElementById('footer-full')?.classList.add('blurred');
+        document.body.classList.add('modal-open');
+
+        modalBox.style.maxHeight = '100vh';
+        modalBox.style.overflowY = 'auto';
+
+        modalBox.innerHTML = `
+            <h4 style="text-align:center;" data-lang-id="014-add-community-title">Add Your Community</h4>
+            <p data-lang-id="015-add-community-desc">Add your community to Buwana so that others can connect across regenerative apps.</p>
+            <form id="addCommunityForm" onsubmit="addCommunity2Buwana(event)">
+                <label for="newCommunityName" data-lang-id="016-community-name-label">Name of Community:</label>
+                <input type="text" id="newCommunityName" name="newCommunityName" required>
+                <label for="newCommunityType" data-lang-id="017-community-type-label">Type of Community:</label>
+                <select id="newCommunityType" name="newCommunityType" required>
+                    <option value="" data-lang-id="018-select-type-option">Select Type</option>
+                    <option value="neighborhood" data-lang-id="019-type-neighborhood">Neighborhood</option>
+                    <option value="city" data-lang-id="020-type-city">City</option>
+                    <option value="school" data-lang-id="021-type-school">School</option>
+                    <option value="organization" data-lang-id="022-type-organization">Organization</option>
+                </select>
+                <label for="communityCountry" data-lang-id="023-country-label">Country:</label>
+                <select id="communityCountry" name="communityCountry" required>
+                    <option value="" data-lang-id="024-select-country-option">Select Country...</option>
+                    <?php foreach ($countries as $country) : ?>
+                        <option value="<?php echo $country['country_id']; ?>">
+                            <?php echo htmlspecialchars($country['country_name'], ENT_QUOTES, 'UTF-8'); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+                <label for="communityLanguage" data-lang-id="025-language-label">Preferred Language:</label>
+                <select id="communityLanguage" name="communityLanguage" required>
+                    <option value="" data-lang-id="026-select-language-option">Select Language...</option>
+                    <?php foreach ($languages as $language) : ?>
+                        <option value="<?php echo $language['language_id']; ?>">
+                            <?php echo htmlspecialchars($language['languages_native_name'], ENT_QUOTES, 'UTF-8'); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+                <button type="submit" style="margin-top:10px;" class="confirm-button enabled" data-lang-id="027-submit-button">Create Community</button>
+            </form>
+        `;
+
+        applyTranslations();
+
+        setTimeout(() => {
+            document.getElementById('communityCountry').value = userCountryId;
+            document.getElementById('communityLanguage').value = userLanguageId;
+        }, 100);
+    };
+
+    window.addCommunity2Buwana = function (event) {
+        event.preventDefault();
+        const form = document.getElementById('addCommunityForm');
+        const formData = new FormData(form);
+
+        fetch('../scripts/add_community.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);
+            if (data.success) {
+                closeInfoModal();
+                const communityInput = document.getElementById('community_name');
+                const communityIdInput = document.getElementById('community_id');
+                communityInput.value = data.community_name;
+                fetch('../scripts/get_community_id_by_name.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: 'name=' + encodeURIComponent(data.community_name)
+                })
+                .then(res => res.json())
+                .then(result => {
+                    if(result.success && result.community_id){
+                        communityIdInput.value = result.community_id;
+                    }
+                });
+            }
+        })
+        .catch(error => {
+            alert('Error adding community. Please try again.');
+            console.error('Error:', error);
+        });
+    };
+});
+</script>
 <script>
 $(function () {
     let debounceTimer;
