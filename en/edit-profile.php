@@ -337,7 +337,7 @@ echo '<!DOCTYPE html>
         <!-- Visible field for community name with prepopulated value -->
         <input type="text" id="community_name" name="community_name"
                value="<?= htmlspecialchars($user_community_name, ENT_QUOTES); ?>"
-               placeholder="Start typing your community..." required style="padding-left:45px;">
+               placeholder="Start typing your community..." style="padding-left:45px;">
         <!-- Hidden field for community_id with prepopulated value -->
         <input  id="community_id"  type="hidden" name="community_id"
                value="<?= htmlspecialchars($community_id, ENT_QUOTES); ?>">
@@ -347,7 +347,7 @@ echo '<!DOCTYPE html>
     <p class="form-caption"><span data-lang-id="008-start-typing-community">
         Start typing to see and select a community. There's a good chance someone local to you has already set one up!</span>
     <br> ➕
-        <a href="#" onclick="openAddCommunityModal(); return false;" style="color: #007BFF; text-decoration: underline;" data-lang-id="009-add-community"></a>
+        <a href="#" onclick="openAddCommunityModal(); return false;" style="color: #007BFF; text-decoration: underline;" data-lang-id="009-add-community">Don't see your community? Add it.</a>
     </p>
 </div>
 
@@ -496,6 +496,9 @@ echo '<!DOCTYPE html>
     <h2>Your Apps</h2>
     <p>You've connected to the following Buwana apps:</p>
     <div id="connected-apps-row" class="connected-apps-row"></div>
+    <div style="text-align:center;margin-top:10px;">
+        <a href="index.php" class="submit-button enabled">+ Add Buwana App</a>
+    </div>
 </div>
 
 
