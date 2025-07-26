@@ -1308,6 +1308,8 @@ select {
   border: none;
   border-radius: 6px;
    font-size: 1.3em;
+   text-decoration: none;
+   display: inline-block;
 }
 
 /*!* Styles for the disabled state *!*/
