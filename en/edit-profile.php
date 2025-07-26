@@ -72,10 +72,10 @@ $location_full = $location_full ?? '';
 
 // 🌐 Fetch active languages
 $languages = [];
-$sql_languages = "SELECT language_id, language_name_en, language_name_id, language_name_fr, language_name_es, language_active
+$sql_languages = "SELECT language_id, language_name_en, language_name_id, language_name_fr, language_name_es, languages_native_name, language_active
                   FROM languages_tb
                   WHERE language_active = 1
-                  ORDER BY language_name_en";
+                  ORDER BY languages_native_name";
 $result_languages = $buwana_conn->query($sql_languages);
 if ($result_languages && $result_languages->num_rows > 0) {
     while ($row = $result_languages->fetch_assoc()) {
@@ -496,8 +496,8 @@ echo '<!DOCTYPE html>
     <h2>Your Apps</h2>
     <p>You've connected to the following Buwana apps:</p>
     <div id="connected-apps-row" class="connected-apps-row"></div>
-    <div style="text-align:center;margin-top:10px;">
-        <a href="index.php" class="submit-button enabled">+ Add Buwana App</a>
+    <div style="text-align:center;">
+        <a href="index.php" class="submit-button enabled" style="text-decoration:none;margin-top:20px;display:inline-block;">+ Add Buwana App</a>
     </div>
 </div>
 
