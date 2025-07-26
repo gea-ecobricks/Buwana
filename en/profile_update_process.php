@@ -18,7 +18,7 @@ $buwana_id = $_SESSION['buwana_id'];
 
 // Check if all required fields are present
 $required_fields = [
-    'first_name', 'last_name', 'country_id', 'language_id', 'birth_date',
+    'first_name', 'last_name', 'country_id', 'language_id',
     'continent_code', 'community_id', 'location_full', 'latitude', 'longitude',
     'location_watershed', 'earthling_emoji', 'time_zone'
 ];
@@ -35,7 +35,7 @@ $first_name = trim($_POST['first_name']);
 $last_name = trim($_POST['last_name']);
 $country_id = (int)$_POST['country_id'];
 $language_id = trim($_POST['language_id']);
-$birth_date = $_POST['birth_date'];
+$birth_date = (isset($_POST['birth_date']) && $_POST['birth_date'] !== '') ? $_POST['birth_date'] : null;
 $continent_code = trim($_POST['continent_code']);
 $community_id = (int)$_POST['community_id'];
 $location_full = trim($_POST['location_full']);
