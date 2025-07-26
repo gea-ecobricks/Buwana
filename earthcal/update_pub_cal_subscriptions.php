@@ -9,9 +9,8 @@ ini_set('display_errors', '0');
 
 // CORS Handling
 $allowed_origins = [
-    'https://cycles.earthen.io',
+    'https://earthcal.app',
     'https://ecobricks.org',
-    'https://gobrik.com',
     'http://localhost',
     'file://'
 ];
