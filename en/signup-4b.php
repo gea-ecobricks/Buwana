@@ -13,7 +13,7 @@ function build_login_url($base, array $params) {
 
 // Page setup
 $lang = basename(dirname($_SERVER['SCRIPT_NAME']));
-$page = 'signup-4b';
+$page = 'signup-4';
 $version = '0.776';
 $lastModified = date("Y-m-d\TH:i:s\Z", filemtime(__FILE__));
 $location_full = "";
