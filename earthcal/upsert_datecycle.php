@@ -13,16 +13,16 @@ if (in_array(rtrim($origin, '/'), $allowed_origins)) {
 } elseif (empty($origin)) {
     header('Access-Control-Allow-Origin: *');
 } else {
-    http_response_code(403);
+    header('HTTP/1.1 403 Forbidden');
     echo json_encode(['success' => false, 'message' => 'CORS error']);
     exit();
 }
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    echo json_encode(['success' => false, 'message' => 'Invalid request method.']);
-    exit();
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    header('Access-Control-Allow-Methods: POST, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type');
+    exit(0);
 }
-
 $data = json_decode(file_get_contents('php://input'), true);
 
 // Required fields
