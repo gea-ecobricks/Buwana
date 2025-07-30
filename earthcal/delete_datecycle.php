@@ -54,7 +54,7 @@ try {
     }
 
     $buwanaId = intval($inputData['buwana_id']);
-    $uniqueKey = htmlspecialchars($inputData['unique_key']);
+    $uniqueKey = $cal_conn->real_escape_string($inputData['unique_key']);
 
     // Prepare the DELETE query using unique_key and buwana_id.
     $sql = "DELETE FROM datecycles_tb WHERE unique_key = ? AND buwana_id = ?";
