@@ -25,12 +25,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 $data = json_decode(file_get_contents('php://input'), true);
 
-// Required fields (except raw_json)
+// Required fields (except raw_json and cal_emoji)
 $required_fields = [
     'buwana_id', 'cal_id', 'cal_name', 'cal_color', 'title', 'date', 'time', 'time_zone',
     'day', 'month', 'year', 'frequency', 'created_at', 'last_edited', 'synced',
     'unique_key', 'datecycle_color', 'date_emoji', 'pinned', 'comment', 'comments',
-    'completed', 'public', 'delete_it', 'conflict', 'cal_emoji'
+    'completed', 'public', 'delete_it', 'conflict'
 ];
 
 foreach ($required_fields as $field) {
@@ -67,7 +67,7 @@ $public          = (int) $data['public'];
 $delete_it       = (int) $data['delete_it'];
 $conflict        = (int) $data['conflict'];
 $raw_json        = isset($data['raw_json']) ? $cal_conn->real_escape_string($data['raw_json']) : '';
-$cal_emoji       = $cal_conn->real_escape_string($data['cal_emoji']);
+$cal_emoji       = isset($data['cal_emoji']) ? $cal_conn->real_escape_string($data['cal_emoji']) : '';
 
 try {
     $query = "
