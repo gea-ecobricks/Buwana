@@ -908,7 +908,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const form = document.getElementById('addCommunityForm');
         const formData = new FormData(form);
 
-        fetch('../scripts/add_community.php', {
+        fetch('../api/add_community.php', {
             method: 'POST',
             body: formData
         })
@@ -922,7 +922,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 communityInput.value = data.community_name;
 
                 // Fetch community ID for the newly created community
-                fetch('../api/search_communities.php?query=' + encodeURIComponent(data.community_name))
+                fetch('../api/search_communities_by_id.php?query=' + encodeURIComponent(data.community_name))
                     .then(res => res.json())
                     .then(list => {
                         const match = list.find(c => c.com_name === data.community_name);

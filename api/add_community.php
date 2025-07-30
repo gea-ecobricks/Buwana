@@ -1,6 +1,24 @@
 <?php
 require_once '../buwanaconn_env.php';
+
 header('Content-Type: application/json');
+
+$allowed_origins = [
+    'https://earthcal.app',
+    'https://ecobricks.org',
+    'https://gobrik.com',
+    'https://learning.ecobricks.org',
+    'https://openbooks.ecobricks.org',
+    'https://earthen.io'
+];
+
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+if (in_array($origin, $allowed_origins)) {
+    header("Access-Control-Allow-Origin: $origin");
+    header('Access-Control-Allow-Credentials: true');
+    header('Access-Control-Allow-Methods: GET, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type');
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $com_name = trim($_POST['newCommunityName']);
