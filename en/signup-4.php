@@ -156,16 +156,17 @@ if ($result_languages && $result_languages->num_rows > 0) {
                 <!-- MAP AND WATERSHED SEARCH SECTION -->
                 <div class="form-item" id="watershed-map-section" style="display: none; margin-top:20px;">
                     <label for="watershed_select" data-lang-id="007-in-which-river-basin">In which river basin do you live?</label><br>
-                    <div id="map" style="height: 350px; border-radius: 0px 0px 12px 12px; margin-top: 8px;"></div>
-                    <p class="form-caption" data-lang-id="008-the map shows" style="margin-top:10px;">
-                        ℹ️ The map shows rivers and streams around you. Choose the one to which your water flows.
-                    </p>
                     <select id="watershed_select" name="watershed_select" aria-label="Watershed Select" style="width: 100%; padding: 10px;" required>
                         <option value="" disabled <?= empty($location_watershed) ? 'selected' : '' ?> data-lang-id="010-select-your-river">👉 Select your local river...</option>
                         <?php if (!empty($location_watershed)) : ?>
                             <option value="<?= htmlspecialchars($location_watershed) ?>" selected><?= htmlspecialchars($location_watershed) ?></option>
                         <?php endif; ?>
                     </select>
+                    <p class="form-caption">Don't know your local river? <span id="toggle-map-link" class="underline-link">See a local map of rivers around you.</span></p>
+                    <div id="map" style="display:none;height: 350px; border-radius: 0px 0px 12px 12px; margin-top: 8px;"></div>
+                    <p id="map-info" class="form-caption" data-lang-id="008-the map shows" style="display:none;margin-top:10px;">
+                        ℹ️ The map shows rivers and streams around you. Choose the one to which your water flows.
+                    </p>
                 </div>
 
                 <!-- Kick-Ass Submit Button -->
@@ -465,6 +466,24 @@ function fetchNearbyRivers(lat, lon) {
 //         console.log('Longitude:', $('#lon').val());
 //         // Additional submit handling if needed
 //     });
+
+    // Toggle map display when user clicks the help link
+    $('#toggle-map-link').on('click', function(e) {
+        e.preventDefault();
+        $('#map').toggle();
+        $('#map-info').toggle();
+        if (typeof map !== 'undefined') {
+            setTimeout(function(){ map.invalidateSize(); }, 200);
+        }
+    });
+
+    // Submit form when Enter key is pressed
+    $('#user-signup-form').on('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            this.submit();
+        }
+    });
 });
 
 
