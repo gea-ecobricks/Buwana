@@ -46,7 +46,7 @@ const fr_Page_Translations = {
     "007-check-email": "Vérifiez votre e-mail",
     "008-for-your-code": "pour votre code de confirmation de compte. Entrez-le ici :",
     "009-no-code": "Vous n'avez pas reçu votre code ? Vous pouvez demander un renvoi du code dans",
-    "010-email-no-longer": "N'utilisez-vous plus cette adresse e-mail ?<br>Si non, vous devrez <a href=\"signup-1.php\">créer un nouveau compte</a> ou contacter notre équipe à l'adresse support@gobrik.com.",
+    "010-email-no-longer": "N'utilisez-vous plus cette adresse e-mail ?<br>Si non, vous devrez <a href=\"signup.php\">créer un nouveau compte</a> ou contacter notre équipe à l'adresse support@gobrik.com.",
     "011-change-email": "Voulez-vous changer votre adresse e-mail ?",
     "012-go-back-new-email": "Retournez pour entrer une autre adresse e-mail.",
 

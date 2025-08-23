@@ -49,11 +49,11 @@ const en_Page_Translations = {
     "007-check-email": "Check your email",
     "008-for-your-code": "for your account confirmation code. Enter it here:",
     "009-no-code": "Didn't get your code? You can request a resend of the code in",
-    "010-email-no-longer": "Do you no longer use this email address?<br>If not, you'll need to <a href=\"signup-1.php\">create a new account</a> or contact our team at support@gobrik.com.",
+    "010-email-no-longer": "Do you no longer use this email address?<br>If not, you'll need to <a href=\"signup.php\">create a new account</a> or contact our team at support@gobrik.com.",
     "011-change-email": "Want to change your email?",
     "012-go-back-new-email": "Go back to enter a different email address.",
 
-    // signup-4.php
+    // activate-3.php
     "001-password-set": "your password is set.",
    "011-your-local-area": "Where is your home?",
   "011-location-full-caption": "Start typing your home location (without the street location!), and we'll fill in the rest.  Data source: OpenStreetMap API.",
