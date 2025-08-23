@@ -44,6 +44,25 @@ if (empty($credential_key) || empty($password)) {
     exit();
 }
 
+// ------------------------------------------------------------------
+// GoBrik legacy account check
+// ------------------------------------------------------------------
+if ($client_id === 'gbrk_f2c61a85a4cd4b8b89a7') {
+    $sql_legacy = "SELECT ecobricker_id, buwana_id FROM tb_ecobrickers WHERE email_addr = ?";
+    $stmt_legacy = $gobrik_conn->prepare($sql_legacy);
+    if ($stmt_legacy) {
+        $stmt_legacy->bind_param('s', $credential_key);
+        $stmt_legacy->execute();
+        $stmt_legacy->bind_result($ecobricker_id, $legacy_buwana_id);
+        if ($stmt_legacy->fetch() && empty($legacy_buwana_id)) {
+            auth_log('Legacy GoBrik account detected for ' . $credential_key);
+            header("Location: ../$lang/activate-gobrik-legacy.php?id=$ecobricker_id");
+            exit();
+        }
+        $stmt_legacy->close();
+    }
+}
+
 // Check credentials_tb
 $sql_credential = "SELECT buwana_id FROM credentials_tb WHERE credential_key = ?";
 $stmt_credential = $buwana_conn->prepare($sql_credential);
