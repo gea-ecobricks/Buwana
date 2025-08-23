@@ -7,10 +7,10 @@ require_once '../buwanaconn_env.php';
 require_once '../fetch_app_info.php';
 require_once '../earthenAuth_helper.php'; // Include the authentication helper functions
 
-function build_login_url($base, array $params) {
-    $delimiter = (strpos($base, '?') !== false) ? '&' : '?';
-    return $base . $delimiter . http_build_query($params);
-}
+// function build_login_url($base, array $params) {
+//     $delimiter = (strpos($base, '?') !== false) ? '&' : '?';
+//     return $base . $delimiter . http_build_query($params);
+// }
 
 // Page setup
 $lang = basename(dirname($_SERVER['SCRIPT_NAME']));
