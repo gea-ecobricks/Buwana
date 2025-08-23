@@ -13,6 +13,11 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 
 
+$is_logged_in = false; // Ensure not logged in for this page
+
+$response = ['success' => false];
+$ecobricker_id = $_GET['id'] ?? null;
+
 // Page setup
 $lang = basename(dirname($_SERVER['SCRIPT_NAME']));
 $version = '0.4';
@@ -29,10 +34,6 @@ if (!empty($_SESSION['buwana_id'])) {
     </script>";
     exit();
 }
-
-$is_logged_in = false; // Ensure not logged in for this page
-
-$response = ['success' => false];
 
 
 // PART 2: Check if ecobricker_id is passed in the URL
