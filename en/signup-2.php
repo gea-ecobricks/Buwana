@@ -223,8 +223,6 @@ https://github.com/gea-ecobricks/buwana/-->
                  <span id="submit-emoji" class="submit-emoji" style="display: none;"></span>
                </button>
              </div>
-
-
             </form>
         </div>
     <div id="browser-back-link" style="font-size: medium; text-align: center; margin: auto; align-self: center; padding-top: 40px; padding-bottom: 40px; margin-top: 0px;" >
