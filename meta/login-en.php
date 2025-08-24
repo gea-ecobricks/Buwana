@@ -1,4 +1,4 @@
-<title>Login | Buwana</title>
+<title>Login | <?= htmlspecialchars($app_info["app_display_name"]) ?> | Buwana</title>
 
 <meta name="keywords" content="login, buwana, buwana app, regenerative app, authentication, sso, buwana ecosystem">
 <meta name="description" content="Login to your awesome regenerative app using the Buwanana authentication protocol">

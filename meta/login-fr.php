@@ -1,4 +1,4 @@
-<title>Connexion | Buwana</title>
+<title>Connexion | <?= htmlspecialchars($app_info["app_display_name"]) ?> | Buwana</title>
 
 <meta name="keywords" content="connexion, buwana, application buwana, application régénératrice, authentification, sso, écosystème buwana">
 <meta name="description" content="Connectez-vous à votre application régénératrice géniale en utilisant le protocole d'authentification Buwanana">
