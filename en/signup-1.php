@@ -68,7 +68,7 @@ https://github.com/gea-ecobricks/buwana/-->
 
 <div class="login-panel-group">
     <div id="form-submission-box" class="landing-page-form">
-        <div class="form-container" style="box-shadow: #0000001f 0px 5px 20px;">
+        <div class="form-container">
             <div id="top-page-image"
                  class="top-page-image"
                  data-light-img="<?= htmlspecialchars($app_info[$page_key . '_top_img_light']) ?>"

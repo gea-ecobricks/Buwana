@@ -121,8 +121,6 @@ https://github.com/gea-ecobricks/buwana/-->
     <div id="splash-bar"></div>-->
 
 <!-- PAGE CONTENT -->
-
-<!-- PAGE CONTENT -->
    <?php
    $page_key = str_replace('-', '_', $page); // e.g. 'signup-1' → 'signup_1'
    ?>
