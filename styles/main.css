@@ -1405,6 +1405,8 @@ text-decoration: underline;
     margin-bottom: 70px;
     z-index: 24;
     position: absolute;
+    top: 0;
+    left: 0;
     text-align: center;
     width: 100%;
     background-repeat: no-repeat;
