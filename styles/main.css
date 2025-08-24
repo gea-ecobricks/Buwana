@@ -1444,7 +1444,8 @@ z-index:5;
     width:100%;
 }
 
-.login-panel-group {
+.login-panel-group,
+.page-panel-group {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -1466,7 +1467,8 @@ z-index:5;
 
       }
 
-      .login-panel-group {
+      .login-panel-group,
+      .page-panel-group {
         justify-content: flex-start;
       }
 
