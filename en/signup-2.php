@@ -126,7 +126,7 @@ https://github.com/gea-ecobricks/buwana/-->
    ?>
 
 <div class="page-panel-group">
-    <div id="form-submission-box" class="landing-page-form" style="min-height:100vh">
+    <div id="form-submission-box" class="landing-page-form" style="min-height:calc( 100vh - 54px)">
         <div class="form-container">
             <div id="top-page-image"
                 class="top-page-image"
@@ -227,9 +227,10 @@ https://github.com/gea-ecobricks/buwana/-->
 
             </form>
         </div>
-    </div>
     <div id="browser-back-link" style="font-size: medium; text-align: center; margin: auto; align-self: center; padding-top: 40px; padding-bottom: 40px; margin-top: 0px;" >
-        <p style="font-size: medium;">
+            <p style="font-size: medium;">
+    </div>
+
 
             <a href="#" onclick="browserBack(event)" data-lang-id="000-go-back">↩ Go back a step</a>
         </p>
