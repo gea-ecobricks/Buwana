@@ -100,26 +100,8 @@ https://github.com/gea-ecobricks/buwana/-->
    </div>
 
 
-<div class="form-item credential-select-wrapper">
-    <select id="credential"
-            name="credential"
-            aria-label="Preferred Credential"
-            required title="We'll send your account confirmation messages this way and you'll use this to login.">
-        <option value="" disabled data-lang-id="006-credential-choice">
-            Select how you register...
-        </option>
-        <option value="email" selected>E-mail</option>
-        <option value="phone" disabled>Phone number</option>
-        <option value="peer" disabled>Peer</option>
-    </select>
-
-    <!-- Error message -->
-    <div id="credential-error-required"
-         class="form-field-error"
-         data-lang-id="000-field-required-error">
-        This field is required.
-    </div>
-</div>
+<!-- Credential selection simplified: default to email without showing the field -->
+<input type="hidden" id="credential" name="credential" value="email" />
 
 
 
