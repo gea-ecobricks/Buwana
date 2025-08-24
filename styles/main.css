@@ -1390,6 +1390,16 @@ color: var(--h1);
 text-decoration: underline;
 }
 
+.toggle-map-link {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.toggle-map-link:hover {
+    text-decoration: none;
+    color: var(--emblem-green);
+}
+
 
 .top-page-image {
     margin-bottom: 70px;
@@ -1633,6 +1643,7 @@ Sign up process
     padding: 14px 24px;
     font-size: 1.3em;
     font-weight: 600;
+    font-family: 'Arvo', serif;
     border: none;
     border-radius: 8px;
     background-color: var(--button-2-2);
