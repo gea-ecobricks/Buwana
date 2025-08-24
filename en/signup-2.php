@@ -127,14 +127,14 @@ https://github.com/gea-ecobricks/buwana/-->
    $page_key = str_replace('-', '_', $page); // e.g. 'signup-1' → 'signup_1'
    ?>
 
-   <div id="top-page-image"
-        class="top-page-image"
-        data-light-img="<?= htmlspecialchars($app_info[$page_key . '_top_img_light']) ?>"
-        data-dark-img="<?= htmlspecialchars($app_info[$page_key . '_top_img_dark']) ?>">
-   </div>
-
-<div id="form-submission-box" class="landing-page-form" >
-    <div class="form-container">
+<div class="login-panel-group">
+    <div id="form-submission-box" class="landing-page-form" >
+        <div class="form-container">
+            <div id="top-page-image"
+                class="top-page-image"
+                data-light-img="<?= htmlspecialchars($app_info[$page_key . '_top_img_light']) ?>"
+                data-dark-img="<?= htmlspecialchars($app_info[$page_key . '_top_img_dark']) ?>">
+            </div>
 
             <div style="text-align:center;width:100%;margin:auto;">
                 <h2><span data-lang-id="001-register-by"></span> <?php echo $credential_type; ?></h2>
@@ -227,19 +227,15 @@ https://github.com/gea-ecobricks/buwana/-->
              </div>
 
 
-           </form>
+            </form>
+        </div>
+    </div>
+    <div id="browser-back-link" style="font-size: medium; text-align: center; margin: auto; align-self: center; padding-top: 40px; padding-bottom: 40px; margin-top: 0px;" >
+        <p style="font-size: medium;">
 
-</div>
-
-
-<div id="browser-back-link" style="font-size: medium; text-align: center; margin: auto; align-self: center; padding-top: 40px; padding-bottom: 40px; margin-top: 0px;" >
-    <p style="font-size: medium;">
-
-        <a href="#" onclick="browserBack(event)" data-lang-id="000-go-back">↩ Go back a step</a>
-    </p>
-</div>
-
-
+            <a href="#" onclick="browserBack(event)" data-lang-id="000-go-back">↩ Go back a step</a>
+        </p>
+    </div>
 
     </div>
 </div>  <!--main closes-->
