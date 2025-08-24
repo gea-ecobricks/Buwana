@@ -66,25 +66,23 @@ https://github.com/gea-ecobricks/buwana/-->
    $page_key = str_replace('-', '_', $page); // e.g. 'signup-1' → 'signup_1'
    ?>
 
-   <div id="top-page-image"
-        class="top-page-image"
-        data-light-img="<?= htmlspecialchars($app_info[$page_key . '_top_img_light']) ?>"
-        data-dark-img="<?= htmlspecialchars($app_info[$page_key . '_top_img_dark']) ?>">
-   </div>
+<div class="login-panel-group">
+    <div id="form-submission-box" class="landing-page-form">
+        <div class="form-container" style="box-shadow: #0000001f 0px 5px 20px;">
+            <div id="top-page-image"
+                 class="top-page-image"
+                 data-light-img="<?= htmlspecialchars($app_info[$page_key . '_top_img_light']) ?>"
+                 data-dark-img="<?= htmlspecialchars($app_info[$page_key . '_top_img_dark']) ?>">
+            </div>
 
+            <div style="text-align:center;width:100%;margin:auto;">
+                <div id="status-message" data-lang-id="001-signup-heading" style="font-family: 'Arvo';margin-top:15px;"><!--Create Your Account--></div>
 
+                <div id="sub-status-message" style="margin-bottom:15px;"><?= htmlspecialchars($app_info['app_display_name']) ?><span data-lang-id="002-signup-subtext"> <!--uses the Buwana Authentication protocol— a secure, open-source and for-Earth protocol that powers regenerative apps.--></div>
+            </div>
 
-<div id="form-submission-box" class="landing-page-form" >
-    <div class="form-container" style="box-shadow: #0000001f 0px 5px 20px;">
-
-        <div style="text-align:center;width:100%;margin:auto;">
-            <div id="status-message" data-lang-id="001-signup-heading" style="font-family: 'Arvo';margin-top:15px;"><!--Create Your Account--></div>
-
-            <div id="sub-status-message" style="margin-bottom:15px;"><?= htmlspecialchars($app_info['app_display_name']) ?><span data-lang-id="002-signup-subtext"> <!--uses the Buwana Authentication protocol— a secure, open-source and for-Earth protocol that powers regenerative apps.--></div>
-        </div>
-
-       <!--SIGNUP-1 FORM-->
-<form id="user-signup-form" method="post" action="signup-1_process.php" novalidate>
+            <!--SIGNUP-1 FORM-->
+            <form id="user-signup-form" method="post" action="signup-1_process.php" novalidate>
 
    <div class="form-item float-label-group" style="border-radius:10px 10px 5px 5px;padding-bottom: 10px;">
      <input type="text" id="first_name" name="first_name"
@@ -105,30 +103,29 @@ https://github.com/gea-ecobricks/buwana/-->
 
 
 
-<div class="submit-button-wrapper">
+  <div class="submit-button-wrapper">
 
-<button type="submit" id="submit-button" class="kick-ass-submit">
-  <span id="submit-button-text" data-lang-id="000-next"><!--Next ➡--></span>
-  <span id="submit-emoji" class="submit-emoji" style="display: none;"></span>
-</button>
-
-
-</div>
+  <button type="submit" id="submit-button" class="kick-ass-submit">
+    <span id="submit-button-text" data-lang-id="000-next"><!--Next ➡--></span>
+    <span id="submit-emoji" class="submit-emoji" style="display: none;"></span>
+  </button>
 
 
-</div>
-
-</form>
+  </div>
 
 
-    <div style="font-size: medium; text-align: center; margin: auto; align-self: center;padding-top:40px;padding-bottom:50px;margin-top: 0px;">
-        <?php $login_url = build_login_url($app_info['app_login_url'], ['app' => $app_info['client_id']]); ?>
-        <p style="font-size:medium;line-height:2em;"><span data-lang-id="000-already-have-account">Already have an account?</span> <br> <a href="<?= htmlspecialchars($login_url) ?>"><span data-lang-id="000-login-to"> Login to </span> <?= htmlspecialchars($app_info['app_display_name']) ?> ↗</a>.</p>
+  </form>
+
+            <div style="font-size: medium; text-align: center; margin: auto; align-self: center;padding-top:40px;padding-bottom:50px;margin-top: 0px;">
+                <?php $login_url = build_login_url($app_info['app_login_url'], ['app' => $app_info['client_id']]); ?>
+                <p style="font-size:medium;line-height:2em;"><span data-lang-id="000-already-have-account">Already have an account?</span> <br> <a href="<?= htmlspecialchars($login_url) ?>"><span data-lang-id="000-login-to"> Login to </span> <?= htmlspecialchars($app_info['app_display_name']) ?> ↗</a>.</p>
+            </div>
+        </div>
     </div>
 </div>
 
 
-    </div><!--closes Landing content-->
+      </div><!--closes Landing content-->
 
 
 
