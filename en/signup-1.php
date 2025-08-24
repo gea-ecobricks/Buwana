@@ -84,45 +84,39 @@ https://github.com/gea-ecobricks/buwana/-->
             <!--SIGNUP-1 FORM-->
             <form id="user-signup-form" method="post" action="signup-1_process.php" novalidate>
 
-   <div class="form-item float-label-group" style="border-radius:10px 10px 5px 5px;padding-bottom: 10px;">
-     <input type="text" id="first_name" name="first_name"
-            aria-label="Your first name"
-            maxlength="255"
-            required
-            placeholder=" " />
-     <label for="first_name" data-lang-id="003-firstname">What's your first name?</label>
-     <!-- ERRORS -->
-     <div id="maker-error-required" class="form-field-error" data-lang-id="000-field-required-error">This field is required.</div>
-     <div id="maker-error-long" class="form-field-error" data-lang-id="000-name-field-too-long-error">The name is too long. Max 255 characters.</div>
-     <div id="maker-error-invalid" class="form-field-error" data-lang-id="005b-name-error">The entry contains invalid characters. Avoid quotes, slashes, and greater-than signs please.</div>
-   </div>
+               <div class="form-item float-label-group" style="border-radius:10px 10px 5px 5px;padding-bottom: 10px;">
+                 <input type="text" id="first_name" name="first_name"
+                        aria-label="Your first name"
+                        maxlength="255"
+                        required
+                        placeholder=" " />
+                 <label for="first_name" data-lang-id="003-firstname">What's your first name?</label>
+                 <!-- ERRORS -->
+                 <div id="maker-error-required" class="form-field-error" data-lang-id="000-field-required-error">This field is required.</div>
+                 <div id="maker-error-long" class="form-field-error" data-lang-id="000-name-field-too-long-error">The name is too long. Max 255 characters.</div>
+                 <div id="maker-error-invalid" class="form-field-error" data-lang-id="005b-name-error">The entry contains invalid characters. Avoid quotes, slashes, and greater-than signs please.</div>
+               </div>
 
 
-<!-- Credential selection simplified: default to email without showing the field -->
-<input type="hidden" id="credential" name="credential" value="email" />
+                <!-- Credential selection simplified: default to email without showing the field -->
+                <input type="hidden" id="credential" name="credential" value="email" />
 
-
-
-  <div class="submit-button-wrapper">
-
-  <button type="submit" id="submit-button" class="kick-ass-submit">
-    <span id="submit-button-text" data-lang-id="000-next"><!--Next ➡--></span>
-    <span id="submit-emoji" class="submit-emoji" style="display: none;"></span>
-  </button>
-
-
-  </div>
-
-
-  </form>
+                <div class="submit-button-wrapper">
+                      <button type="submit" id="submit-button" class="kick-ass-submit">
+                        <span id="submit-button-text" data-lang-id="000-next"><!--Next ➡--></span>
+                        <span id="submit-emoji" class="submit-emoji" style="display: none;"></span>
+                      </button>
+                </div>
+            </form>
         </div>
     </div>
+
     <div style="font-size: medium; text-align: center; margin: auto; align-self: center;padding-top:40px;padding-bottom:50px;margin-top: 0px;">
         <?php $login_url = build_login_url($app_info['app_login_url'], ['app' => $app_info['client_id']]); ?>
         <p style="font-size:medium;line-height:2em;"><span data-lang-id="000-already-have-account">Already have an account?</span> <br> <a href="<?= htmlspecialchars($login_url) ?>"><span data-lang-id="000-login-to"> Login to </span> <?= htmlspecialchars($app_info['app_display_name']) ?> ↗</a>.</p>
     </div>
 </div>
-      </div><!--closes Landing content-->
+</div><!--closes Landing content-->
  </div>
 
 </div><!--closes main and starry background-->
