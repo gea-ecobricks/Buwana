@@ -147,6 +147,7 @@ echo 'const status = "' . addslashes($status) . '";';
 echo 'const firstName = "' . addslashes($first_name) . '";';
 echo 'const buwanaId = "' . addslashes($buwana_id) . '";';
 echo 'const code = "' . addslashes($code) . '";';
+echo 'const credentialKey = "' . addslashes($credential_key) . '";';
 echo 'const appDisplayName = "' . addslashes($app_info['app_display_name'] ?? '') . '";';
 echo '</script>';
 ?>
@@ -194,7 +195,7 @@ echo '</script>';
     <div class="form-item" style="border-radius: 10px 10px 0px 0px;">
         <!--<p style="text-align:center;">Login with your Buwana account credentials.</p>-->
         <div id="credential-input-field" class="input-wrapper" style="position: relative;">
-            <input type="text" id="credential_key" name="credential_key" required placeholder="Your e-mail...">
+            <input type="text" id="credential_key" name="credential_key" required placeholder="Your e-mail..." value="<?= htmlspecialchars($credential_key) ?>">
             <span class="toggle-select-key" style="cursor: pointer; position: absolute; right: 10px; top: 50%; transform: translateY(-50%);font-size:18px;">🌏</span>
             <div id="dropdown-menu" style="display: none; position: absolute; right: 10px; top: 100%; z-index: 1000; background: white; border: 1px solid #ccc; width: 150px; text-align: left;">
                 <div class="dropdown-item" value="Your email...">E-mail</div>

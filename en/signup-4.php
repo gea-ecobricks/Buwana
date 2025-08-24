@@ -155,6 +155,10 @@ if ($result_languages && $result_languages->num_rows > 0) {
 
                 <!-- MAP AND WATERSHED SEARCH SECTION -->
                 <div class="form-item" id="watershed-map-section" style="display: none; margin-top:20px;">
+                    <div id="map" style="display:none;height: 350px; border-radius: 12px 12px 0px 0px; margin-bottom: 8px;"></div>
+                    <p id="map-info" class="form-caption" data-lang-id="008-the map shows" style="display:none;margin-bottom:10px;">
+                        ℹ️ The map shows rivers and streams around you. Choose the one to which your water flows.
+                    </p>
                     <label for="watershed_select" data-lang-id="007-in-which-river-basin">In which river basin do you live?</label><br>
                     <select id="watershed_select" name="watershed_select" aria-label="Watershed Select" style="width: 100%; padding: 10px;" required>
                         <option value="" disabled <?= empty($location_watershed) ? 'selected' : '' ?> data-lang-id="010-select-your-river">👉 Select your local river...</option>
@@ -162,11 +166,7 @@ if ($result_languages && $result_languages->num_rows > 0) {
                             <option value="<?= htmlspecialchars($location_watershed) ?>" selected><?= htmlspecialchars($location_watershed) ?></option>
                         <?php endif; ?>
                     </select>
-                    <p class="form-caption">Don't know your local river? <span id="toggle-map-link" class="underline-link">See a local map of rivers around you.</span></p>
-                    <div id="map" style="display:none;height: 350px; border-radius: 0px 0px 12px 12px; margin-top: 8px;"></div>
-                    <p id="map-info" class="form-caption" data-lang-id="008-the map shows" style="display:none;margin-top:10px;">
-                        ℹ️ The map shows rivers and streams around you. Choose the one to which your water flows.
-                    </p>
+                    <p class="form-caption">Don't know your local river? <span id="toggle-map-link" class="toggle-map-link">See a local map of rivers around you.</span></p>
                 </div>
 
                 <!-- Kick-Ass Submit Button -->

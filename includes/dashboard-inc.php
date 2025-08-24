@@ -163,6 +163,7 @@
 
 .kick-ass-submit {
   text-decoration: none;
+  font-family: 'Arvo', serif;
 }
 
 .simple-button {
