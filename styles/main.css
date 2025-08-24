@@ -1482,7 +1482,7 @@ z-index:5;
 
 
 @media screen and (min-width: 700px) {
-	.splash-title-block {
+        .splash-title-block {
         /*background-color: var(--top-header);*/
         filter: none !important;
         min-height: 22vh !important;
@@ -1490,7 +1490,7 @@ z-index:5;
 }
   .top-page-image {
    height: 170px;
-   margin-top:0;
+   margin-top:-4%;
 
   }
 
@@ -1506,6 +1506,12 @@ z-index:5;
     min-height:auto;
   }
 
+}
+
+@media screen and (min-height: 1000px) {
+  .form-container {
+    margin-bottom: 10%;
+  }
 }
 
 /*EYE ON AND OFF*/
