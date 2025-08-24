@@ -13,6 +13,16 @@ require_once '../buwanaconn_env.php';
 require_once '../fetch_app_info.php';
 require_once '../scripts/create_user.php';
 
+// 🌿 Special handling for Learning Portal (Moodle SSO)
+$app_id = $_SESSION['app_id'] ?? null;
+
+if ($app_id === 'lear_a30d677a7b08') {
+    // 🌻 Skip DB logic & redirect to Moodle Learning Portal
+    header("Location: https://learning.ecobricks.org");
+    exit();
+}
+
+
 // --- STEP 1: Validate and extract inputs ---
 $buwana_id = $_GET['id'] ?? null;
 if (!$buwana_id || !is_numeric($buwana_id)) {
@@ -84,8 +94,17 @@ $stmt->bind_param(
 $stmt->execute();
 $stmt->close();
 
+// --- STEP 6: Bypass full client provisioning if Learning Portal app ---
+if ($app_name === 'lear_a30d677a7b08') {
+    error_log("🌱 Skipping client provisioning for Learning Portal app ID: $app_name");
 
-// --- STEP 6: Load client connection ---
+    // Optional: Maybe even notify user via session or toast here
+
+    header("Location: signup-7.php?id=" . urlencode($buwana_id));
+    exit();
+}
+
+// --- STEP 7: Load client connection ---
 $client_env_path = "../config/{$app_name}_env.php";
 if (!file_exists($client_env_path)) {
     die("❌ Missing DB config: $client_env_path");
@@ -96,7 +115,7 @@ if (!isset($client_conn) || !($client_conn instanceof mysqli) || $client_conn->c
     die("❌ Client DB connection could not be initialized.");
 }
 
-// --- STEP 7: Fetch user fields for provisioning ---
+// --- STEP 8: Fetch user fields for provisioning ---
 $userData = [];
 $stmt = $buwana_conn->prepare("
     SELECT first_name, last_name, full_name, email, terms_of_service, profile_pic,
@@ -117,7 +136,7 @@ $stmt->bind_result(
 $stmt->fetch();
 $stmt->close();
 
-// --- STEP 8: Create user in client app ---
+// --- STEP 9: Create user in client app ---
 $response = createUserInClientApp($buwana_id, $userData, $app_name, $client_conn, $buwana_conn, $client_id);
 
 if ($response['success']) {
