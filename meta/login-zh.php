@@ -1,4 +1,4 @@
-<title>登录 | Buwana</title>
+<title>登录 | <?= htmlspecialchars($app_info["app_display_name"]) ?> | Buwana</title>
 
 <meta name="keywords" content="登录, Buwana, Buwana 应用, 再生应用, 认证, 单点登录, Buwana 生态">
 <meta name="description" content="使用 Buwanana 身份验证协议登录到您精彩的再生应用">

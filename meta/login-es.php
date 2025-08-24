@@ -1,4 +1,4 @@
-<title>Iniciar sesión | Buwana</title>
+<title>Iniciar sesión | <?= htmlspecialchars($app_info["app_display_name"]) ?> | Buwana</title>
 
 <meta name="keywords" content="inicio de sesión, buwana, aplicación buwana, aplicación regenerativa, autenticación, sso, ecosistema buwana">
 <meta name="description" content="Inicia sesión en tu increíble aplicación regenerativa usando el protocolo de autenticación Buwanana">

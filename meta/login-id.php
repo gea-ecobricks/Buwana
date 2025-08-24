@@ -1,4 +1,4 @@
-<title>Masuk | Buwana</title>
+<title>Masuk | <?= htmlspecialchars($app_info["app_display_name"]) ?> | Buwana</title>
 
 <meta name="keywords" content="login, buwana, aplikasi buwana, aplikasi regeneratif, autentikasi, sso, ekosistem buwana">
 <meta name="description" content="Masuk ke aplikasi regeneratif Anda yang luar biasa menggunakan protokol autentikasi Buwanana">

@@ -1,4 +1,4 @@
-<title>تسجيل الدخول | بوانا</title>
+<title>تسجيل الدخول | <?= htmlspecialchars($app_info["app_display_name"]) ?> | بوانا</title>
 
 <meta name="keywords" content="تسجيل الدخول، بوانا، تطبيق بوانا، تطبيق تجديدي، مصادقة، تسجيل موحد، منظومة بوانا">
 <meta name="description" content="سجّل الدخول إلى تطبيقك التجديدي الرائع باستخدام بروتوكول المصادقة بوانانا">
