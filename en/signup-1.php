@@ -67,6 +67,7 @@ https://github.com/gea-ecobricks/buwana/-->
    ?>
 
 <div class="page-panel-group">
+    <div id="form-submission-box" class="landing-page-form">
         <div class="form-container" style="margin:auto;">
             <div id="top-page-image"
                  class="top-page-image"
@@ -89,7 +90,8 @@ https://github.com/gea-ecobricks/buwana/-->
                         maxlength="255"
                         required
                         placeholder=" " />
-                 <label for="first_name" data-lang-id="003-firstname">What's your first name?</label>
+                 <label for="first_nam        <div class="form-container" style="margin:auto;">
+e" data-lang-id="003-firstname">What's your first name?</label>
                  <!-- ERRORS -->
                  <div id="maker-error-required" class="form-field-error" data-lang-id="000-field-required-error">This field is required.</div>
                  <div id="maker-error-long" class="form-field-error" data-lang-id="000-name-field-too-long-error">The name is too long. Max 255 characters.</div>
@@ -108,7 +110,7 @@ https://github.com/gea-ecobricks/buwana/-->
                 </div>
             </form>
         </div>
-
+    </div>
 
     <div style="font-size: medium; text-align: center; margin: auto; align-self: center;padding-top:40px;padding-bottom:50px;margin-top: 0px;">
         <?php $login_url = build_login_url($app_info['app_login_url'], ['app' => $app_info['client_id']]); ?>
