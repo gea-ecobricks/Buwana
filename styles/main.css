@@ -1439,20 +1439,33 @@ z-index:5;
     display:flex;
     flex-direction: column;
     justify-content: space-between;
+    width:100%;
+}
+
+.login-panel-group {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 @media screen and (max-width: 700px) {
-	.splash-title-block {
+        .splash-title-block {
         /*background-color: var(--top-header);*/
         filter: none !important;
         min-height: 22vh !important;
         height: 22vh !important;
-	}
+        }
 
       .top-page-image {
        height: 130px;
-       margin-top:25px;
+       margin-top:0;
 
+      }
+
+      .login-panel-group {
+        justify-content: flex-start;
       }
 
       #status-message {
@@ -1475,7 +1488,7 @@ z-index:5;
 }
   .top-page-image {
    height: 170px;
-   margin-top:70px;
+   margin-top:0;
 
   }
 
@@ -1487,9 +1500,9 @@ z-index:5;
         }
 
   .landing-page-form {
-min-height:100vh;
-padding-top:55px;
-}
+    padding-top:0;
+    min-height:auto;
+  }
 
 }
 
