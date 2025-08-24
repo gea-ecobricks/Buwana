@@ -66,7 +66,7 @@ https://github.com/gea-ecobricks/buwana/-->
    $page_key = str_replace('-', '_', $page); // e.g. 'signup-1' → 'signup_1'
    ?>
 
-<div class="login-panel-group">
+<div class="page-panel-group">
     <div id="form-submission-box" class="landing-page-form" style="min-height:100vh">
         <div class="form-container">
             <div id="top-page-image"

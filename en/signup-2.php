@@ -126,7 +126,7 @@ https://github.com/gea-ecobricks/buwana/-->
    ?>
 
 <div class="page-panel-group">
-    <div id="form-submission-box" class="landing-page-form" >
+    <div id="form-submission-box" class="landing-page-form" style="min-height:100vh">
         <div class="form-container">
             <div id="top-page-image"
                 class="top-page-image"
