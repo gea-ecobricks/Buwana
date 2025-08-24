@@ -68,7 +68,7 @@ https://github.com/gea-ecobricks/buwana/-->
 
 <div class="login-panel-group">
     <div id="form-submission-box" class="landing-page-form">
-        <div class="form-container" style="box-shadow: #0000001f 0px 5px 20px;">
+        <div class="form-container">
             <div id="top-page-image"
                  class="top-page-image"
                  data-light-img="<?= htmlspecialchars($app_info[$page_key . '_top_img_light']) ?>"
@@ -115,23 +115,14 @@ https://github.com/gea-ecobricks/buwana/-->
 
 
   </form>
-
-            <div style="font-size: medium; text-align: center; margin: auto; align-self: center;padding-top:40px;padding-bottom:50px;margin-top: 0px;">
-                <?php $login_url = build_login_url($app_info['app_login_url'], ['app' => $app_info['client_id']]); ?>
-                <p style="font-size:medium;line-height:2em;"><span data-lang-id="000-already-have-account">Already have an account?</span> <br> <a href="<?= htmlspecialchars($login_url) ?>"><span data-lang-id="000-login-to"> Login to </span> <?= htmlspecialchars($app_info['app_display_name']) ?> ↗</a>.</p>
-            </div>
         </div>
     </div>
+    <div style="font-size: medium; text-align: center; margin: auto; align-self: center;padding-top:40px;padding-bottom:50px;margin-top: 0px;">
+        <?php $login_url = build_login_url($app_info['app_login_url'], ['app' => $app_info['client_id']]); ?>
+        <p style="font-size:medium;line-height:2em;"><span data-lang-id="000-already-have-account">Already have an account?</span> <br> <a href="<?= htmlspecialchars($login_url) ?>"><span data-lang-id="000-login-to"> Login to </span> <?= htmlspecialchars($app_info['app_display_name']) ?> ↗</a>.</p>
+    </div>
 </div>
-
-
       </div><!--closes Landing content-->
-
-
-
-
-
-
  </div>
 
 </div><!--closes main and starry background-->

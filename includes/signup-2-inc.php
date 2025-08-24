@@ -4,6 +4,16 @@
 
 <STYLE>
 
+#main {
+    height: fit-content;
+}
+
+.form-container {
+    max-width: 800px;
+    margin: 0 auto;
+    box-shadow: #0000001f 0px 5px 20px;
+}
+
 .bullet-container {
   position: relative;
   padding-left: 28px; /* Leave space for the bullet */
