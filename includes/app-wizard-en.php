@@ -56,7 +56,7 @@
   .wizard-buttons { text-align:center; margin-top:20px; }
   .wizard-buttons button { margin:0 5px; }
 
-  .kick-ass-submit { text-decoration:none; }
+  .kick-ass-submit { text-decoration:none; font-family: 'Arvo', serif; }
   .simple-button {
     display: inline-block;
     padding: 8px 16px;

@@ -455,12 +455,12 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Get the values from the URL query parameters
-    const status = getQueryParam('status') || ''; // status like 'loggedout', 'firsttime', etc.
+    const status = window.status || getQueryParam('status') || ''; // status like 'loggedout', 'firsttime', etc.
     const lang = document.documentElement.lang || 'en'; // Get language from the <html> tag or default to 'en'
-    const firstName = getQueryParam('firstName') || ''; // Optional first name for the message
-    const credentialKey = getQueryParam('key'); // credential_key
-    const code = getQueryParam('code'); // Get the code from the URL
-    const buwanaId = getQueryParam('id'); // Get the id from the URL
+    const firstName = window.firstName || getQueryParam('firstName') || getQueryParam('firstname') || '';
+    const credentialKey = window.credentialKey || getQueryParam('key'); // credential_key
+    const code = window.code || getQueryParam('code'); // Get the code from the URL
+    const buwanaId = window.buwanaId || getQueryParam('id'); // Get the id from the URL
 
     function updateStatusMessages() {
         const { main, sub } = getStatusMessages(status, lang, firstName);
