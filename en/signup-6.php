@@ -119,14 +119,16 @@ https://github.com/gea-ecobricks/gobrik-3.0/tree/main/en-->
    $page_key = str_replace('-', '_', $page); // e.g. 'signup-1' → 'signup_1'
    ?>
 
-   <div id="top-page-image"
-        class="top-page-image"
-        data-light-img="<?= htmlspecialchars($app_info[$page_key . '_top_img_light']) ?>"
-        data-dark-img="<?= htmlspecialchars($app_info[$page_key . '_top_img_dark']) ?>">
-   </div>
-
-<div id="form-submission-box" class="landing-page-form">
+<div class="page-panel-group">
+<div id="form-submission-box" class="landing-page-form" style="min-height:calc( 100vh - 54px)">
     <div class="form-container">
+
+        <div id="top-page-image"
+             class="top-page-image"
+             data-light-img="<?= htmlspecialchars($app_info[$page_key . '_top_img_light']) ?>"
+             data-dark-img="<?= htmlspecialchars($app_info[$page_key . '_top_img_dark']) ?>">
+        </div>
+
         <div style="text-align:center;width:100%;margin:auto;">
             <p style="color:green;" data-lang-id="001-subs-set">✔ Your Earthen subscriptions are confirmed!</p>
             <div id="status-message"><h4 data-lang-id="002-fun-part" style="margin-bottom: 12px;margin-top:0px;">Now the fun part!</h4></div>
@@ -316,20 +318,14 @@ $current_lang_dir = basename(dirname($_SERVER['SCRIPT_NAME']));
 
 </form>
 
-
-
-
-
     </div>
 
-
-<div id="browser-back-link" style="font-size: medium; text-align: center; margin: auto; align-self: center; padding-top: 40px; padding-bottom: 40px; margin-top: 0px;">
+    <div id="browser-back-link" style="font-size: medium; text-align: center; margin: auto; align-self: center; padding-top: 40px; padding-bottom: 40px; margin-top: 0px;">
             <p style="font-size: medium;">
                 <a href="#" onclick="browserBack(event)" data-lang-id="000-go-back">↩ Go back one step</a>
             </p>
         </div>
     </div>
-
 </div>
 <!-- FOOTER STARTS HERE -->
 <?php require_once ("../footer-2025.php"); ?>

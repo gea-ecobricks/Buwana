@@ -113,16 +113,15 @@ if ($result_languages && $result_languages->num_rows > 0) {
    <?php
    $page_key = str_replace('-', '_', $page); // e.g. 'signup-1' → 'signup_1'
    ?>
-
-   <div id="top-page-image"
-        class="top-page-image"
-        data-light-img="<?= htmlspecialchars($app_info[$page_key . '_top_img_light']) ?>"
-        data-dark-img="<?= htmlspecialchars($app_info[$page_key . '_top_img_dark']) ?>">
-   </div>
-
-
-    <div id="form-submission-box" class="landing-page-form">
+<div class="page-panel-group">
+    <div id="form-submission-box" class="landing-page-form" style="min-height:calc( 100vh - 54px)">
         <div class="form-container" style="box-shadow: #0000001f 0px 5px 20px;">
+
+            <div id="top-page-image"
+                 class="top-page-image"
+                 data-light-img="<?= htmlspecialchars($app_info[$page_key . '_top_img_light']) ?>"
+                 data-dark-img="<?= htmlspecialchars($app_info[$page_key . '_top_img_dark']) ?>">
+            </div>
 
             <div style="text-align:center;width:100%;margin:auto;">
                 <p style="color:green;" data-lang-id="001-email-confirmed">✔ Your email is confirmed!</p>
@@ -191,7 +190,6 @@ if ($result_languages && $result_languages->num_rows > 0) {
             </p>
         </div>
     </div>
-
 </div>
 
 

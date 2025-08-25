@@ -135,15 +135,16 @@ if (!empty($credential_key)) {
    $page_key = str_replace('-', '_', $page); // e.g. 'signup-1' → 'signup_1'
    ?>
 
-   <div id="top-page-image"
-        class="top-page-image"
-        data-light-img="<?= htmlspecialchars($app_info[$page_key . '_top_img_light']) ?>"
-        data-dark-img="<?= htmlspecialchars($app_info[$page_key . '_top_img_dark']) ?>">
-   </div>
+<div class="page-panel-group">
+    <div id="form-submission-box" class="landing-page-form" style="min-height:calc( 100vh - 54px)">
+        <div class="form-container">
 
+            <div id="top-page-image"
+                 class="top-page-image"
+                 data-light-img="<?= htmlspecialchars($app_info[$page_key . '_top_img_light']) ?>"
+                 data-dark-img="<?= htmlspecialchars($app_info[$page_key . '_top_img_dark']) ?>">
+            </div>
 
-<div id="form-submission-box" class="landing-page-form">
-    <div class="form-container">
         <div style="text-align:center;width:100%;margin:auto;">
             <h2 data-lang-id="001-select-subs"></h2>
             <h4 style="color:#748931;" data-lang-id="002-sub-subtitle"></h4>
@@ -184,16 +185,12 @@ if (!empty($credential_key)) {
             </form>
         </div>
     </div>
+
+    <div id="browser-back-link" style="font-size: medium; text-align: center; margin: auto; align-self: center; padding-top: 40px; padding-bottom: 40px; margin-top: 0px;">
+        <p style="font-size: 1em"><a href="#" onclick="browserBack(event)" data-lang-id="000-go-back">↩ Go back one</a></p>
+    </div>
+    </div>
 </div>
-
-
-
-<div id="browser-back-link" style="font-size: medium; text-align: center; margin: auto; align-self: center; padding-top: 40px; padding-bottom: 40px; margin-top: 0px;">
-    <p style="font-size: 1em"><a href="#" onclick="browserBack(event)" data-lang-id="000-go-back">↩ Go back one</a></p>
-</div>
-
-
-</div> <!--CLoses main-->
 
 <!-- FOOTER STARTS HERE -->
 <?php require_once ("../footer-2025.php"); ?>
