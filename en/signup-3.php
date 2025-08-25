@@ -197,17 +197,17 @@ https://github.com/gea-ecobricks/buwana/-->
 
 <!-- PAGE CONTENT -->
    <?php
-   $page_key = str_replace('-', '_', $page); // e.g. 'signup-1' → 'signup_1'
-   ?>
+    $page_key = str_replace('-', '_', $page); // e.g. 'signup-1' → 'signup_1'
+    ?>
 
-   <div id="top-page-image"
-        class="top-page-image"
-        data-light-img="<?= htmlspecialchars($app_info[$page_key . '_top_img_light']) ?>"
-        data-dark-img="<?= htmlspecialchars($app_info[$page_key . '_top_img_dark']) ?>">
-   </div>
-
-<div id="form-submission-box" class="landing-page-form">
-    <div class="form-container">
+<div class="page-panel-group">
+    <div id="form-submission-box" class="landing-page-form" style="min-height:calc( 100vh - 54px)">
+        <div class="form-container">
+            <div id="top-page-image"
+                class="top-page-image"
+                data-light-img="<?= htmlspecialchars($app_info[$page_key . '_top_img_light']) ?>"
+                data-dark-img="<?= htmlspecialchars($app_info[$page_key . '_top_img_dark']) ?>">
+            </div>
 
        <!-- Email confirmation form -->
 <div id="first-send-form" style="text-align:center;width:100%;margin:auto;margin-top:10px;margin-bottom:10px;"
@@ -257,27 +257,20 @@ https://github.com/gea-ecobricks/buwana/-->
     <p id="resend-code" style="font-size:1em"><span data-lang-id="009-no-code">Didn't get your code? You can request a resend of the code in</span> <span id="timer">1:00</span></p>
 </div>
 
-
 </div>
-
-
+        </div>
+        <?php if (!empty($buwana_id)) : ?>
+        <div id="browser-back-link" style="font-size: medium; text-align: center; margin: auto; align-self: center; padding-top: 40px; padding-bottom: 40px; margin-top: 0px; ">
+            <p style="font-size:1em;line-height: 1.9em;"><span data-lang-id="011-change-email">Need to change your email? </span><br><a href="#" onclick="browserBack(event)" data-lang-id="000-go-back">↩ Go back</a>
+            </p>
+        </div>
+        <?php else : ?>
+        <div id="legacy-account-email-not-used" style="text-align:center;width:90%;margin:auto;margin-top:30px;margin-bottom:50px;">
+            <p style="font-size:1em;line-height: 1.9em;" data-lang-id="010-email-no-longer">Do you no longer use this email address?<br>If not, you'll need to <a href="signup-1.php">create a new account</a> or contact our team at support@gobrik.com.</p>
+        </div>
+        <?php endif; ?>
+    </div>
 </div>
-
-<?php if (!empty($buwana_id)) : ?>
-<div id="browser-back-link" style="font-size: medium; text-align: center; margin: auto; align-self: center; padding-top: 40px; padding-bottom: 40px; margin-top: 0px; ">
-    <p style="font-size:1em;line-height: 1.9em;"><span data-lang-id="011-change-email">Need to change your email? </span><br><a href="#" onclick="browserBack(event)" data-lang-id="000-go-back">↩ Go back</a>
-    </p>
-<?php else : ?>
-<div id="legacy-account-email-not-used" style="text-align:center;width:90%;margin:auto;margin-top:30px;margin-bottom:50px;">
-    <p style="font-size:1em;line-height: 1.9em;" data-lang-id="010-email-no-longer">Do you no longer use this email address?<br>If not, you'll need to <a href="signup-1.php">create a new account</a> or contact our team at support@gobrik.com.</p>
-</div>
-<?php endif; ?>
-</div>
-
-
-</div>
-
-
 
 </div> <!--Closes main-->
 

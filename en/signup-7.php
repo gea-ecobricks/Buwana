@@ -60,34 +60,33 @@ $redirect_url = $app_login_url
   <meta charset="UTF-8">
 
 
-  <?php require_once ("../includes/signup-7-inc.php");?>
+<?php require_once ("../includes/signup-7-inc.php");?>
 
-<div id="top-page-image" class="top-page-image"></div>
+<div class="page-panel-group">
+  <div id="form-submission-box" class="landing-page-form" style="min-height:calc( 100vh - 54px)">
+    <div class="form-container">
 
-<div id="form-submission-box" class="landing-page-form">
-  <div class="form-container">
-    <div style="text-align:center;width:100%;margin:auto;">
-      <div class="emoji-banner" style="text-align:center;font-size:5em;">
-        <?= htmlspecialchars($earthling_emoji) ?>
+      <div id="top-page-image" class="top-page-image"></div>
+
+      <div style="text-align:center;width:100%;margin:auto;">
+        <div class="emoji-banner" style="text-align:center;font-size:5em;">
+          <?= htmlspecialchars($earthling_emoji) ?>
+        </div>
+        <h1>
+          <span data-lang-id="001-hurray">Hurray</span> <?= htmlspecialchars($first_name) ?>!
+        </h1>
+        <h4 data-lang-id="002-your-buwana-create">Your Buwana account has been created.</h4>
+        <p>
+          <span data-lang-id="003-you-will-be">You'll be redirected to login to </span><?= htmlspecialchars($app_display_name) ?> <span data-lang-id="004-after">after</span> <span id="countdown">5</span> <span data-lang-id="005-seconds">seconds</span>.
+        </p>
       </div>
-      <h1>
-        <span data-lang-id="001-hurray">Hurray</span> <?= htmlspecialchars($first_name) ?>!
-      </h1>
-      <h4 data-lang-id="002-your-buwana-create">Your Buwana account has been created.</h4>
-      <p>
-        <span data-lang-id="003-you-will-be">You'll be redirected to login to </span><?= htmlspecialchars($app_display_name) ?> <span data-lang-id="004-after">after</span> <span id="countdown">5</span> <span data-lang-id="005-seconds">seconds</span>.
-      </p>
+    </div>
 
-
+    <div id="browser-back-link" style="font-size: small; text-align: center; margin: auto; align-self: center; padding-top: 40px; padding-bottom: 40px; margin-top: 0px;">
+        <p><span data-lang-id="006-manual-redirect">If you're not redirected automatically,</span><a href="<?= htmlspecialchars($redirect_url) ?>"> <span data-lang-id="007-click-here">click here</span></a>.
+        </p>
     </div>
   </div>
-  <div id="browser-back-link" style="font-size: small; text-align: center; margin: auto; align-self: center; padding-top: 40px; padding-bottom: 40px; margin-top: 0px;">
-      <p><span data-lang-id="006-manual-redirect">If you're not redirected automatically,</span><a href="<?= htmlspecialchars($redirect_url) ?>"> <span data-lang-id="007-click-here">click here</span></a>.
-      </p>
-  </div>
-</div>
-
-
 </div>
 
 <?php require_once ("../footer-2025.php"); ?>
