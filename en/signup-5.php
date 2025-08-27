@@ -120,24 +120,34 @@ if (!empty($credential_key)) {
 
 }
 
-?>
 
-<!DOCTYPE html>
-<html lang="<?php echo $lang; ?>">
+// Echo the HTML structure
+echo '<!DOCTYPE html>
+<html lang="' . htmlspecialchars($lang, ENT_QUOTES, 'UTF-8') . '">
 <head>
 <meta charset="UTF-8">
+';
+
+?>
+
+<!--
+Buwana EarthenAuth
+Developed and made open source by the Global Ecobrick Alliance
+See our git hub repository for the full code and to help out:
+https://github.com/gea-ecobricks/buwana/-->
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <?php require_once ("../includes/signup-5-inc.php");?>
+
 
 <!-- PAGE CONTENT -->
    <?php
    $page_key = str_replace('-', '_', $page); // e.g. 'signup-1' → 'signup_1'
    ?>
-
 <div class="page-panel-group">
     <div id="form-submission-box" class="landing-page-form" style="min-height:calc( 100vh - 54px)">
-        <div class="form-container">
+        <div class="form-container" style="box-shadow: #0000001f 0px 5px 20px;margin:auto;">
 
             <div id="top-page-image"
                  class="top-page-image"
