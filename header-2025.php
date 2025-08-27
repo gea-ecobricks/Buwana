@@ -577,4 +577,4 @@ max-height: 200px;
 </div>
 
 
-<div id="main" >
+<div id="main" style="padding-top: 40px;">
