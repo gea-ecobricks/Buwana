@@ -20,6 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $latitude = trim($_POST['latitude'] ?? '');
     $longitude = trim($_POST['longitude'] ?? '');
     $watershed_select = trim($_POST['watershed_select'] ?? '');
+    $community_name = trim($_POST['community_name'] ?? '');
 
     if (empty($location_full) || empty($latitude) || empty($longitude)) {
         echo json_encode(['success' => false, 'error' => 'missing_location_data']);
@@ -38,10 +39,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt_country->execute();
         $stmt_country->bind_result($country_id, $continent_code);
         $stmt_country->fetch();
-        $stmt_country->close();
+    $stmt_country->close();
     } else {
         echo json_encode(['success' => false, 'error' => 'db_error_country']);
         exit();
+    }
+
+    // Lookup community ID if provided
+    $community_id = null;
+    if (!empty($community_name)) {
+        $stmt_comm = $buwana_conn->prepare("SELECT community_id FROM communities_tb WHERE com_name = ? LIMIT 1");
+        if ($stmt_comm) {
+            $stmt_comm->bind_param('s', $community_name);
+            $stmt_comm->execute();
+            $stmt_comm->bind_result($community_id);
+            $stmt_comm->fetch();
+            $stmt_comm->close();
+        }
     }
 
 
@@ -82,6 +96,7 @@ $sql_update = "UPDATE users_tb SET
     location_lat = ?,
     location_long = ?,
     location_watershed = ?,
+    community_id = ?,
     time_zone = ?
     WHERE buwana_id = ?";
 
@@ -92,13 +107,14 @@ error_log("Updating user ID: $buwana_id with tz: $user_timezone");
 
 if ($stmt_update) {
     $stmt_update->bind_param(
-        'sisddssi',
+        'sisddsisi',
         $continent_code,
         $country_id,
         $location_full,
         $latitude,
         $longitude,
         $watershed_select,
+        $community_id,
         $user_timezone,
         $buwana_id
     );
