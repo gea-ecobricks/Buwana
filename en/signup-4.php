@@ -87,17 +87,25 @@ if ($result_languages && $result_languages->num_rows > 0) {
         $languages[] = $row;
     }
 }
+
+
+
+
+// Echo the HTML structure
+echo '<!DOCTYPE html>
+<html lang="' . htmlspecialchars($lang, ENT_QUOTES, 'UTF-8') . '">
+<head>
+<meta charset="UTF-8">
+';
+
 ?>
 
+<!--
+Buwana EarthenAuth
+Developed and made open source by the Global Ecobrick Alliance
+See our git hub repository for the full code and to help out:
+https://github.com/gea-ecobricks/buwana/-->
 
-
-
-
-
-<!DOCTYPE html>
-<html lang="<?php echo $lang; ?>">
-<head>
-    <meta charset="UTF-8">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
