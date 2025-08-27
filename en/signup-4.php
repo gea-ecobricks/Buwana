@@ -199,6 +199,7 @@ https://github.com/gea-ecobricks/buwana/-->
         </div>
     </div>
 </div>
+</div>
 
 
 <!-- FOOTER STARTS HERE -->
