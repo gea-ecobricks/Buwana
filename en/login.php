@@ -165,9 +165,9 @@ echo '</script>';
    $page_key = str_replace('-', '_', $page); // e.g. 'signup-1' → 'signup_1'
    ?>
 
-<div class="login-panel-group">
+<div class="page-panel-group">
     <div id="form-submission-box" class="landing-page-form">
-        <div class="form-container">
+        <div class="form-container" style="margin:auto;">
             <div id="top-page-image"
                 class="top-page-image"
                 data-light-img="<?= htmlspecialchars($app_info[$page_key . '_top_img_light']) ?>"
