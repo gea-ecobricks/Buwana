@@ -32,5 +32,23 @@ const en_Page_Translations = {
 
     "015-osm-description": "We make a point of not using Google maps and instead use OpenStreetMap (a foundation not a for-profit corporation) for localizing users.  OpenStreetMap is built by a community of mappers that contribute and maintain data about roads, rivers, trails, and much more, all over the world. OpenStreetMap is open-data and open-source: anyone is free to use it for any purpose as long as you credit OpenStreetMap and its contributors.",
 
+    "011-community-connect": "Buwana accounts let you connect with your local community...",
+    "012-start-typing-community": "Start typing to see and select a community. There's a good chance someone local to you has already set one up!",
+    "013-add-community": "Don't see your community? Add it.",
+    "014-add-community-title": "Add Your Community",
+    "015-add-community-desc": "Add your community to Buwana so that others can connect across regenerative apps.",
+    "016-community-name-label": "Name of Community:",
+    "017-community-type-label": "Type of Community:",
+    "018-select-type-option": "Select Type",
+    "019-type-neighborhood": "Neighborhood",
+    "020-type-city": "City",
+    "021-type-school": "School",
+    "022-type-organization": "Organization",
+    "023-country-label": "Country:",
+    "024-select-country-option": "Select Country...",
+    "025-language-label": "Preferred Language:",
+    "026-select-language-option": "Select Language...",
+    "027-submit-button": "➕ Create Community",
+
 
 };
