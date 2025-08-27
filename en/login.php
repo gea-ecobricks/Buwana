@@ -166,7 +166,7 @@ echo '</script>';
    ?>
 
 <div class="page-panel-group">
-    <div id="form-submission-box" class="landing-page-form">
+    <div id="form-submission-box" class="landing-page-form" style="min-height:calc( 100vh - 54px)">
         <div class="form-container" style="margin:auto;">
             <div id="top-page-image"
                 class="top-page-image"

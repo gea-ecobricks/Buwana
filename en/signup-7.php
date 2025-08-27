@@ -71,7 +71,7 @@ https://github.com/gea-ecobricks/buwana/-->
 <?php require_once ("../includes/signup-7-inc.php");?>
 
 <div class="page-panel-group">
-    <div id="form-submission-box" class="landing-page-form">
+    <div id="form-submission-box" class="landing-page-form" style="min-height:calc( 100vh - 54px)">
         <div class="form-container" style="box-shadow: #0000001f 0px 5px 20px;margin:auto;">
 
       <div id="top-page-image" class="top-page-image"></div>
