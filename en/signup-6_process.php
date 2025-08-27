@@ -14,9 +14,9 @@ require_once '../fetch_app_info.php';
 require_once '../scripts/create_user.php';
 
 // 🌿 Special handling for Learning Portal (Moodle SSO)
-$app_id = $_SESSION['app_id'] ?? null;
+$session_client_id = $_SESSION['client_id'] ?? null;
 
-if ($app_id === 'lear_a30d677a7b08') {
+if ($session_client_id === 'lear_a30d677a7b08') {
     // 🌻 Skip DB logic & redirect to Moodle Learning Portal
     header("Location: https://learning.ecobricks.org");
     exit();
@@ -79,8 +79,8 @@ $stmt->execute();
 $stmt->close();
 
 // --- STEP 5: Bypass full client provisioning if Learning Portal app ---
-if ($app_name === 'lear_a30d677a7b08') {
-    error_log("🌱 Skipping client provisioning for Learning Portal app ID: $app_name");
+if ($session_client_id === 'lear_a30d677a7b08') {
+    error_log("🌱 Skipping client provisioning for Learning Portal app ID: $session_client_id");
 
     // Optional: Maybe even notify user via session or toast here
 
