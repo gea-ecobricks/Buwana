@@ -67,8 +67,8 @@ https://github.com/gea-ecobricks/buwana/-->
    ?>
 
 <div class="page-panel-group">
-    <div id="form-submission-box" class="landing-page-form" style="min-height:100vh">
-        <div class="form-container">
+    <div id="form-submission-box" class="landing-page-form" style="min-height:calc( 100vh - 54px)">
+        <div class="form-container" style="margin:auto">
             <div id="top-page-image"
                  class="top-page-image"
                  data-light-img="<?= htmlspecialchars($app_info[$page_key . '_top_img_light']) ?>"
