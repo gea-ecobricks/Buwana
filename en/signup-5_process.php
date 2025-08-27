@@ -13,7 +13,6 @@ $credential_key = $_POST['credential_key'] ?? null;
 $first_name = $_POST['first_name'] ?? ''; // Get the first name from POST
 $subscribed_newsletters = json_decode($_POST['subscribed_newsletters'] ?? '[]', true);
 $ghost_member_id = $_POST['ghost_member_id'] ?? null;
-$community_name = $_POST['community_name'] ?? '';
 
 // Ensure we have the user's email
 if (empty($credential_key)) {
@@ -41,35 +40,12 @@ if (empty($subscribed_newsletters)) {
 
 // PART 2: Update users_tb buwana database record
 if ($buwana_id) {
-    // Lookup community_id based on name
-    $community_id = null;
-    if (!empty($community_name)) {
-        $stmt_comm = $buwana_conn->prepare("SELECT community_id FROM communities_tb WHERE com_name = ? LIMIT 1");
-        if ($stmt_comm) {
-            $stmt_comm->bind_param('s', $community_name);
-            $stmt_comm->execute();
-            $stmt_comm->bind_result($community_id);
-            $stmt_comm->fetch();
-            $stmt_comm->close();
-        }
-    }
-
-    if ($community_id !== null) {
-        $update_user_query = "UPDATE users_tb SET community_id = ?, account_status = 'registered and subscribed, no login', terms_of_service = 1 WHERE buwana_id = ?";
-        $stmt_update_user = $buwana_conn->prepare($update_user_query);
-        if ($stmt_update_user) {
-            $stmt_update_user->bind_param('ii', $community_id, $buwana_id);
-            $stmt_update_user->execute();
-            $stmt_update_user->close();
-        }
-    } else {
-        $update_user_query = "UPDATE users_tb SET community_id = NULL, account_status = 'registered and subscribed, no login', terms_of_service = 1 WHERE buwana_id = ?";
-        $stmt_update_user = $buwana_conn->prepare($update_user_query);
-        if ($stmt_update_user) {
-            $stmt_update_user->bind_param('i', $buwana_id);
-            $stmt_update_user->execute();
-            $stmt_update_user->close();
-        }
+    $update_user_query = "UPDATE users_tb SET account_status = 'registered and subscribed, no login', terms_of_service = 1 WHERE buwana_id = ?";
+    $stmt_update_user = $buwana_conn->prepare($update_user_query);
+    if ($stmt_update_user) {
+        $stmt_update_user->bind_param('i', $buwana_id);
+        $stmt_update_user->execute();
+        $stmt_update_user->close();
     }
 }
 
