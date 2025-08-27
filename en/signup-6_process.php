@@ -13,14 +13,8 @@ require_once '../buwanaconn_env.php';
 require_once '../fetch_app_info.php';
 require_once '../scripts/create_user.php';
 
-// 🌿 Special handling for Learning Portal (Moodle SSO)
+// 🌿 Capture active client id from session
 $session_client_id = $_SESSION['client_id'] ?? null;
-
-if ($session_client_id === 'lear_a30d677a7b08') {
-    // 🌻 Skip DB logic & redirect to Moodle Learning Portal
-    header("Location: https://learning.ecobricks.org");
-    exit();
-}
 
 
 // --- STEP 1: Validate and extract inputs ---
@@ -81,8 +75,10 @@ $stmt->close();
 // --- STEP 5: Bypass full client provisioning if Learning Portal app ---
 if ($session_client_id === 'lear_a30d677a7b08') {
     error_log("🌱 Skipping client provisioning for Learning Portal app ID: $session_client_id");
+    $connected_at = date('Y-m-d H:i:s');
+    updateAppConnectionStatus($buwana_conn, $buwana_id, $client_id, 'registered', $connected_at);
+    updateBuwanaUserNotes($buwana_conn, $buwana_id, $app_name, $connected_at);
 
-    // Optional: Maybe even notify user via session or toast here
 
     header("Location: signup-7.php?id=" . urlencode($buwana_id));
     exit();
