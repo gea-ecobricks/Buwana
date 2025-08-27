@@ -115,10 +115,10 @@ $page_key = 'signup_1';
 
             <p data-lang-id="0004-buwana-accounts" style="font-size:1em; text-align: center;">Buwana accounts are designed with ecology, security, and privacy in mind. Soon, you'll be able to login to other great regenerative apps movement in the same way you login to GoBrik!.</p>
             <div style="display:flex;flex-flow:row;justify-content:center;width:100%;margin-top:10px">
-                <div><a href="#" onclick="showModalInfo('terms')" class="underline-link" style="margin:auto;padding: 15px;text-align:center;display:block;background: var(--lighter);  border-radius: 10px;margin: 5px;" data-lang-id="0005-new-terms">New Buwana & GoBrik Terms of Service</a></div>
+                <div><a href="#" onclick="openTermsModal(); return false;" class="underline-link" style="margin:auto;padding: 15px;text-align:center;display:block;background: var(--lighter);  border-radius: 10px;margin: 5px;" data-lang-id="0005-new-terms">New Buwana & GoBrik Terms of Service</a></div>
 
-                <div><a href="https://earthen.io/gobrik-regen" class="underline-link" target="_blank" style="margin:auto;padding: 15px;text-align:center;display:block;background: var(--lighter);  border-radius: 10px;margin: 5px;" data-lang-id="0005-regen-blog">Why?  Read our 'Great GoBrik Regeneration' blog post.</a></div>
-                <div><a href="https://github.com/gea-ecobricks/gobrik-3.0" class="underline-link" target="_blank" style="margin:auto;padding: 15px;text-align:center;display:block;background: var(--lighter);  border-radius: 10px;margin: 5px;" data-lang-id="0006-github-code">New Github Source Code Repository</a></div>
+                <div><a href="https://earthen.io/the-great-gobrik-regeneration/" class="underline-link" target="_blank" style="margin:auto;padding: 15px;text-align:center;display:block;background: var(--lighter);  border-radius: 10px;margin: 5px;" data-lang-id="0005-regen-blog">Why?  Read our 'Great GoBrik Regeneration' blog post.</a></div>
+                <div><a href="https://github.com/gea-ecobricks/gobrik-3.1" class="underline-link" target="_blank" style="margin:auto;padding: 15px;text-align:center;display:block;background: var(--lighter);  border-radius: 10px;margin: 5px;" data-lang-id="0006-github-code">New Github Source Code Repository</a></div>
            </div>
 
             <div class="form-item" style="margin: 70px 10px 40px 10px;">
@@ -150,6 +150,8 @@ function confirmDeletion() {
     }
 }
 </script>
+
+<?php require_once ("../scripts/app_modals.php");?>
 
 </body>
 </html>
