@@ -29,7 +29,6 @@ if (!$buwana_id || !is_numeric($buwana_id)) {
     die("⚠️ Invalid or missing Buwana ID.");
 }
 
-$selected_community   = $_POST['community_name'] ?? '';
 $selected_country_id  = $_POST['country_name'] ?? null; // this is the country_id
 $selected_language_id = $_POST['language_id'] ?? '';
 $earthling_emoji      = $_POST['earthling_emoji'] ?? '🌍';
@@ -56,25 +55,11 @@ if ($stmt) {
     $stmt->close();
 }
 
-// --- STEP 4: Get community_id (if exists) ---
-$community_id = null;
-if (!empty($selected_community)) {
-    $stmt = $buwana_conn->prepare("SELECT community_id FROM communities_tb WHERE com_name = ? LIMIT 1");
-    if ($stmt) {
-        $stmt->bind_param("s", $selected_community);
-        $stmt->execute();
-        $stmt->bind_result($community_id);
-        $stmt->fetch();
-        $stmt->close();
-    }
-}
-
-// --- STEP 5: Update Buwana User Record ---
+// --- STEP 4: Update Buwana User Record ---
 $update_sql = "
     UPDATE users_tb
     SET continent_code = ?,
         country_id = ?,
-        community_id = ?,
         language_id = ?,
         earthling_emoji = ?,
         open_id = CONCAT('buwana_', ?)
@@ -82,10 +67,9 @@ $update_sql = "
 ";
 $stmt = $buwana_conn->prepare($update_sql);
 $stmt->bind_param(
-    'sisssii',
+    'sissii',
     $set_continent_code,
     $selected_country_id,
-    $community_id,
     $selected_language_id,
     $earthling_emoji,
     $buwana_id,  // for CONCAT('buwana_', ?)
@@ -94,7 +78,7 @@ $stmt->bind_param(
 $stmt->execute();
 $stmt->close();
 
-// --- STEP 6: Bypass full client provisioning if Learning Portal app ---
+// --- STEP 5: Bypass full client provisioning if Learning Portal app ---
 if ($app_name === 'lear_a30d677a7b08') {
     error_log("🌱 Skipping client provisioning for Learning Portal app ID: $app_name");
 
@@ -104,7 +88,7 @@ if ($app_name === 'lear_a30d677a7b08') {
     exit();
 }
 
-// --- STEP 7: Load client connection ---
+// --- STEP 6: Load client connection ---
 $client_env_path = "../config/{$app_name}_env.php";
 if (!file_exists($client_env_path)) {
     die("❌ Missing DB config: $client_env_path");

@@ -3,6 +3,36 @@
     <STYLE>
 
 
+/* Spinner for community search */
+.spinner {
+    display: none;
+    position: absolute;
+    top: 25%;
+    left: 20px;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    border: 4px solid rgba(0,0,0,0.1);
+    border-top: 4px solid var(--emblem-pink);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.pin-icon {
+    display: block;
+    position: absolute;
+    top: 35px;
+    left: 20px;
+    transform: translateY(-50%);
+    width: 15px;
+    height: 0px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg) translateY(-50%); }
+    100% { transform: rotate(360deg) translateY(-50%); }
+}
+
 /* SUBSCRIPTION LAYOUT PAGE */
 
 
@@ -28,9 +58,9 @@
 }
 
 /* Hover effect changes brightness and contrast */
-.sub-box:hover {
-    background-color: var(--lighter);
-    filter: brightness(1.1) contrast(0.95);
+    .sub-box:hover {
+        background-color: var(--lighter);
+        filter: brightness(1.1) contrast(0.95);
 }
 
 /* Checkbox for selection */

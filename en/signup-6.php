@@ -80,13 +80,6 @@ while ($row = $result_languages->fetch_assoc()) {
     $languages[] = $row;
 }
 
-// 📋 Fetch communities
-$communities = [];
-$result_communities = $buwana_conn->query("SELECT com_name FROM communities_tb");
-while ($row = $result_communities->fetch_assoc()) {
-    $communities[] = $row['com_name'];
-}
-
 // 📋 Fetch user's current country id
 $user_country_id = null;
 $stmt = $buwana_conn->prepare("SELECT country_id FROM users_tb WHERE buwana_id = ?");
@@ -215,48 +208,6 @@ https://github.com/gea-ecobricks/buwana/-->
 
 
 
-<!-- COMMUNITY FIELD -->
-<div class="form-item" id="community-section" style="margin-top:20px;padding-bottom: 0px;">
-    <label for="community_name" data-lang-id="006-community-connect">
-        Buwana accounts let you connect with local and global communities...
-    </label><br>
-
-    <div class="select-wrapper" style="position: relative;">
-        <span class="select-icon" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); pointer-events: none; font-size: 20px;">👥</span>
-
-        <input
-        	type="text"
-        	id="community_name"
-        	name="community_name"
-        	aria-label="Community Name"
-        	list="community_list"
-        	autocomplete="off"
-        	data-lang-id="007-community-placeholder"
-        	placeholder="Type your community..."
-        	style="width: 100%; padding: 11px 10px 11px 50px; font-size: 20px !important;"
-        	value="<?php echo htmlspecialchars($pre_community ?? '', ENT_QUOTES, 'UTF-8'); ?>"
-        >
-
-    </div>
-
-    <datalist id="community_list">
-        <?php foreach ($communities as $community) : ?>
-            <option value="<?php echo htmlspecialchars($community, ENT_QUOTES, 'UTF-8'); ?>"
-                <?php echo (isset($pre_community) && $community === $pre_community) ? 'selected' : ''; ?>>
-                <?php echo htmlspecialchars($community, ENT_QUOTES, 'UTF-8'); ?>
-            </option>
-        <?php endforeach; ?>
-    </datalist>
-
-    <!-- "Add a new community" text link -->
-    <p class="form-caption"><span data-lang-id="008-start-typing-community">
-        Start typing to see and select a community. There's a good chance someone local to you has already set one up!</span>
-    <br> ➕
-        <a href="#" onclick="openAddCommunityModal(); return false;" style="color: #007BFF; text-decoration: underline;" data-lang-id="009-add-community"></a>
-    </p>
-</div>
-
-
 <!-- COUNTRY SELECT -->
 <div class="form-item" id="country-section" style="margin-top: 20px; position: relative;">
     <label for="country_name" data-lang-id="010-check-country">Please make sure we've connected you with the right country:</label><br>
@@ -371,96 +322,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // --- Country & language preselect ---
-    const userLanguageId = "<?php echo $current_lang_dir; ?>";
-    const userCountryId = "<?php echo htmlspecialchars($user_country_id ?? '', ENT_QUOTES, 'UTF-8'); ?>";
-
-    window.openAddCommunityModal = function () {
-        const modal = document.getElementById('form-modal-message');
-        const modalBox = document.getElementById('modal-content-box');
-
-        modal.style.display = 'flex';
-        modalBox.style.flexFlow = 'column';
-        document.getElementById('page-content')?.classList.add('blurred');
-        document.getElementById('footer-full')?.classList.add('blurred');
-        document.body.classList.add('modal-open');
-
-        modalBox.style.maxHeight = '100vh';
-        modalBox.style.overflowY = 'auto';
-
-        modalBox.innerHTML = `
-            <h4 style="text-align:center;" data-lang-id="014-add-community-title">Add Your Community</h4>
-            <p data-lang-id="015-add-community-desc">Add your community to Buwana so that others can connect across regenerative apps.</p>
-            <form id="addCommunityForm" onsubmit="addCommunity2Buwana(event)">
-                <label for="newCommunityName" data-lang-id="016-community-name-label">Name of Community:</label>
-                <input type="text" id="newCommunityName" name="newCommunityName" required>
-                <label for="newCommunityType" data-lang-id="017-community-type-label">Type of Community:</label>
-                <select id="newCommunityType" name="newCommunityType" required>
-                    <option value="" data-lang-id="018-select-type-option">Select Type</option>
-                    <option value="neighborhood" data-lang-id="019-type-neighborhood">Neighborhood</option>
-                    <option value="city" data-lang-id="020-type-city">City</option>
-                    <option value="school" data-lang-id="021-type-school">School</option>
-                    <option value="organization" data-lang-id="022-type-organization">Organization</option>
-                </select>
-                <label for="communityCountry" data-lang-id="023-country-label">Country:</label>
-                <select id="communityCountry" name="communityCountry" required>
-                    <option value="" data-lang-id="024-select-country-option">Select Country...</option>
-                    <?php foreach ($countries as $country) : ?>
-                        <option value="<?php echo $country['country_id']; ?>">
-                            <?php echo htmlspecialchars($country['country_name'], ENT_QUOTES, 'UTF-8'); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-                <label for="communityLanguage" data-lang-id="025-language-label">Preferred Language:</label>
-                <select id="communityLanguage" name="communityLanguage" required>
-                    <option value="" data-lang-id="026-select-language-option">Select Language...</option>
-                    <?php foreach ($languages as $language) : ?>
-                        <option value="<?php echo $language['language_id']; ?>">
-                            <?php echo htmlspecialchars($language['languages_native_name'], ENT_QUOTES, 'UTF-8'); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-                <button type="submit" style="margin-top:10px;" class="confirm-button enabled" data-lang-id="027-submit-button">Create Community</button>
-            </form>
-        `;
-
-        applyTranslations();
-
-        // Preselect values
-        setTimeout(() => {
-            document.getElementById('communityCountry').value = userCountryId;
-            document.getElementById('communityLanguage').value = userLanguageId;
-        }, 100);
-    };
-
-    window.addCommunity2Buwana = function (event) {
-        event.preventDefault();
-        const form = document.getElementById('addCommunityForm');
-        const formData = new FormData(form);
-
-        fetch('../api/add_community.php', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            alert(data.message);
-            if (data.success) {
-                closeInfoModal();
-                const communityInput = document.getElementById('community_name');
-                const communityList = document.getElementById('community_list');
-                const newOption = document.createElement('option');
-                newOption.value = data.community_name;
-                newOption.textContent = data.community_name;
-                communityList.appendChild(newOption);
-                communityInput.value = data.community_name;
-            }
-        })
-        .catch(error => {
-            alert('Error adding community. Please try again.');
-            console.error('Error:', error);
-        });
-    };
 });
 </script>
 
