@@ -3,8 +3,17 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 session_start();
 
+// Hardcode the client ID for this page
+$_GET['app'] = 'buwana_mgr_001';
+
 require_once '../buwanaconn_env.php';
 require_once '../fetch_app_info.php';
+
+$is_logged_in = !empty($_SESSION['buwana_id']);
+$buwana_id = isset($_GET['id']) && is_numeric($_GET['id']) ? intval($_GET['id']) : null;
+if (!$buwana_id && $is_logged_in) {
+    $buwana_id = intval($_SESSION['buwana_id']);
+}
 
 $lang = basename(dirname($_SERVER['SCRIPT_NAME']));
 $page = 'get-started';
@@ -31,7 +40,7 @@ https://github.com/gea-ecobricks/buwana/-->
 
 <!-- PAGE CONTENT -->
    <?php
-   $page_key = str_replace('-', '_', $page); // e.g. 'signup-1' → 'signup_1'
+   $page_key = 'signup_1';
    ?>
 <div class="page-panel-group">
     <div id="form-submission-box" class="landing-page-form" style="min-height:calc( 100vh - 54px)">
@@ -44,7 +53,7 @@ https://github.com/gea-ecobricks/buwana/-->
             </div>
 
             <div style="padding:20px; max-width:800px; margin:auto;">
-                <h1 data-lang-id="001-get-started-title">🌱 Getting Started with Buwana SSO ✨</h1>
+                <h1 data-lang-id="001-get-started-title">Getting Started with Buwana SSO</h1>
                 <p data-lang-id="002-intro">Welcome, fellow Earth-dweller! 🌍 You're about to tap into the enchanted ecosystem of the <strong>Buwana Federated Login System</strong> — a soulful, secure, and sovereign way to authenticate users across regenerative apps. Whether you're building a bioregional barter bazaar or a community compost tracker, Buwana is here to connect your users under one enchanted identity.</p>
 
                 <h2 data-lang-id="003-what-is-title">💡 What is Buwana SSO?</h2>
