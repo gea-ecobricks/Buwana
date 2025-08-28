@@ -29,4 +29,8 @@ const id_Page_Translations = {
 
     "015-osm-description": "Kami dengan sengaja tidak menggunakan Google Maps dan sebagai gantinya menggunakan OpenStreetMap (sebuah yayasan, bukan perusahaan berorientasi keuntungan) untuk menentukan lokasi pengguna. OpenStreetMap dibangun oleh komunitas pemeta yang berkontribusi dan memelihara data tentang jalan, sungai, jalur, dan banyak lagi di seluruh dunia. OpenStreetMap adalah data terbuka dan sumber terbuka: siapa pun bebas menggunakannya untuk tujuan apa pun selama memberikan kredit kepada OpenStreetMap dan para kontributornya.",
 
+    "010-are-you-part-community": "Apakah Anda bagian dari komunitas lokal di Buwana?",
+    "011-community-connect": "Pilih komunitas Anda...",
+    "012-start-typing-community": "Buwana membantu komunitas terhubung. Mulailah mengetik untuk mencari berdasarkan nama komunitas. Seseorang di dekat Anda mungkin sudah menambahkan grup Anda!",
+
 };

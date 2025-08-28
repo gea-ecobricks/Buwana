@@ -29,4 +29,8 @@ const de_Page_Translations = {
 
     "015-osm-description": "Wir vermeiden bewusst die Nutzung von Google Maps und verwenden stattdessen OpenStreetMap (eine Stiftung, keine profitorientierte Firma) zur Lokalisierung der Nutzer. OpenStreetMap wird von einer Community von Kartographen erstellt und gepflegt, die weltweit Daten über Straßen, Flüsse, Pfade und vieles mehr beitragen. OpenStreetMap ist offene Daten und Open Source: jeder darf es für beliebige Zwecke nutzen, solange OpenStreetMap und seine Mitwirkenden genannt werden.",
 
+    "010-are-you-part-community": "Bist du Teil einer lokalen Community auf Buwana?",
+    "011-community-connect": "Wähle deine Community...",
+    "012-start-typing-community": "Buwana hilft Gemeinschaften, sich zu verbinden. Beginne zu tippen, um nach dem Namen der Community zu suchen. Vielleicht hat jemand in deiner Nähe deine Gruppe schon hinzugefügt!",
+
 };

@@ -27,4 +27,8 @@ const fr_Page_Translations = {
 
     "015-osm-description": "Nous faisons le choix de ne pas utiliser Google Maps et préférons OpenStreetMap (une fondation, et non une entreprise à but lucratif) pour localiser les utilisateurs. OpenStreetMap est construit par une communauté de cartographes qui contribuent et maintiennent des données sur les routes, rivières, sentiers et bien plus encore dans le monde entier. OpenStreetMap est en données ouvertes et open-source : tout le monde est libre de l’utiliser à toute fin, à condition de créditer OpenStreetMap et ses contributeurs.",
 
+    "010-are-you-part-community": "Faites-vous partie d’une communauté locale sur Buwana ?",
+    "011-community-connect": "Sélectionnez votre communauté...",
+    "012-start-typing-community": "Buwana aide les communautés à se connecter. Commencez à taper pour rechercher par nom de communauté. Quelqu’un près de chez vous a peut-être déjà ajouté votre groupe !",
+
 };
