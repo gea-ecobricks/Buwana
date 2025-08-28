@@ -196,12 +196,18 @@ https://github.com/gea-ecobricks/buwana/-->
                     <p class="form-caption">Don't know your local river? <span id="toggle-map-link" class="toggle-map-link">See a local map of rivers around you.</span></p>
                 </div>
 
+
+
+
+
                 <!-- COMMUNITY FIELD -->
-                <div class="form-item float-label-group" id="community-section" style="display:none;padding-bottom:10px;">
-                    <p data-lang-id="010-are-you-part-community">Are you part of a local community on Buwana?</p><br>
-                    <input type="text" id="community_name" name="community_name" aria-label="Community Name" style="padding-left:45px;" placeholder=" ">
-                    <label for="community_name" data-lang-id="011-community-connect" style="border-radius:10px 10px 0px 0px;padding-bottom:10px;">Select your community...</label>
-                    <div id="community-loading-spinner" class="spinner" style="display:none;"></div>
+                <div class="form-item" id="community-section" style="display:none;padding-bottom:10px;">
+                             <p data-lang-id="010-are-you-part-community">Are you part of a local community on Buwana?</p>
+                             <div class="float-label-group">
+                               <input type="text" id="community_name" name="community_name" aria-label="Community Name" style="padding-left:45px;" placeholder=" ">
+                               <label for="community_name" data-lang-id="011-community-connect" style="border-radius:10px 10px 0px 0px;padding-bottom:10px;">Select your community...</label>
+                             </div>
+                         <div id="community-loading-spinner" class="spinner" style="display:none;"></div>
                     <div id="community-pin" class="pin-icon">👥</div>
                     <p class="form-caption"><span data-lang-id="012-start-typing-community">Start typing to see and select a community. There's a good chance someone local to you has already set one up!</span><br>➕ <a href="#" onclick="openAddCommunityModal(); return false;" style="color:#007BFF; text-decoration: underline;" data-lang-id="013-add-community"></a></p>
                 </div>
