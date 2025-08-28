@@ -6,7 +6,7 @@ const ar_Page_Translations = {
     "001-email-confirmed": "✔ تم تأكيد بريدك الإلكتروني!",
     "002-now": "الآن",
     "003-now-localize-you": " دعنا نحدد موقعك.",
-    "004-lets-determine-bioregion": "دعنا نحدد منطقتك البيئية: حوض التصريف الذي تعيش فيه.",
+    "004-lets-determine-bioregion": "دعنا نحدد منطقتك البيئية ومجتمعك المحلي.",
     "005-your-neighbourhood": "حيّك...",
     "006-start-typing-neighbourhood": "ابدأ بكتابة اسم حيّك، وسيقوم <a href=\"#\" onclick=\"openAboutOSM()\" class=\"underline-link\">openstreetmaps.org</a> بإكمال الباقي.",
     "007-in-which-river-basin": "في أي حوض نهري تعيش؟",

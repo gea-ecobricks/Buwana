@@ -6,7 +6,7 @@ const zh_Page_Translations = {
     "001-email-confirmed": "✔ 您的电子邮件已确认！",
     "002-now": "现在",
     "003-now-localize-you": " 让我们为您定位。",
-    "004-lets-determine-bioregion": "让我们确定您的生物区域：您所居住的流域。",
+    "004-lets-determine-bioregion": "让我们确定您的生物区域和当地社区。",
     "005-your-neighbourhood": "您的社区...",
     "006-start-typing-neighbourhood": "开始输入您社区的名称，<a href=\"#\" onclick=\"openAboutOSM()\" class=\"underline-link\">openstreetmaps.org</a> 将补全其余部分。",
     "007-in-which-river-basin": "您居住在哪个河流流域？",

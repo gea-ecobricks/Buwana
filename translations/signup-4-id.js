@@ -6,7 +6,7 @@ const id_Page_Translations = {
     "001-email-confirmed": "✔ Email Anda telah dikonfirmasi!",
     "002-now": "Sekarang",
     "003-now-localize-you": " mari kita sesuaikan lokasi Anda.",
-    "004-lets-determine-bioregion": "Mari kita tentukan bioregion Anda: daerah aliran sungai tempat Anda tinggal.",
+    "004-lets-determine-bioregion": "Mari kita tentukan bioregion dan komunitas lokal Anda.",
     "005-your-neighbourhood": "Lingkungan Anda...",
     "006-start-typing-neighbourhood": "Mulailah mengetik nama lingkungan Anda, dan <a href=\"#\" onclick=\"openAboutOSM()\" class=\"underline-link\">openstreetmaps.org</a> akan melengkapi sisanya.",
     "007-in-which-river-basin": "Di daerah aliran sungai mana Anda tinggal?",
