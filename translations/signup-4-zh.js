@@ -29,4 +29,8 @@ const zh_Page_Translations = {
 
     "015-osm-description": "我们特意不使用 Google 地图，而是使用 OpenStreetMap（一家非营利性基金会）来为用户定位。OpenStreetMap 是由一个全球地图绘制者社区构建和维护的，他们提供关于道路、河流、小径等的开放数据。OpenStreetMap 是开放数据和开源的：任何人都可以在注明来源的前提下免费使用这些数据，用于任何目的。",
 
+    "010-are-you-part-community": "您是 Buwana 上本地社区的一员吗？",
+    "011-community-connect": "选择您的社区...",
+    "012-start-typing-community": "Buwana 帮助社区互相联系。开始输入以按社区名称搜索。你附近的人可能已经添加了你的团体！",
+
 };
