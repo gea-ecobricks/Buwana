@@ -7,7 +7,7 @@ const en_Page_Translations = {
     "001-email-confirmed": "✔ Your credentials are set.",
     "002-now": "Now",
     "003-now-localize-you": " let's get you localized.",
-    "004-lets-determine-bioregion": "Let's determine your bioregion: the watershed where you live.",
+    "004-lets-determine-bioregion": "Let's determine your bioregion and local community.",
     "005-your-neighbourhood": "Your neighbourhood...",
     "006-start-typing-neighbourhood": "Start typing the name of your neighbourhood, and <a href=\"#\" onclick=\"openAboutOSM()\" class=\"underline-link\">openstreetmaps.org</a> will fill in the rest.",
     "007-in-which-river-basin": "In which river basin do you live?",

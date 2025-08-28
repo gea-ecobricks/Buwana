@@ -14,7 +14,7 @@ function build_login_url($base, array $params) {
 // Page setup
 $lang = basename(dirname($_SERVER['SCRIPT_NAME']));
 $page = 'signup-4';
-$version = '0.776';
+$version = '0.777';
 $lastModified = date("Y-m-d\TH:i:s\Z", filemtime(__FILE__));
 $location_full = "";
 
@@ -155,7 +155,7 @@ https://github.com/gea-ecobricks/buwana/-->
                 <p style="color:green;" data-lang-id="001-email-confirmed">✔ Your email is confirmed!</p>
                 <div id="status-message" style="font-family: 'Arvo';margin-top:15px;"><span data-lang-id="002-now"> Now</span> <?php echo htmlspecialchars($first_name); ?><span data-lang-id="003-now-localize-you"> let's get you localized.</div>
                 <div id="sub-status-message" data-lang-id="004-lets-determine-bioregion" style="font-size:1.3em;padding-top:10px;padding-bottom:10px;">
-                    Let's determine your bioregion: the watershed where you live.
+                    Let's determine your bioregion and local community.
                 </div>
             </div>
 
@@ -198,7 +198,7 @@ https://github.com/gea-ecobricks/buwana/-->
 
                 <!-- COMMUNITY FIELD -->
                 <div class="form-item float-label-group" id="community-section" style="display:none;padding-bottom:10px;">
-                    <label for="community_name" data-lang-id="010-are-you-part-community">Are you part of a local community on Buwana?</label><br>
+                    <p data-lang-id="010-are-you-part-community">Are you part of a local community on Buwana?</p><br>
                     <input type="text" id="community_name" name="community_name" aria-label="Community Name" style="padding-left:45px;" placeholder=" ">
                     <label for="community_name" data-lang-id="011-community-connect" style="border-radius:10px 10px 0px 0px;padding-bottom:10px;">Select your community...</label>
                     <div id="community-loading-spinner" class="spinner" style="display:none;"></div>
