@@ -6,7 +6,7 @@ const de_Page_Translations = {
     "001-email-confirmed": "✔ Deine E-Mail wurde bestätigt!",
     "002-now": "Jetzt",
     "003-now-localize-you": " lass uns deinen Standort festlegen.",
-    "004-lets-determine-bioregion": "Lass uns deine Bioregion bestimmen: das Einzugsgebiet, in dem du lebst.",
+    "004-lets-determine-bioregion": "Lass uns deine Bioregion und lokale Gemeinschaft bestimmen.",
     "005-your-neighbourhood": "Dein Wohnviertel...",
     "006-start-typing-neighbourhood": "Beginne mit der Eingabe deines Wohnviertels, und <a href=\"#\" onclick=\"openAboutOSM()\" class=\"underline-link\">openstreetmaps.org</a> ergänzt den Rest.",
     "007-in-which-river-basin": "In welchem Flusseinzugsgebiet lebst du?",

@@ -6,7 +6,7 @@ const fr_Page_Translations = {
     "001-email-confirmed": "✔ Votre adresse e-mail est confirmée !",
     "002-now": "Maintenant",
     "003-now-localize-you": " localisons-vous.",
-    "004-lets-determine-bioregion": "Déterminons votre bioregion : le bassin versant où vous vivez.",
+    "004-lets-determine-bioregion": "Déterminons votre bioregion et votre communauté locale.",
     "005-your-neighbourhood": "Votre quartier...",
     "006-start-typing-neighbourhood": "Commencez à taper le nom de votre quartier, et <a href=\"#\" onclick=\"openAboutOSM()\" class=\"underline-link\">openstreetmaps.org</a> complétera le reste.",
     "007-in-which-river-basin": "Dans quel bassin fluvial vivez-vous ?",

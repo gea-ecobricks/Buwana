@@ -6,7 +6,7 @@ const es_Page_Translations = {
     "001-email-confirmed": "✔ ¡Tu correo electrónico está confirmado!",
     "002-now": "Ahora",
     "003-now-localize-you": " vamos a localizarte.",
-    "004-lets-determine-bioregion": "Vamos a determinar tu bioregión: la cuenca hidrográfica donde vives.",
+    "004-lets-determine-bioregion": "Vamos a determinar tu bioregión y tu comunidad local.",
     "005-your-neighbourhood": "Tu vecindario...",
     "006-start-typing-neighbourhood": "Empieza a escribir el nombre de tu vecindario y <a href=\"#\" onclick=\"openAboutOSM()\" class=\"underline-link\">openstreetmaps.org</a> completará el resto.",
     "007-in-which-river-basin": "¿En qué cuenca fluvial vives?",
