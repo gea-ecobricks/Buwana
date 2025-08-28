@@ -7,6 +7,25 @@ function auth_log($msg) {
     error_log("[AUTHORIZE] $msg");
 }
 
+// Normalize redirect URIs to ensure consistent parameter ordering
+function normalize_redirect_uri($uri) {
+    $parts = parse_url($uri);
+    if (!$parts) {
+        return $uri;
+    }
+    $scheme = $parts['scheme'] ?? '';
+    $host   = $parts['host'] ?? '';
+    $port   = isset($parts['port']) ? ':' . $parts['port'] : '';
+    $path   = $parts['path'] ?? '';
+    $normalized = $scheme . '://' . $host . $port . $path;
+    if (isset($parts['query'])) {
+        parse_str($parts['query'], $query);
+        ksort($query);
+        $normalized .= '?' . http_build_query($query);
+    }
+    return $normalized;
+}
+
 // Allow only GET requests
 if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     http_response_code(405);
@@ -18,6 +37,9 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
 $client_id             = $_GET['client_id'] ?? null;
 $response_type         = $_GET['response_type'] ?? null;
 $redirect_uri          = $_GET['redirect_uri'] ?? null;
+if ($redirect_uri) {
+    $redirect_uri = normalize_redirect_uri($redirect_uri);
+}
 $scope                 = $_GET['scope'] ?? '';
 $state                 = $_GET['state'] ?? null;
 $nonce                 = $_GET['nonce'] ?? null;

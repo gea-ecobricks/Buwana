@@ -18,6 +18,25 @@ function auth_log($message) {
     error_log('[' . date('Y-m-d H:i:s') . "] TOKEN: " . $message . PHP_EOL, 3, $authLogFile);
 }
 
+// Normalize redirect URIs to ensure parameter order doesn't affect matching
+function normalize_redirect_uri($uri) {
+    $parts = parse_url($uri);
+    if (!$parts) {
+        return $uri;
+    }
+    $scheme = $parts['scheme'] ?? '';
+    $host   = $parts['host'] ?? '';
+    $port   = isset($parts['port']) ? ':' . $parts['port'] : '';
+    $path   = $parts['path'] ?? '';
+    $normalized = $scheme . '://' . $host . $port . $path;
+    if (isset($parts['query'])) {
+        parse_str($parts['query'], $query);
+        ksort($query);
+        $normalized .= '?' . http_build_query($query);
+    }
+    return $normalized;
+}
+
 auth_log("Token request received");
 
 // 🌐 CORS: Allow trusted origins
@@ -48,6 +67,8 @@ $redirect_uri = $_POST['redirect_uri'] ?? '';
 $client_id = $_POST['client_id'] ?? '';
 $client_secret = $_POST['client_secret'] ?? '';
 $code_verifier = $_POST['code_verifier'] ?? '';
+
+$redirect_uri = normalize_redirect_uri($redirect_uri);
 
 if ($grant_type !== 'authorization_code' || !$code || !$redirect_uri || !$client_id) {
     http_response_code(400);
@@ -82,6 +103,8 @@ if ($stmt->num_rows !== 1) {
 $stmt->bind_result($user_id, $stored_redirect_uri, $scope, $nonce, $code_challenge, $code_challenge_method);
 $stmt->fetch();
 $stmt->close();
+
+$stored_redirect_uri = normalize_redirect_uri($stored_redirect_uri);
 
 if ($redirect_uri !== $stored_redirect_uri) {
     http_response_code(400);
