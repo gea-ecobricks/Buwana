@@ -14,6 +14,25 @@ function auth_log($message) {
     error_log('[' . date('Y-m-d H:i:s') . "] TOKEN: " . $message . PHP_EOL, 3, $authLogFile);
 }
 
+// Normalize redirect URIs so query parameter order doesn't cause mismatches
+function normalize_redirect_uri($uri) {
+    $parts = parse_url($uri);
+    if (!$parts) {
+        return $uri;
+    }
+    $scheme = $parts['scheme'] ?? '';
+    $host   = $parts['host'] ?? '';
+    $port   = isset($parts['port']) ? ':' . $parts['port'] : '';
+    $path   = $parts['path'] ?? '';
+    $normalized = $scheme . '://' . $host . $port . $path;
+    if (isset($parts['query'])) {
+        parse_str($parts['query'], $query);
+        ksort($query);
+        $normalized .= '?' . http_build_query($query);
+    }
+    return $normalized;
+}
+
 auth_log("Token endpoint called");
 
 // Allow only POST requests
@@ -29,6 +48,8 @@ $code = $_POST['code'] ?? '';
 $redirect_uri = $_POST['redirect_uri'] ?? '';
 $client_id = $_POST['client_id'] ?? '';
 $client_secret = $_POST['client_secret'] ?? '';
+
+$redirect_uri = normalize_redirect_uri($redirect_uri);
 
 // Basic parameter validation
 if ($grant_type !== 'authorization_code' || !$code || !$redirect_uri || !$client_id || !$client_secret) {
@@ -63,6 +84,7 @@ if ($client_secret !== $expected_secret) {
 }
 
 // Verify redirect_uri matches what is registered
+$registered_redirect_uri = normalize_redirect_uri($registered_redirect_uri);
 if ($redirect_uri !== $registered_redirect_uri) {
     http_response_code(400);
     echo json_encode(["error" => "invalid_redirect_uri"]);
