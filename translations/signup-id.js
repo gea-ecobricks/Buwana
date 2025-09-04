@@ -30,7 +30,7 @@ const id_Page_Translations = {
 "004-your": "Tulis",
 "004b-please": " anda:",
 "010-duplicate-email": "🚧 Ups! Sepertinya alamat email tersebut sudah digunakan oleh Akun Buwana. Silakan pilih yang lain.",
-"010-gobrik-duplicate": "🌏 Sepertinya email ini sudah digunakan dengan akun GoBrik lama. Silakan <a href=\"login.php\" class=\"underline-link\">masuk dengan email ini untuk memperbarui akun Anda.</a>",
+"010-gobrik-duplicate": "Sepertinya email ini sudah digunakan dengan akun GoBrik lama. Silakan <a href=\"login.php\" class=\"underline-link\">masuk dengan email ini untuk memperbarui akun Anda.</a>",
 "006-email-sub-caption": "💌 Ini adalah cara kami akan menghubungi Anda untuk mengonfirmasi akun Anda",
 "007-set-your-pass": "Buat kata sandi Anda:",
 "008-password-advice": "🔑 Kata sandi Anda harus minimal 6 karakter.",

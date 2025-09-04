@@ -160,7 +160,7 @@ https://github.com/gea-ecobricks/buwana/-->
                    </div>
                    <div id="duplicate-gobrik-email" class="form-warning">
                      <?php $dup_login = build_login_url('login.php', ['app' => $app_info['client_id']]); ?>
-                     🌏 <span data-lang-id="006-gobrik-duplicate">It looks like this email is already being used with a legacy GoBrik account. Please <a href="<?= htmlspecialchars($dup_login) ?>" class="underline-link">login with this email to upgrade your account.</a></span>
+                     <span data-lang-id="006-gobrik-duplicate">It looks like this email is already being used with a legacy GoBrik account. Please <a href="<?= htmlspecialchars($dup_login) ?>" class="underline-link">login with this email to upgrade your account.</a></span>
                   </div>
 
                    <div id="loading-spinner" class="spinner" style="display: none;margin-left: 10px;margin-top: 7px;"></div>
@@ -251,6 +251,7 @@ $(document).ready(function () {
   const duplicateEmailError = $('#duplicate-email-error');
   const duplicateGobrikEmail = $('#duplicate-gobrik-email');
   const loadingSpinner = $('#loading-spinner');
+  const accountStatus = <?php echo json_encode($account_status); ?>;
 
   // === Initial UI State ===
   setPasswordSection.style.display = 'none';
@@ -298,11 +299,18 @@ $(document).ready(function () {
               setPasswordSection.style.display = 'none';
               $('#credential_value').css('padding-left', '35px');  // <--- Keep padding when duplicate
             } else if (res.error === 'duplicate_gobrik_email') {
-              duplicateGobrikEmail.show();
-              duplicateEmailError.hide();
-              loadingSpinner.addClass('red').show();
-              setPasswordSection.style.display = 'none';
-              $('#credential_value').css('padding-left', '35px');  // <--- Keep padding when gobrik duplicate
+              if (accountStatus === 'legacy account activated') {
+                duplicateGobrikEmail.hide();
+                duplicateEmailError.hide();
+                loadingSpinner.addClass('green').show();
+                setPasswordSection.style.display = 'block';
+              } else {
+                duplicateGobrikEmail.show();
+                duplicateEmailError.hide();
+                loadingSpinner.addClass('red').show();
+                setPasswordSection.style.display = 'none';
+              }
+              $('#credential_value').css('padding-left', '35px');  // <--- Keep padding for gobrik duplicate
             } else {
               alert("An error occurred: " + res.error);
               $('#credential_value').css('padding-left', '');  // <--- Reset padding if unknown error
