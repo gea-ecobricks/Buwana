@@ -82,8 +82,8 @@ if (empty($buwana_id)) {
                 $stmt_cred->close();
             }
 
-            // Update gobrik account with buwana_id
-            $gobrik_conn2 = new mysqli(getenv('GOBRIK_HOST'), getenv('GOBRIK_USER'), getenv('GOBRIK_PASS'), getenv('GOBRIK_DB'));
+            // Update gobrik account with buwana_id using existing credential variables
+            $gobrik_conn2 = new mysqli($gobrik_servername, $gobrik_username, $gobrik_password, $gobrik_dbname);
             if (!$gobrik_conn2->connect_error) {
                 $sql_update = "UPDATE tb_ecobrickers SET buwana_id = ? WHERE ecobricker_id = ?";
                 $stmt_update = $gobrik_conn2->prepare($sql_update);
