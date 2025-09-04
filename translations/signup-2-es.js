@@ -23,4 +23,6 @@ const es_Page_Translations = {
     "014-is-spelled": " se escribe sin espacio, mayúscula ni guion.",
     "015-by-registering": "Al registrarme hoy, acepto los ",
     "016-register-button": "Registrarse ➡",
+    "015b-by-upgrading": "Al actualizar mi cuenta hoy, acepto los nuevos ",
+    "016-upgrade-button": "Actualizar cuenta ➡",
 };
