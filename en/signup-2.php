@@ -133,7 +133,13 @@ https://github.com/gea-ecobricks/buwana/-->
             </div>
 
             <div style="text-align:center;width:100%;margin:auto;">
-                <h2 id="main-welcome"><span data-lang-id="<?= $is_legacy ? '001-activate-by' : '001-register-by' ?>"></span> <?php echo $credential_type; ?></h2>
+                <h2 id="main-welcome">
+                    <?php if ($is_legacy): ?>
+                        <span data-lang-id="001-activate-by"></span>
+                    <?php else: ?>
+                        <span data-lang-id="001-register-by"></span> <?= $credential_type ?>
+                    <?php endif; ?>
+                </h2>
                 <p id="sub-welcome">Ok <?php echo $first_name; ?>!
                     <?php if ($is_legacy): ?>
                         <span data-lang-id="001-now-lets-reset"></span>

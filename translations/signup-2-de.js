@@ -3,7 +3,7 @@ TEXT TRANSLATION SNIPPETS FOR signup-2.php
 -----------------------------------*/
 const de_Page_Translations = {
     "001-register-by": "Registrieren mit",
-    "001-activate-by": "Aktiviere dein",
+    "001-activate-by": "Aktualisiere dein GoBrik-Konto",
     "002-now-lets-use": "Lass uns dein Konto einrichten auf ",
     "001-now-lets-reset": "jetzt setzen wir dein Passwort und die wichtigsten Kontoinformationen zurück.",
     "003-to-register-on": "um dich zu registrieren auf ",

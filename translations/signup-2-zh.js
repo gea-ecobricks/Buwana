@@ -3,7 +3,7 @@ TEXT TRANSLATION SNIPPETS FOR signup-2.php
 -----------------------------------*/
 const zh_Page_Translations = {
     "001-register-by": "注册方式",
-    "001-activate-by": "激活你的",
+    "001-activate-by": "升级你的 GoBrik 账户",
     "002-now-lets-use": "现在让我们为你设置账户：",
     "001-now-lets-reset": "现在让我们重设你的密码和账户核心信息。",
     "003-to-register-on": "在此注册：",

@@ -1,6 +1,6 @@
 const ar_Page_Translations = {
     "001-register-by": "سجل عن طريق",
-    "001-activate-by": "قم بتفعيل",
+    "001-activate-by": "قم بترقية حساب GoBrik الخاص بك",
     "002-now-lets-use": "دعنا نُعد حسابك على ",
     "001-now-lets-reset": "الآن دعنا نعيد تعيين كلمة مرورك ومعلومات حسابك الأساسية.",
     "003-to-register-on": "للتسجيل على ",

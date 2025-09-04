@@ -6,7 +6,7 @@ ENGLISH TRANSLATIONS FOR signup-2.php
 const en_Page_Translations = {
 
     "001-register-by": "Register by",
-    "001-activate-by": "Activate your",
+    "001-activate-by": "Upgrade your GoBrik Account",
     "002-now-lets-use": "Let's set you up on ",
     "001-now-lets-reset": "now let's reset your password and core account information.",
     "003-to-register-on": "to register on ",
