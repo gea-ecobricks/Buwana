@@ -51,12 +51,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         error_log("🚨 High bot score signup detected: Buwana ID $buwana_id with score $bot_score");
     }
 
-    // 🛠️ Fetch user's first name
-    $stmt = $buwana_conn->prepare("SELECT first_name FROM users_tb WHERE buwana_id = ?");
+    // 🛠️ Fetch user's first name and account status
+    $stmt = $buwana_conn->prepare("SELECT first_name, account_status FROM users_tb WHERE buwana_id = ?");
     if (!$stmt) sendJsonError('db_error_first_name');
     $stmt->bind_param("i", $buwana_id);
     $stmt->execute();
-    $stmt->bind_result($first_name);
+    $stmt->bind_result($first_name, $account_status);
     $stmt->fetch();
     $stmt->close();
 
@@ -103,7 +103,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     // 🎉 Success
     $response['success'] = true;
-    $response['redirect'] = "signup-3.php?id=" . urlencode($buwana_id);
+    if ($account_status === 'legacy account activated') {
+        $response['redirect'] = "signup-4.php?id=" . urlencode($buwana_id);
+    } else {
+        $response['redirect'] = "signup-3.php?id=" . urlencode($buwana_id);
+    }
 }
 
 ob_end_clean();

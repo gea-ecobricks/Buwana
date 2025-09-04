@@ -165,7 +165,7 @@ https://github.com/gea-ecobricks/buwana/-->
 
                    <div id="loading-spinner" class="spinner" style="display: none;margin-left: 10px;margin-top: 7px;"></div>
 
-                   <p class="form-caption" data-lang-id="007-email-sub-caption" style="margin-bottom: -10px;">💌 We'll use this email to confirm your account.</p>
+                   <p id="email-caption" class="form-caption" data-lang-id="007-email-sub-caption" style="margin-bottom: -10px;">💌 We'll use this email to confirm your account.</p>
                  </div>
 
 
@@ -252,6 +252,17 @@ $(document).ready(function () {
   const duplicateGobrikEmail = $('#duplicate-gobrik-email');
   const loadingSpinner = $('#loading-spinner');
   const accountStatus = <?php echo json_encode($account_status); ?>;
+  const emailCaption = document.getElementById('email-caption');
+  const submitButtonText = document.getElementById('submit-button-text');
+
+  if (accountStatus === 'legacy account activated') {
+    if (emailCaption) {
+      emailCaption.textContent = "👍 Let's go ahead and upgrade your legacy GoBrik account to the Buwana system!";
+    }
+    if (submitButtonText) {
+      submitButtonText.textContent = 'Upgrade Account';
+    }
+  }
 
   // === Initial UI State ===
   setPasswordSection.style.display = 'none';
