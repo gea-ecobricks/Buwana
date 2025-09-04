@@ -8,6 +8,19 @@ require_once '../buwanaconn_env.php';
 require_once '../gobrikconn_env.php';
 require_once '../fetch_app_info.php';
 
+
+function build_login_url($base, array $params) {
+    $delimiter = (strpos($base, '?') !== false) ? '&' : '?';
+    return $base . $delimiter . http_build_query($params);
+}
+require '../vendor/autoload.php';
+
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+// Page setup
 $lang = basename(dirname($_SERVER['SCRIPT_NAME']));
 $page = 'activate';
 $version = '0.8';
