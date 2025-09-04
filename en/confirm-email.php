@@ -112,6 +112,7 @@ $page_key = 'signup_3';
         </div>
     </div>
 </div>
+</div>
 
 <?php require_once("../footer-2025.php"); ?>
 <script>
