@@ -190,7 +190,7 @@ https://github.com/gea-ecobricks/buwana/-->
 
 
                <!-- Set Password -->
-               <div class="form-item float-label-group bullet-container" id="set-password" style="display: none; margin-top: 14px; margin-bottom: 15px; padding-bottom: 1px;">
+               <div class="form-item float-label-group bullet-container" id="set-password" style="margin-top: 14px; margin-bottom: 15px; padding-bottom: 1px;<?php if (!$is_legacy) echo ' display: none;'; ?>">
                  <div class="bullet-indicator" id="bullet-password"></div>
                  <input type="password" id="password_hash" name="password_hash" required minlength="6" placeholder=" " style="font-size: 22px !important; padding-left: 30px;" />
                  <label for="password_hash" data-lang-id="008-set-your-pass">Set your password...</label>
@@ -282,16 +282,13 @@ $(document).ready(function () {
       credentialSection.style.display = 'block';
     }
     setPasswordSection.style.display = 'block';
-    confirmPasswordSection.style.display = 'block';
-    humanCheckSection.style.display = 'block';
-    submitSection.style.display = 'block';
+  } else {
+    // === Initial UI State ===
+    setPasswordSection.style.display = 'none';
+    confirmPasswordSection.style.display = 'none';
+    humanCheckSection.style.display = 'none';
+    submitSection.style.display = 'none';
   }
-
-  // === Initial UI State ===
-  setPasswordSection.style.display = 'none';
-  confirmPasswordSection.style.display = 'none';
-  humanCheckSection.style.display = 'none';
-  submitSection.style.display = 'none';
 
   function isValidEmail(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -326,26 +323,30 @@ $(document).ready(function () {
               loadingSpinner.addClass('green').show();
               setPasswordSection.style.display = 'block';
               $('#credential_value').css('padding-left', '35px');  // <--- Keep padding when success
-            } else if (res.error === 'duplicate_email') {
-              duplicateEmailError.show();
-              duplicateGobrikEmail.hide();
-              loadingSpinner.addClass('red').show();
-              setPasswordSection.style.display = 'none';
-              $('#credential_value').css('padding-left', '35px');  // <--- Keep padding when duplicate
-            } else if (res.error === 'duplicate_gobrik_email') {
-              if (accountStatus === 'legacy account activated') {
+              } else if (res.error === 'duplicate_email') {
+                duplicateEmailError.show();
                 duplicateGobrikEmail.hide();
-                duplicateEmailError.hide();
-                loadingSpinner.addClass('green').show();
-                setPasswordSection.style.display = 'block';
-              } else {
-                duplicateGobrikEmail.show();
-                duplicateEmailError.hide();
                 loadingSpinner.addClass('red').show();
-                setPasswordSection.style.display = 'none';
-              }
-              $('#credential_value').css('padding-left', '35px');  // <--- Keep padding for gobrik duplicate
-            } else {
+                if (accountStatus !== 'legacy account activated') {
+                  setPasswordSection.style.display = 'none';
+                }
+                $('#credential_value').css('padding-left', '35px');  // <--- Keep padding when duplicate
+              } else if (res.error === 'duplicate_gobrik_email') {
+                if (accountStatus === 'legacy account activated') {
+                  duplicateGobrikEmail.hide();
+                  duplicateEmailError.hide();
+                  loadingSpinner.addClass('green').show();
+                  setPasswordSection.style.display = 'block';
+                } else {
+                  duplicateGobrikEmail.show();
+                  duplicateEmailError.hide();
+                  loadingSpinner.addClass('red').show();
+                  if (accountStatus !== 'legacy account activated') {
+                    setPasswordSection.style.display = 'none';
+                  }
+                }
+                $('#credential_value').css('padding-left', '35px');  // <--- Keep padding for gobrik duplicate
+              } else {
               alert("An error occurred: " + res.error);
               $('#credential_value').css('padding-left', '');  // <--- Reset padding if unknown error
             }
@@ -361,7 +362,9 @@ $(document).ready(function () {
         // If invalid email format, hide spinner and remove padding
         loadingSpinner.hide();
         $('#credential_value').css('padding-left', '');
-        setPasswordSection.style.display = 'none';
+        if (accountStatus !== 'legacy account activated') {
+          setPasswordSection.style.display = 'none';
+        }
       }
   });
 
