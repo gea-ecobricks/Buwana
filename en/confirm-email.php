@@ -139,8 +139,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const feedbackMessages = messages[lang] || messages.en;
 
     function sendVerificationEmail() {
-        fetch('confirm-email_process.php?id=' + ecobricker_id, { method: 'POST' })
-        .then(response => response.json())
+        const params = new URLSearchParams();
+        params.append('id', ecobricker_id);
+
+        fetch('confirm-email_process.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: params,
+            credentials: 'same-origin'
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
         .then(data => {
             if (data.success) {
                 generatedCode = data.code;
