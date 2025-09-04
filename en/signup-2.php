@@ -94,6 +94,8 @@ if (!is_null($earthling_emoji) && trim($earthling_emoji) !== '') {
     }
 }
 
+$is_legacy = ($account_status === 'legacy account activated');
+
 // Echo the HTML structure
 echo '<!DOCTYPE html>
 <html lang="' . htmlspecialchars($lang, ENT_QUOTES, 'UTF-8') . '">
@@ -131,8 +133,14 @@ https://github.com/gea-ecobricks/buwana/-->
             </div>
 
             <div style="text-align:center;width:100%;margin:auto;">
-                <h2 id="main-welcome"><span data-lang-id="001-register-by"></span> <?php echo $credential_type; ?></h2>
-                <p id="sub-welcome">Ok <?php echo $first_name; ?>! <span data-lang-id="002-now-lets-use"></span> <?= $app_info['app_display_name']; ?>...</p>
+                <h2 id="main-welcome"><span data-lang-id="<?= $is_legacy ? '001-activate-by' : '001-register-by' ?>"></span> <?php echo $credential_type; ?></h2>
+                <p id="sub-welcome">Ok <?php echo $first_name; ?>!
+                    <?php if ($is_legacy): ?>
+                        <span data-lang-id="001-now-lets-reset"></span>
+                    <?php else: ?>
+                        <span data-lang-id="002-now-lets-use"></span> <?= $app_info['app_display_name']; ?>...
+                    <?php endif; ?>
+                </p>
             </div>
 
            <form id="user-signup-form" method="post" action="signup-2_process.php?id=<?php echo htmlspecialchars($buwana_id); ?>">
@@ -165,8 +173,14 @@ https://github.com/gea-ecobricks/buwana/-->
 
                    <div id="loading-spinner" class="spinner" style="display: none;margin-left: 10px;margin-top: 7px;"></div>
 
-                   <p id="email-caption" class="form-caption" data-lang-id="007-email-sub-caption" style="margin-bottom: -10px;">💌 We'll use this email to confirm your account.</p>
-                 </div>
+                   <p id="email-caption" class="form-caption" data-lang-id="<?= $is_legacy ? '007-email-reuse' : '007-email-sub-caption' ?>" style="margin-bottom: -10px;">
+                       <?php if ($is_legacy): ?>
+                           👍 Now let's get your old GoBrik email working with your new Buwana GoBrik account.
+                       <?php else: ?>
+                           💌 We'll use this email to confirm your account.
+                       <?php endif; ?>
+                   </p>
+                </div>
 
 
                <!-- Set Password -->
@@ -252,13 +266,9 @@ $(document).ready(function () {
   const duplicateGobrikEmail = $('#duplicate-gobrik-email');
   const loadingSpinner = $('#loading-spinner');
   const accountStatus = <?php echo json_encode($account_status); ?>;
-  const emailCaption = document.getElementById('email-caption');
   const submitButtonText = document.getElementById('submit-button-text');
 
   if (accountStatus === 'legacy account activated') {
-    if (emailCaption) {
-      emailCaption.textContent = "👍 Let's go ahead and upgrade your legacy GoBrik account to the Buwana system!";
-    }
     if (submitButtonText) {
       submitButtonText.textContent = 'Upgrade Account';
     }
