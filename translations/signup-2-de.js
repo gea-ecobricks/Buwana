@@ -23,4 +23,6 @@ const de_Page_Translations = {
     "014-is-spelled": " wird ohne Leerzeichen, Großbuchstaben oder Bindestrich geschrieben!",
     "015-by-registering": "Mit der heutigen Registrierung stimme ich den ",
     "016-register-button": "Registrieren ➡",
+    "015b-by-upgrading": "Durch das heutige Aktualisieren meines Kontos stimme ich den neuen ",
+    "016-upgrade-button": "Konto aktualisieren ➡",
 };

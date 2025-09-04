@@ -26,6 +26,8 @@ const en_Page_Translations = {
     "014-is-spelled": " is spelled without a space, capital or hyphen!",
     "015-by-registering": "By registering today, I agree to the ",
     "016-register-button": "Register ➡",
+    "015b-by-upgrading": "By upgrading my account today, I agree to the new ",
+    "016-upgrade-button": "Upgrade Account ➡",
 
 };
 

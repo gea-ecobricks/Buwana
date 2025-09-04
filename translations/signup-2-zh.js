@@ -23,4 +23,6 @@ const zh_Page_Translations = {
     "014-is-spelled": " 的拼写中没有空格、大写或连字符！",
     "015-by-registering": "我在此注册，即表示同意 ",
     "016-register-button": "注册 ➡",
+    "015b-by-upgrading": "通过今天升级我的账户，我同意新的 ",
+    "016-upgrade-button": "升级账户 ➡",
 };

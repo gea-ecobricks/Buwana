@@ -20,4 +20,6 @@ const ar_Page_Translations = {
     "014-is-spelled": " تُكتب بدون فراغ، أو حرف كبير، أو واصلة!",
     "015-by-registering": "من خلال التسجيل اليوم، أوافق على ",
     "016-register-button": "تسجيل ➡",
+    "015b-by-upgrading": "من خلال ترقية حسابي اليوم، أوافق على ",
+    "016-upgrade-button": "ترقية الحساب ➡",
 };

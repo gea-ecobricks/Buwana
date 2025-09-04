@@ -20,4 +20,6 @@ const fr_Page_Translations = {
     "014-is-spelled": " s'écrit sans espace, majuscule ni tiret !",
     "015-by-registering": "En vous inscrivant aujourd'hui, j'accepte les ",
     "016-register-button": "S'inscrire ➡",
+    "015b-by-upgrading": "En mettant à niveau mon compte aujourd'hui, j'accepte les nouvelles ",
+    "016-upgrade-button": "Mettre à niveau le compte ➡",
 };

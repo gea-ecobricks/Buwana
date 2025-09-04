@@ -20,4 +20,6 @@ const id_Page_Translations = {
     "014-is-spelled": " ditulis tanpa spasi, huruf kapital, atau tanda hubung!",
     "015-by-registering": "Dengan mendaftar hari ini, saya setuju dengan ",
     "016-register-button": "Daftar ➡",
+    "015b-by-upgrading": "Dengan meningkatkan akun saya hari ini, saya setuju dengan ",
+    "016-upgrade-button": "Tingkatkan Akun ➡",
 };

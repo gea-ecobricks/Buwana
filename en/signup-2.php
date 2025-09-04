@@ -218,7 +218,10 @@ https://github.com/gea-ecobricks/buwana/-->
 
                <div style="display:flex;" class="form-item">
                  <input type="checkbox" id="terms" name="terms" required checked>
-                 <div class="form-caption"><span data-lang-id="015-by-registering">By registering today, I agree to the </span><a href="#" onclick="openTermsModal(); return false;" class="underline-link"><?= $app_info['app_display_name']; ?> <span data-lang-id="1000-terms-of-use">Terms of Use</a>.
+                 <div id="terms-check-text" class="form-caption">
+                   <span data-lang-id="<?= $is_legacy ? '015b-by-upgrading' : '015-by-registering' ?>">
+                     <?= $is_legacy ? 'By upgrading my account today, I agree to the new ' : 'By registering today, I agree to the ' ?>
+                   </span><a href="#" onclick="openTermsModal(); return false;" class="underline-link"><?= $app_info['app_display_name']; ?> <span data-lang-id="1000-terms-of-use">Terms of Use</span></a>.
                  </div>
                </div>
 
@@ -229,7 +232,7 @@ https://github.com/gea-ecobricks/buwana/-->
              <!-- Kick-Ass Submit Button -->
              <div id="submit-section" style="display:none;" class="submit-button-wrapper">
                <button type="submit" id="submit-button" class="kick-ass-submit disabled" title="Be sure you wrote ecobrick correctly!">
-                 <span id="submit-button-text" data-lang-id="016-register-button">Register ➡</span>
+                 <span id="submit-button-text" data-lang-id="<?= $is_legacy ? '016-upgrade-button' : '016-register-button' ?>"><?= $is_legacy ? 'Upgrade Account ➡' : 'Register ➡' ?></span>
                  <span id="submit-emoji" class="submit-emoji" style="display: none;"></span>
                </button>
              </div>
@@ -266,12 +269,16 @@ $(document).ready(function () {
   const duplicateGobrikEmail = $('#duplicate-gobrik-email');
   const loadingSpinner = $('#loading-spinner');
   const accountStatus = <?php echo json_encode($account_status); ?>;
-  const submitButtonText = document.getElementById('submit-button-text');
+  const credentialSection = document.getElementById('credential-section');
 
   if (accountStatus === 'legacy account activated') {
-    if (submitButtonText) {
-      submitButtonText.textContent = 'Upgrade Account';
+    if (credentialSection) {
+      credentialSection.style.display = 'block';
     }
+    setPasswordSection.style.display = 'block';
+    confirmPasswordSection.style.display = 'block';
+    humanCheckSection.style.display = 'block';
+    submitSection.style.display = 'block';
   }
 
   // === Initial UI State ===
