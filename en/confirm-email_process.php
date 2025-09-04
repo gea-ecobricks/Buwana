@@ -15,7 +15,7 @@ use GuzzleHttp\Exception\RequestException;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-$ecobricker_id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
+$ecobricker_id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT);
 if (!$ecobricker_id) {
     echo json_encode(['success' => false, 'message' => 'missing_id']);
     exit();
