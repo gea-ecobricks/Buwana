@@ -1,6 +1,6 @@
 const fr_Page_Translations = {
     "001-register-by": "S'inscrire avec",
-    "001-activate-by": "Active ton",
+    "001-activate-by": "Mets à niveau ton compte GoBrik",
     "002-now-lets-use": "Mettons en place votre compte sur ",
     "001-now-lets-reset": "maintenant, réinitialisons votre mot de passe et les informations principales de votre compte.",
     "003-to-register-on": "pour vous inscrire sur ",

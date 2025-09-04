@@ -1,6 +1,6 @@
 const id_Page_Translations = {
     "001-register-by": "Daftar dengan",
-    "001-activate-by": "Aktifkan",
+    "001-activate-by": "Tingkatkan Akun GoBrik Anda",
     "002-now-lets-use": "Sekarang mari kita atur akun Anda di ",
     "001-now-lets-reset": "sekarang mari kita atur ulang kata sandi dan informasi inti akun Anda.",
     "003-to-register-on": "untuk mendaftar di ",
