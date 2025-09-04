@@ -16,7 +16,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 
     // Check if the email already exists in the Buwana database
-    $sql_check_email = "SELECT COUNT(*) FROM users_tb WHERE email = ?";
+    // Ignore users with the 'legacy account activated' status
+    $sql_check_email = "SELECT COUNT(*) FROM users_tb WHERE email = ? AND account_status <> 'legacy account activated'";
     $stmt_check_email = $buwana_conn->prepare($sql_check_email);
     if ($stmt_check_email) {
         $stmt_check_email->bind_param("s", $credential_value);
