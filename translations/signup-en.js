@@ -27,7 +27,7 @@ const en_Page_Translations = {
     "004-your": "Your",
     "004b-please": " please:",
     "010-duplicate-email": "🚧 Whoops! Looks like that e-mail address is already being used by a Buwana Account. Please choose another.",
-    "010-gobrik-duplicate": "🌏 It looks like this email is already being used with a legacy GoBrik account. Please <a href=\"login.php\" class=\"underline-link\">login with this email to upgrade your account.</a>",
+    "010-gobrik-duplicate": "It looks like this email is already being used with a legacy GoBrik account. Please <a href=\"login.php\" class=\"underline-link\">login with this email to upgrade your account.</a>",
     "006-email-sub-caption": "💌 This is the way we will contact you to confirm your account",
     "007-set-your-pass": "Set your password:",
     "008-password-advice": "🔑 Your password must be at least 6 characters.",

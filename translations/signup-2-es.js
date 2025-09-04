@@ -8,7 +8,7 @@ const es_Page_Translations = {
     "003b-last-name": "¿Cuál es tu apellido?",
     "004-your-email-please": "Tu correo electrónico, por favor...",
     "005-duplicate-email": "🚧 ¡Ups! Parece que esa dirección de correo ya está siendo utilizada por una cuenta Buwana. Por favor elige otra.",
-    "006-gobrik-duplicate": "🌏 Parece que este correo electrónico ya está siendo utilizado con una cuenta antigua de GoBrik. Por favor <a href=\"login.php\" class=\"underline-link\">inicia sesión con este correo para actualizar tu cuenta.</a>",
+    "006-gobrik-duplicate": "Parece que este correo electrónico ya está siendo utilizado con una cuenta antigua de GoBrik. Por favor <a href=\"login.php\" class=\"underline-link\">inicia sesión con este correo para actualizar tu cuenta.</a>",
     "007-email-sub-caption": "💌 Confirmaremos tu cuenta con un mensaje a esta credencial",
     "008-set-your-pass": "Establece contraseña:",
     "008-password-advice": "🔑 Tu contraseña debe tener al menos 6 caracteres.",
