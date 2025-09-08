@@ -157,7 +157,7 @@ echo '<!DOCTYPE html>
 <!-- PAGE CONTENT -->
 
 <div class="page-panel-group">
-    <div id="form-submission-box" style="height:fit-content;margin-top: 130px;">
+    <div id="form-submission-box" style="height:fit-content;">
         <div class="form-container" style="padding-top:120px">
 
             <div id="top-page-image"
@@ -518,11 +518,11 @@ echo '<!DOCTYPE html>
             type="button"
             class="submit-button delete"
             onclick='confirmDeletion(<?= json_encode($buwana_id); ?>, <?= json_encode($lang); ?>)'
-            data-lang-id="0010-delete-button"
-        >
+            data-lang-id="0010-delete-button">
             Delete My Account
         </button>
     </div>
+</div>
 
     </div> <!-- close form-container -->
     </div> <!-- close form-submission-box -->
