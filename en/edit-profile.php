@@ -529,7 +529,8 @@ echo '<!DOCTYPE html>
 </div> <!-- close page-panel-group -->
 
 </div> <!--closes main-->
-
+here
+</div>
 <!-- FOOTER STARTS HERE -->
 <?php require_once("../footer-2025.php"); ?>
 
