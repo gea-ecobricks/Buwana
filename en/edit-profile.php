@@ -525,7 +525,7 @@ echo '<!DOCTYPE html>
     </div>
 </div>
 
-
+</div>
 
     </div> <!-- close form-container -->
     </div> <!-- close form-submission-box -->
