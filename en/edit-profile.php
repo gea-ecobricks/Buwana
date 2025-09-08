@@ -168,7 +168,7 @@ echo '<!DOCTYPE html>
 
             <div style="text-align:center;width:100%;margin:auto;">
 
-            <div id="status-message">⚙️ <?php echo htmlspecialchars($first_name); ?>'s <span data-lang-id="001-profile-settings-title">Profile Settings</span></div>
+            <div id="status-message" style="margin-top:12px;">⚙️ <?php echo htmlspecialchars($first_name); ?>'s <span data-lang-id="001-profile-settings-title">Profile Settings</span></div>
             <div id="sub-status-message" data-lang-id="002-review-update-message">Review and update your Buwana account profile here:</div>
             <div id="update-status" style="font-size:1.3em; color:green;padding:10px;margin-top:10px;"></div>
             <div id="update-error" style="font-size:1.3em; color:red;padding:10px;margin-top:10px;"></div>
@@ -529,7 +529,7 @@ echo '<!DOCTYPE html>
 </div> <!-- close page-panel-group -->
 
 </div> <!--closes main-->
-here
+
 </div>
 <!-- FOOTER STARTS HERE -->
 <?php require_once("../footer-2025.php"); ?>
