@@ -523,9 +523,6 @@ echo '<!DOCTYPE html>
             Delete My Account
         </button>
     </div>
-</div>
-
-</div>
 
     </div> <!-- close form-container -->
     </div> <!-- close form-submission-box -->
