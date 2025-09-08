@@ -12,6 +12,9 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 $response = [];
+$successes = [];
+$failures = [];
+$overall_success = true;
 
 try {
     // Accept buwana_id from query or session
@@ -64,51 +67,69 @@ try {
 
         switch (strtolower($app_name)) {
             case 'gobrik':
-                $gobrik_conn->begin_transaction();
+                try {
+                    $gobrik_conn->begin_transaction();
 
-                // Find ecobricker_id via buwana_id
-                $stmt_ecobricker = $gobrik_conn->prepare("SELECT ecobricker_id FROM tb_ecobrickers WHERE buwana_id = ?");
-                if ($stmt_ecobricker) {
-                    $stmt_ecobricker->bind_param('i', $buwana_id);
-                    $stmt_ecobricker->execute();
-                    $stmt_ecobricker->bind_result($ecobricker_id);
-                    $stmt_ecobricker->fetch();
-                    $stmt_ecobricker->close();
+                    // Find ecobricker_id via buwana_id
+                    $stmt_ecobricker = $gobrik_conn->prepare("SELECT ecobricker_id FROM tb_ecobrickers WHERE buwana_id = ?");
+                    if ($stmt_ecobricker) {
+                        $stmt_ecobricker->bind_param('i', $buwana_id);
+                        $stmt_ecobricker->execute();
+                        $stmt_ecobricker->bind_result($ecobricker_id);
+                        $stmt_ecobricker->fetch();
+                        $stmt_ecobricker->close();
 
-                    if (!empty($ecobricker_id)) {
-                        $stmt_delete_ecobricker = $gobrik_conn->prepare("DELETE FROM tb_ecobrickers WHERE ecobricker_id = ?");
-                        if (!$stmt_delete_ecobricker) {
-                            throw new Exception('Error preparing statement for deleting ecobricker: ' . $gobrik_conn->error);
+                        if (!empty($ecobricker_id)) {
+                            $stmt_delete_ecobricker = $gobrik_conn->prepare("DELETE FROM tb_ecobrickers WHERE ecobricker_id = ?");
+                            if (!$stmt_delete_ecobricker) {
+                                throw new Exception('Error preparing statement for deleting ecobricker: ' . $gobrik_conn->error);
+                            }
+                            $stmt_delete_ecobricker->bind_param('i', $ecobricker_id);
+                            $stmt_delete_ecobricker->execute();
+                            $stmt_delete_ecobricker->close();
                         }
-                        $stmt_delete_ecobricker->bind_param('i', $ecobricker_id);
-                        $stmt_delete_ecobricker->execute();
-                        $stmt_delete_ecobricker->close();
                     }
-                }
 
-                $gobrik_conn->commit();
+                    $gobrik_conn->commit();
+                    $successes[] = 'Deleted your Gobrik Account';
+                } catch (Exception $e) {
+                    if ($gobrik_conn->in_transaction) {
+                        $gobrik_conn->rollback();
+                    }
+                    $failures[] = 'Failed to delete your Gobrik Account';
+                    $overall_success = false;
+                }
                 break;
 
             case 'earthcal':
-                $cal_conn->begin_transaction();
+                try {
+                    $cal_conn->begin_transaction();
 
-                $tables = [
-                    'datecycles_tb',
-                    'cal_subscriptions_tb',
-                    'calendars_tb',
-                    'users_tb'
-                ];
+                    $tables = [
+                        'datecycles_tb',
+                        'cal_subscriptions_tb',
+                        'calendars_tb',
+                        'users_tb'
+                    ];
 
-                foreach ($tables as $table) {
-                    $sql = "DELETE FROM {$table} WHERE buwana_id = ?";
-                    if ($stmt = $cal_conn->prepare($sql)) {
-                        $stmt->bind_param('i', $buwana_id);
-                        $stmt->execute();
-                        $stmt->close();
+                    foreach ($tables as $table) {
+                        $sql = "DELETE FROM {$table} WHERE buwana_id = ?";
+                        if ($stmt = $cal_conn->prepare($sql)) {
+                            $stmt->bind_param('i', $buwana_id);
+                            $stmt->execute();
+                            $stmt->close();
+                        }
                     }
-                }
 
-                $cal_conn->commit();
+                    $cal_conn->commit();
+                    $successes[] = 'Deleted your Earthcal Account';
+                } catch (Exception $e) {
+                    if ($cal_conn->in_transaction) {
+                        $cal_conn->rollback();
+                    }
+                    $failures[] = 'Failed to delete your Earthcal Account';
+                    $overall_success = false;
+                }
                 break;
 
             default:
@@ -117,37 +138,52 @@ try {
         }
     }
 
-    // Delete user's connections
-    $stmt_delete_connections = $buwana_conn->prepare("DELETE FROM user_app_connections_tb WHERE buwana_id = ?");
-    if ($stmt_delete_connections) {
-        $stmt_delete_connections->bind_param('i', $buwana_id);
-        $stmt_delete_connections->execute();
-        $stmt_delete_connections->close();
-    }
+    try {
+        // Delete user's connections
+        $stmt_delete_connections = $buwana_conn->prepare("DELETE FROM user_app_connections_tb WHERE buwana_id = ?");
+        if ($stmt_delete_connections) {
+            $stmt_delete_connections->bind_param('i', $buwana_id);
+            $stmt_delete_connections->execute();
+            $stmt_delete_connections->close();
+        }
 
-    // Delete user from users_tb
-    $stmt_delete_user = $buwana_conn->prepare("DELETE FROM users_tb WHERE buwana_id = ?");
-    if (!$stmt_delete_user) {
-        throw new Exception('Error preparing statement for deleting user: ' . $buwana_conn->error);
-    }
-    $stmt_delete_user->bind_param('i', $buwana_id);
-    $stmt_delete_user->execute();
-    $stmt_delete_user->close();
+        // Delete user from users_tb
+        $stmt_delete_user = $buwana_conn->prepare("DELETE FROM users_tb WHERE buwana_id = ?");
+        if (!$stmt_delete_user) {
+            throw new Exception('Error preparing statement for deleting user: ' . $buwana_conn->error);
+        }
+        $stmt_delete_user->bind_param('i', $buwana_id);
+        $stmt_delete_user->execute();
+        $stmt_delete_user->close();
 
-    // Delete credentials
-    $stmt_delete_credentials = $buwana_conn->prepare("DELETE FROM credentials_tb WHERE buwana_id = ?");
-    if (!$stmt_delete_credentials) {
-        throw new Exception('Error preparing statement for deleting credentials: ' . $buwana_conn->error);
-    }
-    $stmt_delete_credentials->bind_param('i', $buwana_id);
-    $stmt_delete_credentials->execute();
-    $stmt_delete_credentials->close();
+        // Delete credentials
+        $stmt_delete_credentials = $buwana_conn->prepare("DELETE FROM credentials_tb WHERE buwana_id = ?");
+        if (!$stmt_delete_credentials) {
+            throw new Exception('Error preparing statement for deleting credentials: ' . $buwana_conn->error);
+        }
+        $stmt_delete_credentials->bind_param('i', $buwana_id);
+        $stmt_delete_credentials->execute();
+        $stmt_delete_credentials->close();
 
-    $buwana_conn->commit();
+        $buwana_conn->commit();
+        $successes[] = 'Deleted your core Buwana Account';
+    } catch (Exception $e) {
+        if ($buwana_conn->in_transaction) {
+            $buwana_conn->rollback();
+        }
+        $failures[] = 'Failed to delete your core Buwana Account';
+        $overall_success = false;
+    }
 
     // Call Earthen unsubscribe
     if (!empty($email_addr)) {
-        earthenUnsubscribe($email_addr);
+        try {
+            earthenUnsubscribe($email_addr);
+            $successes[] = 'Unsubscribed you from Earthen';
+        } catch (Exception $e) {
+            $failures[] = 'Failed to unsubscribe you from Earthen';
+            $overall_success = false;
+        }
     }
 
     // Clear user session
@@ -161,10 +197,15 @@ try {
     }
     session_destroy();
 
+    $query = http_build_query([
+        'successes' => $successes,
+        'failures' => $failures
+    ]);
+
     $response = [
-        'success' => true,
-        'message' => 'User deleted successfully.',
-        'redirect' => 'goodbye.php'
+        'success' => $overall_success,
+        'message' => $overall_success ? 'User deleted successfully.' : 'User deletion completed with some errors.',
+        'redirect' => 'goodbye.php?' . $query
     ];
 } catch (Exception $e) {
     if ($buwana_conn->in_transaction) {
