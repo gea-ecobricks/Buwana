@@ -156,16 +156,17 @@ echo '<!DOCTYPE html>
 
 <!-- PAGE CONTENT -->
 
-<div id="top-page-image"
-     class="top-page-image"
-     data-light-img="<?= htmlspecialchars($app_info['signup_1_top_img_light']) ?>"
-     data-dark-img="<?= htmlspecialchars($app_info['signup_1_top_img_dark']) ?>">
-</div>
+<div class="page-panel-group">
+    <div id="form-submission-box" style="height:fit-content;margin-top: 130px;">
+        <div class="form-container" style="padding-top:120px">
 
+            <div id="top-page-image"
+                 class="top-page-image"
+                 data-light-img="<?= htmlspecialchars($app_info['signup_1_top_img_light']) ?>"
+                 data-dark-img="<?= htmlspecialchars($app_info['signup_1_top_img_dark']) ?>">
+            </div>
 
-<div id="form-submission-box" style="height:fit-content;margin-top: 130px;">
-    <div class="form-container" style="padding-top:120px">
-        <div style="text-align:center;width:100%;margin:auto;">
+            <div style="text-align:center;width:100%;margin:auto;">
 
             <div id="status-message">⚙️ <?php echo htmlspecialchars($first_name); ?>'s <span data-lang-id="001-profile-settings-title">Profile Settings</span></div>
             <div id="sub-status-message" data-lang-id="002-review-update-message">Review and update your Buwana account profile here:</div>
@@ -516,7 +517,7 @@ echo '<!DOCTYPE html>
         <button
             type="button"
             class="submit-button delete"
-            onclick="confirmDeletion('<?php echo htmlspecialchars($ecobricker_id); ?>', '<?php echo htmlspecialchars($lang); ?>')"
+            onclick='confirmDeletion(<?= json_encode($buwana_id); ?>, <?= json_encode($lang); ?>)'
             data-lang-id="0010-delete-button"
         >
             Delete My Account
@@ -527,8 +528,8 @@ echo '<!DOCTYPE html>
 
 
     </div> <!-- close form-container -->
-</div> <!-- close form-submission-box -->
-</div>
+    </div> <!-- close form-submission-box -->
+</div> <!-- close page-panel-group -->
 
 </div> <!--closes main-->
 
@@ -1177,17 +1178,23 @@ function confirmDeletion(ecobrickerId, lang = 'en') {
 
             // Send request to delete the user
             fetch('../processes/delete_accounts.php?id=' + encodeURIComponent(ecobrickerId))
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success && data.redirect) {
-                        window.location.href = data.redirect; // 🔁 Redirect to goodbye.php
-                    } else {
-                        alert("Error: " + (data.error || "Unknown error occurred while deleting your account."));
+                .then(response => response.text())
+                .then(text => {
+                    try {
+                        const data = JSON.parse(text);
+                        if (data.success && data.redirect) {
+                            window.location.href = data.redirect; // 🔁 Redirect to goodbye.php
+                        } else {
+                            alert("Error: " + (data.error || "Unknown error occurred while deleting your account."));
+                        }
+                    } catch (err) {
+                        console.error('Deletion response parsing error:', err, text);
+                        alert('Something went wrong while deleting your account.');
                     }
                 })
                 .catch(err => {
-                    console.error("Deletion error:", err);
-                    alert("Something went wrong while deleting your account.");
+                    console.error('Deletion error:', err);
+                    alert('Something went wrong while deleting your account.');
                 });
         }
     }
