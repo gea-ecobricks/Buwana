@@ -26,7 +26,6 @@ $password = $_POST['password'] ?? '';
 $lang = $_POST['lang'] ?? 'en';
 
 $redirect = filter_var($_POST['redirect'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
-$status   = isset($_POST['status']) ? filter_var($_POST['status'], FILTER_SANITIZE_SPECIAL_CHARS) : '';
 $client_id = $_POST['client_id'] ?? ($_SESSION['client_id'] ?? null);
 $csrf_token = $_POST['csrf_token'] ?? '';
 
@@ -243,6 +242,7 @@ if ($stmt_credential) {
                         $delimiter = (strpos($redirect_url, '?') !== false) ? '&' : '?';
                         $redirect_url .= $delimiter . 'jwt=' . urlencode($_SESSION['jwt']);
                     }
+
                     header("Location: $redirect_url");
                     exit();
                 } else {
