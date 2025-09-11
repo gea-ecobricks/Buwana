@@ -71,6 +71,7 @@ $failures = isset($_GET['failures']) ? (array)$_GET['failures'] : [];
         </div>
     </div>
 </div>
+</div>
 
 <?php require_once ("../footer-2025.php");?>
 
