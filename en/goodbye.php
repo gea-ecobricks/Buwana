@@ -44,7 +44,7 @@ $failures = isset($_GET['failures']) ? (array)$_GET['failures'] : [];
 <!-- PAGE CONTENT -->
 <div class="page-panel-group">
 
-    <div id="form-submission-box" class="landing-page-form">
+    <div id="form-submission-box" class="landing-page-form" style="margin-bottom:auto;">
         <div class="form-container">
     <div id="regen-top" class="regen-top top-page-image"></div>
 
