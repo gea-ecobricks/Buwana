@@ -43,10 +43,10 @@ $failures = isset($_GET['failures']) ? (array)$_GET['failures'] : [];
 
 <!-- PAGE CONTENT -->
 <div class="page-panel-group">
-    <div id="regen-top" class="regen-top top-page-image"></div>
 
     <div id="form-submission-box" class="landing-page-form">
         <div class="form-container">
+    <div id="regen-top" class="regen-top top-page-image"></div>
 
           <div style="text-align:center;width:100%;margin:auto;">
 
