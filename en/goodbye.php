@@ -15,7 +15,7 @@ require_once '../fetch_app_info.php';
 
 $lang = basename(dirname($_SERVER['SCRIPT_NAME']));
 $page = 'goodbye';
-$version = '0.1';
+$version = '0.2';
 $lastModified = date("Y-m-d\TH:i:s\Z", filemtime(__FILE__));
 $successes = isset($_GET['successes']) ? (array)$_GET['successes'] : [];
 $failures = isset($_GET['failures']) ? (array)$_GET['failures'] : [];
@@ -43,7 +43,7 @@ $failures = isset($_GET['failures']) ? (array)$_GET['failures'] : [];
 
 <!-- PAGE CONTENT -->
 <div class="page-panel-group">
-    <div id="top-page-image" class="regen-top top-page-image"></div>
+    <div id="regen-top" class="regen-top top-page-image"></div>
 
     <div id="form-submission-box" class="landing-page-form">
         <div class="form-container">
