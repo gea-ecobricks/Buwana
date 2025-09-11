@@ -238,6 +238,10 @@ if ($stmt_credential) {
                     } else {
                         $redirect_url = $app_dashboard_url;
                     }
+                    if ($status === 'firsttime' && !empty($_SESSION['jwt'])) {
+                        $delimiter = (strpos($redirect_url, '?') !== false) ? '&' : '?';
+                        $redirect_url .= $delimiter . 'jwt=' . urlencode($_SESSION['jwt']);
+                    }
 
                     header("Location: $redirect_url");
                     exit();
