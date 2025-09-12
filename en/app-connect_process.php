@@ -6,6 +6,9 @@ session_start();
 require_once '../buwanaconn_env.php';
 require_once '../fetch_app_info.php';
 require_once '../scripts/create_user.php'; // Includes createUserInClientApp()
+require_once '../vendor/autoload.php';
+
+use Firebase\JWT\JWT;
 
 // Get POSTed form data
 $buwana_id = isset($_POST['buwana_id']) ? (int) $_POST['buwana_id'] : null;
@@ -114,11 +117,55 @@ if ($check_stmt->num_rows === 0) {
     $check_stmt->close();
 }
 
-// ✅ Step 3: Redirect to the app login page with upgraded status
-$app_login_url = $app_info['app_login_url'] ?? '/';
-$redirect_url = $app_login_url . '?id=' . urlencode($buwana_id) . '&status=upgraded';
+// ✅ Step 3: Generate JWT and redirect to the app dashboard
+$private_key = '';
+$stmt_key = $buwana_conn->prepare("SELECT private_key FROM oauth_clients_keys_tb WHERE client_id = ?");
+if ($stmt_key) {
+    $stmt_key->bind_param('s', $client_id);
+    $stmt_key->execute();
+    $stmt_key->bind_result($private_key);
+    $stmt_key->fetch();
+    $stmt_key->close();
+}
+
+$jwt_token = '';
+if (!empty($private_key)) {
+    $open_id = $userData['open_id'] ?? null;
+    if ($open_id) {
+        $now = time();
+        $exp = $now + 3600; // 1 hour expiry
+        $payload = [
+            'iss' => 'https://buwana.ecobricks.org',
+            'sub' => $open_id,
+            'buwana_id' => $buwana_id,
+            'aud' => $client_id,
+            'exp' => $exp,
+            'iat' => $now,
+            'email' => $userData['email'] ?? '',
+            'given_name' => $userData['first_name'] ?? ''
+        ];
+        try {
+            $jwt_token = JWT::encode($payload, $private_key, 'RS256', $client_id);
+        } catch (Exception $e) {
+            error_log('JWT generation failed: ' . $e->getMessage());
+        }
+    } else {
+        error_log('OpenID missing for buwana_id ' . $buwana_id);
+    }
+} else {
+    error_log('Private key not found for client_id ' . $client_id);
+}
+
+$redirect_url = $app_dashboard_url;
+$params = [];
+if (!empty($jwt_token)) {
+    $params['jwt'] = $jwt_token;
+}
 if (!empty($redirect)) {
-    $redirect_url .= '&redirect=' . urlencode($redirect);
+    $params['redirect'] = $redirect;
+}
+if (!empty($params)) {
+    $redirect_url .= (strpos($redirect_url, '?') === false ? '?' : '&') . http_build_query($params);
 }
 
 header("Location: $redirect_url");
