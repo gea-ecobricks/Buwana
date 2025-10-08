@@ -119,13 +119,15 @@ if ($check_stmt->num_rows === 0) {
 
 // ✅ Step 3: Generate JWT and redirect to the app dashboard
 $private_key = '';
-$stmt_key = $buwana_conn->prepare("SELECT private_key FROM oauth_clients_keys_tb WHERE client_id = ?");
+$stmt_key = $buwana_conn->prepare("SELECT jwt_private_key FROM apps_tb WHERE client_id = ?");
 if ($stmt_key) {
     $stmt_key->bind_param('s', $client_id);
     $stmt_key->execute();
     $stmt_key->bind_result($private_key);
     $stmt_key->fetch();
     $stmt_key->close();
+} else {
+    error_log('Unable to prepare private key lookup for client_id ' . $client_id);
 }
 
 $jwt_token = '';
