@@ -120,6 +120,8 @@ $sql = "SELECT a.app_display_name,
 
 
 
+<script src="../js/earthcal-config.js?v=<?php echo ($version); ;?>"></script>
+<script src="../js/earthcal-init.js?v=<?php echo ($version); ;?>"></script>
 <script src="../js/language-switcher.js?v=<?php echo ($version); ;?>2"></script>
 
 
