@@ -54,6 +54,35 @@ if ($client_id === 'lear_a30d677a7b08') {
 }
 
 
+// Helper utilities ---------------------------------------------------------
+if (!function_exists('tableExists')) {
+    /**
+     * Check if a given table exists in the current database.
+     */
+    function tableExists(mysqli $connection, string $tableName): bool
+    {
+        $tableNameEscaped = $connection->real_escape_string($tableName);
+        $result = $connection->query("SHOW TABLES LIKE '{$tableNameEscaped}'");
+
+        return $result instanceof mysqli_result && $result->num_rows > 0;
+    }
+}
+
+if (!function_exists('columnExists')) {
+    /**
+     * Check if a column exists on the provided table.
+     */
+    function columnExists(mysqli $connection, string $tableName, string $columnName): bool
+    {
+        $tableNameEscaped = $connection->real_escape_string($tableName);
+        $columnNameEscaped = $connection->real_escape_string($columnName);
+        $sql = "SHOW COLUMNS FROM `{$tableNameEscaped}` LIKE '{$columnNameEscaped}'";
+        $result = $connection->query($sql);
+
+        return $result instanceof mysqli_result && $result->num_rows > 0;
+    }
+}
+
 // --- STEP 5: Load client connection file ---
 $client_env_path = "../config/{$app_name}_env.php";
 
@@ -119,15 +148,27 @@ if ($check_stmt->num_rows === 0) {
 
 // ✅ Step 3: Generate JWT and redirect to the app dashboard
 $private_key = '';
-$stmt_key = $buwana_conn->prepare("SELECT jwt_private_key FROM apps_tb WHERE client_id = ?");
-if ($stmt_key) {
-    $stmt_key->bind_param('s', $client_id);
-    $stmt_key->execute();
-    $stmt_key->bind_result($private_key);
-    $stmt_key->fetch();
-    $stmt_key->close();
-} else {
-    error_log('Unable to prepare private key lookup for client_id ' . $client_id);
+
+try {
+    if (tableExists($buwana_conn, 'apps_tb') && columnExists($buwana_conn, 'apps_tb', 'jwt_private_key')) {
+        $stmt_key = $buwana_conn->prepare("SELECT jwt_private_key FROM apps_tb WHERE client_id = ?");
+    } elseif (tableExists($buwana_conn, 'oauth_clients_keys_tb')) {
+        $columnName = columnExists($buwana_conn, 'oauth_clients_keys_tb', 'jwt_private_key') ? 'jwt_private_key' : 'private_key';
+        $stmt_key = $buwana_conn->prepare("SELECT {$columnName} FROM oauth_clients_keys_tb WHERE client_id = ?");
+    } else {
+        $stmt_key = false;
+        error_log('No table available for private key lookup.');
+    }
+
+    if ($stmt_key) {
+        $stmt_key->bind_param('s', $client_id);
+        $stmt_key->execute();
+        $stmt_key->bind_result($private_key);
+        $stmt_key->fetch();
+        $stmt_key->close();
+    }
+} catch (mysqli_sql_exception $e) {
+    error_log('Private key lookup failed for client_id ' . $client_id . ': ' . $e->getMessage());
 }
 
 $jwt_token = '';
