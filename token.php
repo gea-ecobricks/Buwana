@@ -153,7 +153,7 @@ $stmt_user->close();
 
 // 📅 Prepare token claims
 $now = time();
-$exp = $now + 3600;
+$exp = $now + 5400;
 $sub = $open_id ?? ("buwana_$user_id");
 
 $id_token_payload = [
@@ -208,7 +208,7 @@ $response = [
     "access_token" => $access_token,
     "id_token" => $id_token,
     "token_type" => "Bearer",
-    "expires_in" => 3600
+    "expires_in" => 5400
 ];
 
 auth_log("Returning tokens for user_id: $user_id");

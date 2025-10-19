@@ -176,7 +176,7 @@ if (!empty($private_key)) {
     $open_id = $userData['open_id'] ?? null;
     if ($open_id) {
         $now = time();
-        $exp = $now + 3600; // 1 hour expiry
+        $exp = $now + 5400; // 90 minute expiry
         $payload = [
             'iss' => 'https://buwana.ecobricks.org',
             'sub' => $open_id,
