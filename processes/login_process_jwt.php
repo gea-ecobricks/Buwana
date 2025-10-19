@@ -146,7 +146,7 @@ if ($stmt_credential) {
 
                     if ($private_key) {
                         $now  = time();
-                        $exp  = $now + 3600; // 1 hour expiry
+                        $exp  = $now + 5400; // 90 minute expiry
                         // ✅ Ensure OpenID is present
                         if (empty($open_id)) {
                             // If no OpenID exists for this user, you can either generate it here or throw error.

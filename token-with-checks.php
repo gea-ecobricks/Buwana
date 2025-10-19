@@ -128,7 +128,7 @@ $stmt_user->fetch();
 $stmt_user->close();
 
 $now = time();
-$expire = $now + 3600; // 1 hour token lifetime
+$expire = $now + 5400; // 90 minute token lifetime
 
 // Generate ID Token with standard claims
 $id_token_payload = [
@@ -162,6 +162,6 @@ echo json_encode([
     "access_token" => $access_token,
     "id_token" => $id_token,
     "token_type" => "Bearer",
-    "expires_in" => 3600
+    "expires_in" => 5400
 ]);
 exit;

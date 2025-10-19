@@ -175,7 +175,7 @@ $stmt_user->close();
 
 // --- Issue tokens ---
 $now = time();
-$expire = $now + 3600;
+$expire = $now + 5400;
 
 $id_token_payload = [
     "iss" => "https://buwana.ecobricks.org",
@@ -207,7 +207,7 @@ echo json_encode([
     "access_token" => $access_token,
     "id_token" => $id_token,
     "token_type" => "Bearer",
-    "expires_in" => 3600
+    "expires_in" => 5400
 ]);
 exit;
 ?>
