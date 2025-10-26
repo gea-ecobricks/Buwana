@@ -38,7 +38,9 @@ auth_log("Token request received");
 
 // --- CORS Headers for frontend PKCE clients (Earthcal) ---
 $allowedOrigins = [
-    "https://earthcal.app"
+    "https://earthcal.app",
+    "https://hopeturtles.org"
+
 ];
 if (isset($_SERVER['HTTP_ORIGIN']) && in_array($_SERVER['HTTP_ORIGIN'], $allowedOrigins)) {
     header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");

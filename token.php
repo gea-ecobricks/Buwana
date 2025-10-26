@@ -45,7 +45,8 @@ $allowedOrigins = [
     "https://gobrik.com",
     "https://ecobricks.org",
     "https://learning.ecobricks.org",
-    "https://openbooks.ecobricks.org"
+    "https://openbooks.ecobricks.org",
+    "https://hopeturtles.org"
 ];
 
 if (isset($_SERVER['HTTP_ORIGIN']) && in_array($_SERVER['HTTP_ORIGIN'], $allowedOrigins)) {
