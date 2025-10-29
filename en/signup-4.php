@@ -468,22 +468,25 @@ function fetchNearbyRivers(lat, lon) {
         'data-lang-id': "010-select-your-river"
     });
 
-    $watershedSelect
-        .empty()
-        .append(placeholderOption)
-        .attr('aria-busy', 'true')
-        .prop('disabled', true);
-
     const watershedLoadingOption = $('<option>', {
         value: "",
         disabled: true,
-        text: translations['011-loading'] || "Loading...",
+        text: "Loading...",
         class: 'loading-placeholder'
     });
 
-    $watershedSelect.append(watershedLoadingOption);
+    $("#watershed_select").append(watershedLoadingOption);
 
     const overpassUrl = `https://overpass-api.de/api/interpreter?data=[out:json];(way["waterway"="river"](around:5000,${lat},${lon});relation["waterway"="river"](around:5000,${lat},${lon}););out geom;`;
+
+    $watershedSelect.append(watershedLoadingOption);
+
+        $("#watershed_select .loading-placeholder").remove();
+
+        rivers.forEach((river) => {
+            let riverName = river.tags.name;
+            if (riverName && !uniqueRivers.has(riverName) && !riverName.toLowerCase().includes("unnamed")) {
+                uniqueRivers.add(riverName);
 
     $.ajax({
         url: overpassUrl,
@@ -568,15 +571,23 @@ function fetchNearbyRivers(lat, lon) {
 
             appendFallbackOptions();
 
-            if (window.currentLanguage) {
-                switchLanguage(window.currentLanguage);
-            }
-        })
-        .always(function () {
-            $watershedSelect.find('.loading-placeholder').remove();
-            $watershedSelect.removeAttr('aria-busy');
-            $watershedSelect.prop('disabled', false);
-        });
+    }).fail(function () {
+        console.error("Failed to fetch data from Overpass API.");
+        $("#watershed_select .loading-placeholder").remove();
+        $("#watershed_select").append(
+            $('<option>', {
+                value: "",
+                disabled: true,
+                text: translations["011f-fetch-error"] || "Error fetching rivers",
+                'data-lang-id': "011f-fetch-error"
+            })
+        );
+
+        // Ensure translation applied to error
+        if (window.currentLanguage) {
+            switchLanguage(window.currentLanguage);
+        }
+    });
 }
 
 
