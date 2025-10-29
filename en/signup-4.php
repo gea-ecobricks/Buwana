@@ -294,6 +294,15 @@ $(function () {
             $("#location-pin").hide(); // Hide the pin icon when typing starts
 
             clearTimeout(debounceTimer);
+            if (request.term.length > 3) {
+                response([
+                    {
+                        label: "Loading...",
+                        value: request.term,
+                        loadingPlaceholder: true
+                    }
+                ]);
+            }
             debounceTimer = setTimeout(() => {
                 $.ajax({
                     url: "https://nominatim.openstreetmap.org/search",
@@ -331,6 +340,10 @@ $(function () {
             }, 300);
         },
         select: function (event, ui) {
+            if (ui.item.loadingPlaceholder) {
+                event.preventDefault();
+                return false;
+            }
             // When a location is selected, the lat/lon values are populated and
             // the map/watershed sections are displayed.
             console.log('Selected location:', ui.item);
@@ -439,11 +452,22 @@ function fetchNearbyRivers(lat, lon) {
         })
     );
 
+    const watershedLoadingOption = $('<option>', {
+        value: "",
+        disabled: true,
+        text: "Loading...",
+        class: 'loading-placeholder'
+    });
+
+    $("#watershed_select").append(watershedLoadingOption);
+
     const overpassUrl = `https://overpass-api.de/api/interpreter?data=[out:json];(way["waterway"="river"](around:5000,${lat},${lon});relation["waterway"="river"](around:5000,${lat},${lon}););out geom;`;
 
     $.get(overpassUrl, function (data) {
         let rivers = data.elements;
         let uniqueRivers = new Set();
+
+        $("#watershed_select .loading-placeholder").remove();
 
         rivers.forEach((river) => {
             let riverName = river.tags.name;
@@ -499,6 +523,7 @@ function fetchNearbyRivers(lat, lon) {
 
     }).fail(function () {
         console.error("Failed to fetch data from Overpass API.");
+        $("#watershed_select .loading-placeholder").remove();
         $("#watershed_select").append(
             $('<option>', {
                 value: "",
