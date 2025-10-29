@@ -441,16 +441,32 @@ function fetchNearbyRivers(lat, lon) {
             translations = en_Page_Translations;
     }
 
+    const $watershedSelect = $("#watershed_select");
+
+    const appendFallbackOptions = () => {
+        [
+            { value: "watershed unknown", key: '011c-unknown', fallback: "I don't know" },
+            { value: "watershed unseen", key: '011d-unseen', fallback: "I don't see my river" },
+            { value: "no watershed", key: '011e-no-watershed', fallback: "No watershed" }
+        ].forEach(optionData => {
+            $watershedSelect.append(
+                $('<option>', {
+                    value: optionData.value,
+                    text: translations[optionData.key] || optionData.fallback,
+                    'data-lang-id': optionData.key
+                })
+            );
+        });
+    };
+
     // Clear and set the placeholder option using translation
-    $("#watershed_select").empty().append(
-        $('<option>', {
-            value: "",
-            disabled: true,
-            selected: true,
-            text: translations["010-select-your-river"] || "👉 Select your local river....",
-            'data-lang-id': "010-select-your-river"
-        })
-    );
+    const placeholderOption = $('<option>', {
+        value: "",
+        disabled: true,
+        selected: true,
+        text: translations["010-select-your-river"] || "👉 Select your local river...",
+        'data-lang-id': "010-select-your-river"
+    });
 
     const watershedLoadingOption = $('<option>', {
         value: "",
@@ -463,9 +479,7 @@ function fetchNearbyRivers(lat, lon) {
 
     const overpassUrl = `https://overpass-api.de/api/interpreter?data=[out:json];(way["waterway"="river"](around:5000,${lat},${lon});relation["waterway"="river"](around:5000,${lat},${lon}););out geom;`;
 
-    $.get(overpassUrl, function (data) {
-        let rivers = data.elements;
-        let uniqueRivers = new Set();
+    $watershedSelect.append(watershedLoadingOption);
 
         $("#watershed_select .loading-placeholder").remove();
 
@@ -474,52 +488,88 @@ function fetchNearbyRivers(lat, lon) {
             if (riverName && !uniqueRivers.has(riverName) && !riverName.toLowerCase().includes("unnamed")) {
                 uniqueRivers.add(riverName);
 
-                let coordinates = river.geometry.map(point => [point.lat, point.lon]);
-                let riverPolyline = L.polyline(coordinates, { color: 'blue' }).addTo(riverLayerGroup).bindPopup(riverName);
-                riverLayerGroup.addTo(map);
+    $.ajax({
+        url: overpassUrl,
+        method: 'GET',
+        dataType: 'json',
+        timeout: 20000
+    })
+        .done(function (data) {
+            try {
+                const rivers = Array.isArray(data && data.elements) ? data.elements : [];
+                const uniqueRivers = new Set();
 
-                $("#watershed_select").append(new Option(riverName, riverName));
+                rivers.forEach((river) => {
+                    const riverName = river && river.tags ? river.tags.name : null;
+                    if (riverName && !uniqueRivers.has(riverName) && !riverName.toLowerCase().includes("unnamed")) {
+                        uniqueRivers.add(riverName);
+
+                        if (river && Array.isArray(river.geometry)) {
+                            const coordinates = river.geometry.map(point => [point.lat, point.lon]);
+                            const riverPolyline = L.polyline(coordinates, { color: 'blue' }).addTo(riverLayerGroup).bindPopup(riverName);
+                            riverLayerGroup.addTo(map);
+                        }
+
+                        $watershedSelect.append(new Option(riverName, riverName));
+                    }
+                });
+
+                if (uniqueRivers.size === 0) {
+                    placeholderOption.prop('selected', false);
+                    $watershedSelect.append(
+                        $('<option>', {
+                            value: "",
+                            disabled: true,
+                            selected: true,
+                            text: translations["011b-no-rivers-found"] || "No rivers or watersheds found nearby",
+                            'data-lang-id': "011b-no-rivers-found"
+                        })
+                    );
+                } else {
+                    // Ensure the placeholder remains selected until the user makes a choice
+                    placeholderOption.prop('selected', true);
+                }
+
+                // Add special fixed options (translated)
+                appendFallbackOptions();
+
+                if (window.currentLanguage) {
+                    switchLanguage(window.currentLanguage);
+                }
+            } catch (error) {
+                console.error('Error processing Overpass response:', error);
+                placeholderOption.prop('selected', false);
+                $watershedSelect.append(
+                    $('<option>', {
+                        value: "",
+                        disabled: true,
+                        selected: true,
+                        text: translations["011f-fetch-error"] || "Error fetching rivers",
+                        'data-lang-id': "011f-fetch-error"
+                    })
+                );
+
+                appendFallbackOptions();
+
+                if (window.currentLanguage) {
+                    switchLanguage(window.currentLanguage);
+                }
             }
-        });
-
-        if (uniqueRivers.size === 0) {
-            $("#watershed_select").append(
+        })
+        .fail(function (_jqXHR, textStatus) {
+            console.error("Failed to fetch data from Overpass API.", textStatus);
+            placeholderOption.prop('selected', false);
+            $watershedSelect.append(
                 $('<option>', {
                     value: "",
                     disabled: true,
-                    text: translations["011b-no-rivers-found"] || "No rivers or watersheds found nearby",
-                    'data-lang-id': "011b-no-rivers-found"
+                    selected: true,
+                    text: translations["011f-fetch-error"] || "Error fetching rivers",
+                    'data-lang-id': "011f-fetch-error"
                 })
             );
-        }
 
-        // Add special fixed options (translated)
-        $("#watershed_select").append(
-            $('<option>', {
-                value: "watershed unknown",
-                text: translations['011c-unknown'] || "I don't know",
-                'data-lang-id': "011c-unknown"
-            })
-        );
-        $("#watershed_select").append(
-            $('<option>', {
-                value: "watershed unseen",
-                text: translations['011d-unseen'] || "I don't see my river",
-                'data-lang-id': "011d-unseen"
-            })
-        );
-        $("#watershed_select").append(
-            $('<option>', {
-                value: "no watershed",
-                text: translations['011e-no-watershed'] || "No watershed",
-                'data-lang-id': "011e-no-watershed"
-            })
-        );
-
-        // Re-run switchLanguage to apply ARIA/placeholder translations on new items
-        if (window.currentLanguage) {
-            switchLanguage(window.currentLanguage);
-        }
+            appendFallbackOptions();
 
     }).fail(function () {
         console.error("Failed to fetch data from Overpass API.");
