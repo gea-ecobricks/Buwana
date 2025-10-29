@@ -293,9 +293,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const emojiInput = document.getElementById('earthling_emoji');
 
     // --- Emoji selection logic ---
-    document.querySelectorAll('.emoji-option').forEach(opt => {
+    const emojiOptions = document.querySelectorAll('.emoji-option');
+    emojiOptions.forEach(opt => {
         opt.addEventListener('click', function () {
-            document.querySelectorAll('.emoji-option').forEach(el => el.classList.remove('selected'));
+            emojiOptions.forEach(el => {
+                el.classList.remove('selected');
+                el.style.border = '';
+            });
             this.classList.add('selected');
             this.style.border = '2px solid #28a745';
             emojiInput.value = this.textContent.trim();
