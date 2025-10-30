@@ -521,16 +521,8 @@ max-height: 200px;
            aria-expanded="false"
            aria-controls="language-menu-slider"
            aria-label="Switch language">
-        💬
+        🌐 <span data-lang-id="000-language-code">EN</span>
       </div>
-
-      <!-- Dark Mode Toggle -->
-      <dark-mode-toggle
-        id="dark-mode-toggle-5"
-        class="slider"
-        style="min-width:82px;margin-top:-5px;margin-bottom:-15px;margin-right:10px;"
-        appearance="toggle">
-      </dark-mode-toggle>
 
       <!-- Login Services -->
       <button type="button"
@@ -541,6 +533,14 @@ max-height: 200px;
               aria-controls="login-menu-slider"
               aria-label="Login Services">
       </button>
+
+      <!-- Dark Mode Toggle -->
+      <dark-mode-toggle
+        id="dark-mode-toggle-5"
+        class="slider"
+        style="min-width:82px;margin-top:-5px;margin-bottom:-15px;"
+        appearance="toggle">
+      </dark-mode-toggle>
     </div>
   </div>
 </div>

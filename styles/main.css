@@ -321,10 +321,6 @@ ul li, ol li {
     font-family: 'Mulish', sans-serif;
 }
 
-#settings-buttons dark-mode-toggle {
-    margin-right: 10px;
-}
-
 /* Base state (hidden but in layout) */
 #language-menu-slider,
 #login-menu-slider {
@@ -2016,11 +2012,4 @@ Sign up process
   background-position: center;
   cursor: pointer;
 
-}
-
-#hope-turtle-ascii,
-.hope-turtle-ascii {
-  font-size: clamp(0.45rem, 1.2vw, 1.8rem);
-  font-size: 0.55hw;
-  line-height: 1.1;
 }
