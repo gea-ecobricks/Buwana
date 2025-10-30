@@ -149,6 +149,66 @@ $admin_alert_msg = ($alert_count > 0) ? 'There are admin alerts 🔴' : 'All sys
     <div style="text-align:center;margin-bottom:20px;">
       <a href="app-wizard.php" class="kick-ass-submit">Create New App</a>
     </div>
+    <div class="dashboard-module" id="boat-management-panel">
+      <div class="panel-header">
+        <h3>Boat Management</h3>
+        <button type="button" id="add-boat-button" class="simple-button">+ Add Boat</button>
+      </div>
+      <p class="panel-description">Keep track of the vessels that support your regenerative deployments.</p>
+      <div id="boat-list-state" class="boat-state-box is-empty">
+        No boats have been added yet.
+      </div>
+    </div>
+    <template id="boat-modal-template">
+      <div class="boat-modal-container">
+        <h2>Register a Boat</h2>
+        <p>Provide the core details for your boat so the admin team can approve it.</p>
+        <form id="boat-management-form" class="boat-modal-form">
+          <div class="form-row">
+            <div class="form-field">
+              <label for="boat-name">Boat Name</label>
+              <input type="text" id="boat-name" name="boat_name" required>
+            </div>
+            <div class="form-field">
+              <label for="boat-type">Boat Type</label>
+              <input type="text" id="boat-type" name="boat_type" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-field">
+              <label for="boat-registration">Registration No.</label>
+              <input type="text" id="boat-registration" name="registration_number">
+            </div>
+            <div class="form-field">
+              <label for="boat-capacity">Crew Capacity</label>
+              <input type="number" id="boat-capacity" name="crew_capacity" min="0" step="1">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-field">
+              <label for="boat-home-port">Home Port</label>
+              <input type="text" id="boat-home-port" name="home_port">
+            </div>
+            <div class="form-field">
+              <label for="boat-status">Operational Status</label>
+              <select id="boat-status" name="status">
+                <option value="active">Active</option>
+                <option value="maintenance">Maintenance</option>
+                <option value="retired">Retired</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-field">
+            <label for="boat-notes">Notes</label>
+            <textarea id="boat-notes" name="notes" placeholder="Add mission notes or maintenance reminders."></textarea>
+          </div>
+          <div class="boat-modal-actions">
+            <button type="button" class="cancel-button">Cancel</button>
+            <button type="submit" class="submit-button">Save Boat</button>
+          </div>
+        </form>
+      </div>
+    </template>
   </div>
 </div>
 </div>
@@ -186,6 +246,46 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('timeRange').addEventListener('change', function() {
     loadChart(this.value);
   });
+
+  const addBoatButton = document.getElementById('add-boat-button');
+  if (addBoatButton) {
+    addBoatButton.addEventListener('click', () => {
+      const template = document.getElementById('boat-modal-template');
+      if (!template) {
+        return;
+      }
+
+      openModal(template.innerHTML);
+
+      const form = document.getElementById('boat-management-form');
+      if (!form) {
+        return;
+      }
+
+      const cancelButton = form.querySelector('.cancel-button');
+      if (cancelButton) {
+        cancelButton.addEventListener('click', () => {
+          closeInfoModal();
+        }, { once: true });
+      }
+
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        const boatNameInput = form.elements['boat_name'];
+        const boatNameValue = boatNameInput ? boatNameInput.value.trim() : '';
+        const stateBox = document.getElementById('boat-list-state');
+        if (stateBox) {
+          const safeName = boatNameValue || 'New boat';
+          stateBox.textContent = `“${safeName}” is queued for review.`;
+          stateBox.classList.remove('is-empty');
+          stateBox.classList.add('has-boat');
+        }
+
+        closeInfoModal();
+      }, { once: true });
+    });
+  }
 
   loadChart();
 });
