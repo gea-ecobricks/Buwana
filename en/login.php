@@ -62,15 +62,14 @@ $is_logged_in = isLoggedIn(); // Check if the user is logged in using the helper
 // Check if user is logged in and session active
 if ($is_logged_in) {
     require_once '../api/check_user_app_connection.php';
-$connected = check_user_app_connection($buwana_conn, $_SESSION['buwana_id'], $_SESSION['client_id'], $lang, false);
+    $connected = check_user_app_connection($buwana_conn, $_SESSION['buwana_id'], $_SESSION['client_id'], $lang, false);
 
-if (!$connected) {
-    // Redirect user to app-connect if not connected
-    $connect_url = "/$lang/app-connect.php?id=" . urlencode($_SESSION['buwana_id']) . "&client_id=" . urlencode($_SESSION['client_id']);
-    header("Location: $connect_url");
-    exit();
-}
-
+    if (!$connected) {
+        // Redirect user to app-connect if not connected
+        $connect_url = "/$lang/app-connect.php?id=" . urlencode($_SESSION['buwana_id']) . "&client_id=" . urlencode($_SESSION['client_id']);
+        header("Location: $connect_url");
+        exit();
+    }
 
     if (isset($_SESSION['pending_oauth_request'])) {
         // Redirect to authorize.php to continue the flow
@@ -82,6 +81,10 @@ if (!$connected) {
 
     // Fallback to dashboard if no OAuth flow in progress
     $redirect_url = $app_info['app_dashboard_url'] ?? 'dashboard.php';
+    if ($status === 'firsttime' && strpos($redirect_url, 'status=') === false) {
+        $delimiter = (strpos($redirect_url, '?') !== false) ? '&' : '?';
+        $redirect_url .= $delimiter . 'status=firsttime';
+    }
     auth_log('User already logged in, redirecting to ' . $redirect_url);
     header("Location: $redirect_url");
     exit();

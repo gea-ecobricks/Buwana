@@ -9,6 +9,7 @@ $credential_key = $_POST['credential_key'] ?? '';
 $password = $_POST['password'] ?? '';
 $lang = basename(dirname($_SERVER['SCRIPT_NAME']));
 $redirect = $_POST['redirect'] ?? ''; // Capture the redirect variable from POST
+$status = isset($_POST['status']) ? filter_var($_POST['status'], FILTER_SANITIZE_SPECIAL_CHARS) : '';
 
 // Sanitize the redirect value using FILTER_SANITIZE_SPECIAL_CHARS
 $redirect = filter_var($redirect, FILTER_SANITIZE_SPECIAL_CHARS);
@@ -144,6 +145,10 @@ if ($stmt_credential) {
 
        // ✅ Default redirect
        $redirect_url = !empty($redirect) ? $redirect : $app_dashboard_url;
+       if ($status === 'firsttime' && empty($redirect) && strpos($redirect_url, 'status=') === false) {
+           $delimiter = (strpos($redirect_url, '?') !== false) ? '&' : '?';
+           $redirect_url .= $delimiter . 'status=firsttime';
+       }
        header("Location: $redirect_url");
        exit();
 

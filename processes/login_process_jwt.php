@@ -26,6 +26,7 @@ $password = $_POST['password'] ?? '';
 $lang = $_POST['lang'] ?? 'en';
 
 $redirect = filter_var($_POST['redirect'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
+$status = filter_var($_POST['status'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
 $client_id = $_POST['client_id'] ?? ($_SESSION['client_id'] ?? null);
 $csrf_token = $_POST['csrf_token'] ?? '';
 
@@ -237,6 +238,10 @@ if ($stmt_credential) {
                         }
                     } else {
                         $redirect_url = $app_dashboard_url;
+                    }
+                    if ($status === 'firsttime' && empty($redirect) && strpos($redirect_url, 'status=') === false) {
+                        $delimiter = (strpos($redirect_url, '?') !== false) ? '&' : '?';
+                        $redirect_url .= $delimiter . 'status=firsttime';
                     }
                     if ($status === 'firsttime' && !empty($_SESSION['jwt'])) {
                         $delimiter = (strpos($redirect_url, '?') !== false) ? '&' : '?';
