@@ -1,3 +1,11 @@
+<?php
+$raw_app_emojis = $app_info['app_emoji_array'] ?? $app_info['app_emojis_array'] ?? '[]';
+$decoded_app_emojis = json_decode($raw_app_emojis, true);
+
+if (!is_array($decoded_app_emojis)) {
+    $decoded_app_emojis = [];
+}
+?>
 <!-- app-modals.php -->
 <script>
 
@@ -106,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-    window.appEmojis = <?= json_encode(json_decode($app_info['app_emojis_array'] ?? '[]'), JSON_UNESCAPED_UNICODE) ?>;
+    window.appEmojis = <?= json_encode($decoded_app_emojis, JSON_UNESCAPED_UNICODE) ?>;
 
 // ✅ Reusable emoji spinner for the Kick-Ass Button
 function startEarthlingEmojiSpinner(emojiContainer) {
