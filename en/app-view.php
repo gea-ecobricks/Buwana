@@ -150,6 +150,14 @@ if ($stmt) {
     $stmt->execute();
     $result = $stmt->get_result();
     $recent_users = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
+    foreach ($recent_users as &$user_row) {
+        foreach ($user_row as $field => $value) {
+            if ($value === null) {
+                $user_row[$field] = '';
+            }
+        }
+    }
+    unset($user_row);
     $stmt->close();
 }
 
