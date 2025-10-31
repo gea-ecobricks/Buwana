@@ -60,7 +60,7 @@ if (basename(__FILE__) === basename($_SERVER['SCRIPT_FILENAME'])) {
 
     $response = [
         'connected' => false,
-        'app_login_url' => "/$lang/app-connect.php?id=$buwana_id&client_id=$client_id"
+        'app_login_url' => "https://buwana.ecobricks.org/$lang/app-connect.php?id=$buwana_id&client_id=$client_id"
     ];
 
     if ($buwana_id && $client_id) {
