@@ -64,9 +64,11 @@ function createUserInClientApp($buwana_id, $userData, $app_name, $client_conn, $
         );
     }
 
+
+
     /**
      * ===========================================
-     * DEFAULT CASE: Modern apps using users_tb
+     * DEFAULT CASE: Earthcal and other Modern apps using users_tb
      * ===========================================
      */
     else {

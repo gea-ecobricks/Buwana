@@ -38,7 +38,7 @@ function check_user_app_connection($buwana_conn, $buwana_id, $client_id, $lang =
 
         if (!$connection_id) {
             if ($should_redirect) {
-                header("Location: /$lang/app-connect.php?id=$buwana_id&client_id=$client_id");
+                header("Location: https://buwana.ecobricks.org/$lang/app-connect.php?id=$buwana_id&client_id=$client_id");
                 exit();
             }
             return false;
