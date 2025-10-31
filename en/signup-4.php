@@ -288,13 +288,43 @@ $(function () {
     // --- SECTION 2: Initialize autocomplete for location search using OpenStreetMap Nominatim API ---
     // This section uses jQuery UI Autocomplete to fetch location suggestions from the OpenStreetMap Nominatim API.
     // It debounces the search query and sends a request to the API, returning location results.
+    function showSearchingDropdown(response) {
+        response([
+            {
+                label: "Searching...",
+                value: "",
+                placeholder: true
+            }
+        ]);
+    }
+
+    let lastRequestTerm = "";
+
     $("#location_full").autocomplete({
         source: function (request, response) {
+            const term = (request.term || "").trim();
+
+            clearTimeout(debounceTimer);
+
+            if (term.length <= 3) {
+                lastRequestTerm = "";
+                $("#loading-spinner").hide();
+                updatePinIconVisibility();
+                response([]);
+                $("#location_full").autocomplete("close");
+                return;
+            }
+
+            lastRequestTerm = term;
+
             $("#loading-spinner").show();
             $("#location-pin").hide(); // Hide the pin icon when typing starts
 
-            clearTimeout(debounceTimer);
+            showSearchingDropdown(response);
+
             debounceTimer = setTimeout(() => {
+                const currentTerm = term;
+
                 $.ajax({
                     url: "https://nominatim.openstreetmap.org/search",
                     dataType: "json",
@@ -302,24 +332,33 @@ $(function () {
                         'User-Agent': 'ecobricks.org'
                     },
                     data: {
-                        q: request.term,
+                        q: currentTerm,
                         format: "json"
                     },
                     success: function (data) {
+                        if (currentTerm !== lastRequestTerm) {
+                            return;
+                        }
+
                         $("#loading-spinner").hide();
                         updatePinIconVisibility(); // Show the pin when data has loaded
 
-                        // Map the returned data to an array of display_name, lat, and lon
-                        response($.map(data, function (item) {
+                        const mappedResults = $.map(data, function (item) {
                             return {
                                 label: item.display_name,
                                 value: item.display_name,
                                 lat: item.lat,
                                 lon: item.lon
                             };
-                        }));
+                        });
+
+                        response(mappedResults);
                     },
                     error: function (xhr, status, error) {
+                        if (currentTerm !== lastRequestTerm) {
+                            return;
+                        }
+
                         $("#loading-spinner").hide();
                         updatePinIconVisibility(); // Show the pin when an error occurs
                         console.error("Autocomplete error:", error);
@@ -330,7 +369,17 @@ $(function () {
                 });
             }, 300);
         },
+        focus: function (event, ui) {
+            if (ui.item && ui.item.placeholder) {
+                event.preventDefault();
+            }
+        },
         select: function (event, ui) {
+            if (ui.item && ui.item.placeholder) {
+                event.preventDefault();
+                return false;
+            }
+
             // When a location is selected, the lat/lon values are populated and
             // the map/watershed sections are displayed.
             console.log('Selected location:', ui.item);
@@ -344,7 +393,18 @@ $(function () {
 
             updatePinIconVisibility(); // Show pin icon after selection
         },
-        minLength: 3
+        minLength: 4
+    });
+
+    $("#location_full").on("autocompleteopen", function () {
+        const menu = $(this).autocomplete("widget");
+        menu.find("li").each(function () {
+            const itemData = $(this).data("ui-autocomplete-item");
+            $(this).removeClass("ui-state-disabled");
+            if (itemData && itemData.placeholder) {
+                $(this).addClass("ui-state-disabled");
+            }
+        });
     });
 
     // Update pin icon visibility when the user types in the location input field
