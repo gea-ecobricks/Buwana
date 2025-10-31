@@ -145,9 +145,18 @@ if ($stmt_credential) {
 
        // ✅ Default redirect
        $redirect_url = !empty($redirect) ? $redirect : $app_dashboard_url;
-       if ($status === 'firsttime' && empty($redirect) && strpos($redirect_url, 'status=') === false) {
-           $delimiter = (strpos($redirect_url, '?') !== false) ? '&' : '?';
-           $redirect_url .= $delimiter . 'status=firsttime';
+       if ($status === 'firsttime' && empty($redirect)) {
+           $additional_params = [];
+           if (strpos($redirect_url, 'status=') === false) {
+               $additional_params[] = 'status=firsttime';
+           }
+           if (strpos($redirect_url, 'id=') === false) {
+               $additional_params[] = 'id=' . urlencode($buwana_id);
+           }
+           if (!empty($additional_params)) {
+               $delimiter = (strpos($redirect_url, '?') !== false) ? '&' : '?';
+               $redirect_url .= $delimiter . implode('&', $additional_params);
+           }
        }
        header("Location: $redirect_url");
        exit();
