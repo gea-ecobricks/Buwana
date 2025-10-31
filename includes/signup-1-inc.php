@@ -1,6 +1,12 @@
 
 
-<?php require_once ("../meta/$page-$lang.php");?>
+<?php
+require_once "../meta/$page-$lang.php";
+
+$page_key = str_replace('-', '_', $page);
+$signup_light_img = $app_info[$page_key . '_top_img_light'] ?? '';
+$signup_dark_img = $app_info[$page_key . '_top_img_dark'] ?? '';
+?>
 
 <style>
 #main {
@@ -15,20 +21,20 @@
 
 /*     @media (prefers-color-scheme: light) { */
 /*         .app-signup-banner { */
-/*             background: url('<?= htmlspecialchars($app_info['signup_top_img_url']) ?>?v=2') no-repeat center; */
+/*             background: url('<?= htmlspecialchars($signup_light_img) ?>?v=2') no-repeat center; */
 /*             background-size: contain; */
 /*         } */
 /*     } */
 
 /*     @media (prefers-color-scheme: dark) { */
 /*         .app-signup-banner { */
-/*             background: url('<?= htmlspecialchars($app_info['signup_top_img_dark_url']) ?>?v=2') no-repeat center; */
+/*             background: url('<?= htmlspecialchars($signup_dark_img) ?>?v=2') no-repeat center; */
 /*             background-size: contain; */
 /*         } */
 /*     } */
 
 /* .app-signup-banner { */
-/*     background: url('<?= htmlspecialchars($app_info['signup_top_img_url']) ?>') no-repeat center; */
+/*     background: url('<?= htmlspecialchars($signup_light_img) ?>') no-repeat center; */
 /*     background-size: contain; */
 /* } */
 
