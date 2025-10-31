@@ -37,25 +37,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_app'])) {
     $app_slogan       = $_POST['app_slogan'] ?? '';
     $app_terms_txt    = $_POST['app_terms_txt'] ?? '';
     $app_privacy_txt  = $_POST['app_privacy_txt'] ?? '';
-    $app_emojis_array = $_POST['app_emojis_array'] ?? '';
+    $app_emojis_array = trim($_POST['app_emojis_array'] ?? '');
 
-    $sql = "UPDATE apps_tb a
-            JOIN app_owners_tb ao ON ao.app_id = a.app_id
-            SET a.app_slogan=?, a.app_terms_txt=?, a.app_privacy_txt=?, a.app_emojis_array=?
-            WHERE a.app_id=? AND ao.buwana_id=?";
-    $stmt = $buwana_conn->prepare($sql);
-    if ($stmt) {
-        if ($stmt->bind_param('ssssii', $app_slogan, $app_terms_txt, $app_privacy_txt, $app_emojis_array, $app_id, $buwana_id)) {
-            $success = $stmt->execute();
-            if (!$success) {
+    if ($app_emojis_array === '') {
+        $error_message = 'Emojis Array is required.';
+    } else {
+        $decoded_emojis = json_decode($app_emojis_array, true);
+        if (json_last_error() !== JSON_ERROR_NONE || !is_array($decoded_emojis)) {
+            $error_message = 'Emojis Array must be valid JSON (for example ["🧱","🌍","🌱"]).';
+        } else {
+            $normalized_emojis = [];
+            foreach ($decoded_emojis as $emoji) {
+                if (!is_string($emoji) || $emoji === '') {
+                    $error_message = 'Emojis Array must contain only emoji strings.';
+                    break;
+                }
+                $normalized_emojis[] = $emoji;
+            }
+
+            if ($error_message === '') {
+                $app_emojis_array = json_encode($normalized_emojis, JSON_UNESCAPED_UNICODE);
+            }
+        }
+    }
+
+    if ($error_message === '') {
+        $sql = "UPDATE apps_tb a
+                JOIN app_owners_tb ao ON ao.app_id = a.app_id
+                SET a.app_slogan=?, a.app_terms_txt=?, a.app_privacy_txt=?, a.app_emojis_array=?
+                WHERE a.app_id=? AND ao.buwana_id=?";
+        $stmt = $buwana_conn->prepare($sql);
+        if ($stmt) {
+            if ($stmt->bind_param('ssssii', $app_slogan, $app_terms_txt, $app_privacy_txt, $app_emojis_array, $app_id, $buwana_id)) {
+                $success = $stmt->execute();
+                if (!$success) {
+                    $error_message = $stmt->error;
+                }
+            } else {
                 $error_message = $stmt->error;
             }
+            $stmt->close();
         } else {
-            $error_message = $stmt->error;
+            $error_message = $buwana_conn->error;
         }
-        $stmt->close();
-    } else {
-        $error_message = $buwana_conn->error;
     }
 
     if (isset($_GET['ajax'])) {
@@ -155,6 +179,8 @@ if (!$app) {
         <label for="app_emojis_array">Emojis Array</label>
         <p class="form-caption">Emoji list for your app</p>
         <div id="app_emojis_array-error-required" class="form-field-error">This field is required.</div>
+        <div id="app_emojis_array-error-json" class="form-field-error">Enter a valid JSON array, e.g. ["🧱","🌍","🌱"].</div>
+        <div id="app_emojis_array-error-contents" class="form-field-error">Only emoji strings are allowed in the array.</div>
       </div>
       <div class="submit-button-wrapper">
         <button type="submit" id="submit-button" name="update_app" class="kick-ass-submit">
@@ -199,7 +225,35 @@ document.addEventListener('DOMContentLoaded', function () {
     let valid = true;
     toggleError(name + '-error-required', value === '');
 
-    const skipExtra = ['app_terms_txt','app_privacy_txt','app_emojis_array'].includes(name);
+    if (name === 'app_emojis_array') {
+      let jsonValid = true;
+      let contentsValid = true;
+      if (value === '') {
+        jsonValid = false;
+        contentsValid = false;
+      } else {
+        try {
+          const parsed = JSON.parse(value);
+          if (!Array.isArray(parsed)) {
+            jsonValid = false;
+            contentsValid = false;
+          } else {
+            contentsValid = parsed.every(item => typeof item === 'string' && item.trim() !== '');
+          }
+        } catch (e) {
+          jsonValid = false;
+          contentsValid = false;
+        }
+      }
+      toggleError('app_emojis_array-error-json', !jsonValid);
+      toggleError('app_emojis_array-error-contents', jsonValid && !contentsValid);
+      if (!jsonValid || !contentsValid) {
+        valid = false;
+      }
+      return valid;
+    }
+
+    const skipExtra = ['app_terms_txt','app_privacy_txt'].includes(name);
 
     if (!skipExtra) {
       toggleError(name + '-error-long', value.length > 255);
