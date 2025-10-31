@@ -81,9 +81,19 @@ if ($is_logged_in) {
 
     // Fallback to dashboard if no OAuth flow in progress
     $redirect_url = $app_info['app_dashboard_url'] ?? 'dashboard.php';
-    if ($status === 'firsttime' && strpos($redirect_url, 'status=') === false) {
-        $delimiter = (strpos($redirect_url, '?') !== false) ? '&' : '?';
-        $redirect_url .= $delimiter . 'status=firsttime';
+    if ($status === 'firsttime') {
+        $additional_params = [];
+        if (strpos($redirect_url, 'status=') === false) {
+            $additional_params[] = 'status=firsttime';
+        }
+        $session_buwana_id = $_SESSION['buwana_id'] ?? '';
+        if (!empty($session_buwana_id) && strpos($redirect_url, 'id=') === false) {
+            $additional_params[] = 'id=' . urlencode($session_buwana_id);
+        }
+        if (!empty($additional_params)) {
+            $delimiter = (strpos($redirect_url, '?') !== false) ? '&' : '?';
+            $redirect_url .= $delimiter . implode('&', $additional_params);
+        }
     }
     auth_log('User already logged in, redirecting to ' . $redirect_url);
     header("Location: $redirect_url");
