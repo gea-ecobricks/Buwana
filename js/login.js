@@ -507,8 +507,8 @@ AUTO CODE PROCESSING
 // Check if code and buwana_id are present in the URL for automatic code processing
     if (code && buwanaId) {
         // Update status messages
-        document.getElementById('status-message').textContent = "Checking your code...";
-        document.getElementById('sub-status-message').textContent = "One moment please.";
+        document.getElementById('status-message').textContent = "Your Account is Ready!";
+        document.getElementById('sub-status-message').textContent = "Please go ahead and login.";
 
         // Add a 0.3 sec pause
         setTimeout(() => {
