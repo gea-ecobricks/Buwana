@@ -123,6 +123,9 @@ if ($stmt_credential) {
                     // Unified session user ID for OIDC
                     $_SESSION['user_id'] = $buwana_id;
                     $_SESSION['buwana_id'] = $buwana_id;
+                    if (!empty($first_name)) {
+                        $_SESSION['first_name'] = $first_name;
+                    }
 
                     // Verify user has already connected to this application
                     require_once __DIR__ . '/../api/check_user_app_connection.php';
@@ -239,13 +242,24 @@ if ($stmt_credential) {
                     } else {
                         $redirect_url = $app_dashboard_url;
                     }
-                    if ($status === 'firsttime' && empty($redirect) && strpos($redirect_url, 'status=') === false) {
-                        $delimiter = (strpos($redirect_url, '?') !== false) ? '&' : '?';
-                        $redirect_url .= $delimiter . 'status=firsttime';
-                    }
-                    if ($status === 'firsttime' && !empty($_SESSION['jwt'])) {
-                        $delimiter = (strpos($redirect_url, '?') !== false) ? '&' : '?';
-                        $redirect_url .= $delimiter . 'jwt=' . urlencode($_SESSION['jwt']);
+                    if ($status === 'firsttime' && empty($redirect)) {
+                        $additional_params = [];
+                        if (strpos($redirect_url, 'status=') === false) {
+                            $additional_params[] = 'status=firsttime';
+                        }
+                        if (strpos($redirect_url, 'id=') === false) {
+                            $additional_params[] = 'id=' . urlencode($buwana_id);
+                        }
+                        if (!empty($first_name) && strpos($redirect_url, 'firstname=') === false) {
+                            $additional_params[] = 'firstname=' . urlencode($first_name);
+                        }
+                        if (!empty($_SESSION['jwt']) && strpos($redirect_url, 'jwt=') === false) {
+                            $additional_params[] = 'jwt=' . urlencode($_SESSION['jwt']);
+                        }
+                        if (!empty($additional_params)) {
+                            $delimiter = (strpos($redirect_url, '?') !== false) ? '&' : '?';
+                            $redirect_url .= $delimiter . implode('&', $additional_params);
+                        }
                     }
 
                     header("Location: $redirect_url");

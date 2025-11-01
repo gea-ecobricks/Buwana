@@ -90,6 +90,10 @@ if ($is_logged_in) {
         if (!empty($session_buwana_id) && strpos($redirect_url, 'id=') === false) {
             $additional_params[] = 'id=' . urlencode($session_buwana_id);
         }
+        $session_first_name = $_SESSION['first_name'] ?? '';
+        if (!empty($session_first_name) && strpos($redirect_url, 'firstname=') === false) {
+            $additional_params[] = 'firstname=' . urlencode($session_first_name);
+        }
         if (!empty($additional_params)) {
             $delimiter = (strpos($redirect_url, '?') !== false) ? '&' : '?';
             $redirect_url .= $delimiter . implode('&', $additional_params);
