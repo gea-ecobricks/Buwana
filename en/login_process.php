@@ -67,7 +67,7 @@ if ($stmt_credential) {
         $stmt_credential->close();
 
         // SQL query to get password_hash from users_tb using buwana_id in Buwana database
-        $sql_user = "SELECT password_hash FROM users_tb WHERE buwana_id = ?";
+        $sql_user = "SELECT password_hash, first_name FROM users_tb WHERE buwana_id = ?";
         $stmt_user = $buwana_conn->prepare($sql_user);
 
         if ($stmt_user) {
@@ -76,7 +76,7 @@ if ($stmt_credential) {
             $stmt_user->store_result();
 
             if ($stmt_user->num_rows === 1) {
-                $stmt_user->bind_result($password_hash);
+                $stmt_user->bind_result($password_hash, $first_name);
                 $stmt_user->fetch();
 
                 // Verify the password entered by the user
@@ -107,6 +107,9 @@ if ($stmt_credential) {
 
        // Set session variable to indicate the user is logged in
        $_SESSION['buwana_id'] = $buwana_id;
+       if (!empty($first_name)) {
+           $_SESSION['first_name'] = $first_name;
+       }
 
        $client_id = $_SESSION['client_id'] ?? null;
        $app_dashboard_url = 'dashboard.php'; // default fallback
@@ -152,6 +155,9 @@ if ($stmt_credential) {
            }
            if (strpos($redirect_url, 'id=') === false) {
                $additional_params[] = 'id=' . urlencode($buwana_id);
+           }
+           if (!empty($first_name) && strpos($redirect_url, 'firstname=') === false) {
+               $additional_params[] = 'firstname=' . urlencode($first_name);
            }
            if (!empty($additional_params)) {
                $delimiter = (strpos($redirect_url, '?') !== false) ? '&' : '?';
