@@ -1,7 +1,7 @@
-<title>Your feedback please!</title>
+<title>Your Support Conversations</title>
 
-<meta name="keywords" content="bug report, suggestions, feedback, conversations, development team, feature requests, help, support, technical support, assistance, contact, contact us">
-<meta name="description" content="Share bugs, suggestions, requests and everything esle with the Buwana development team.">
+<meta name="keywords" content="buwana support, conversations, feedback, development team, bug reports, feature requests, help, assistance">
+<meta name="description" content="Start a conversation with the Buwana development team to share feedback, request features, or report issues.">
 <meta name="author" content="Global Ecobrick Alliance">
 <meta name="last-modified" content="' . $lastModified . '">
 <meta name="revised" content="' . $lastModified . '">
@@ -10,8 +10,8 @@
 <meta http-equiv="content-type" content="text/html; charset=UTF-8" >
 <meta property="og:url"           content="https://buwana.ecobricks.org/' . $lang . '/' . $page . '">
 <meta property="og:type"          content="app">
-<meta property="og:title"         content="Your feedback please!">
-<meta property="og:description"   content="Share bugs, suggestions, requests and everything esle with the Buwana development team." >
+<meta property="og:title"         content="Your Support Conversations">
+<meta property="og:description"   content="Start a conversation with the Buwana development team to share feedback, request features, or report issues." >
 <meta property="og:image"         content="https://buwana.ecobricks.org/pngs/bug-report-banner-1000px.png" >
 <meta property="fb:app_id"        content="1781710898523821" >
 <meta property="og:image:width"   content="1000" >
