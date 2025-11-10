@@ -1,0 +1,492 @@
+.cs-dashboard {
+    margin: 40px auto;
+    max-width: 1200px;
+    padding: 0 16px 64px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.support-details {
+    background: var(--lighter);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 32px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.support-details h3 {
+    margin-top: 0;
+    font-size: 1.2rem;
+    color: var(--text-color);
+}
+
+.support-details dl {
+    display: grid;
+    grid-template-columns: minmax(160px, 1fr) minmax(0, 2fr);
+    gap: 12px 18px;
+    margin: 0;
+}
+
+.support-details dt {
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.support-details dd {
+    margin: 0;
+    color: var(--text-color);
+    word-break: break-word;
+}
+
+.support-details .info-row {
+    display: contents;
+}
+
+.cs-dashboard__header {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.cs-dashboard__title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.cs-dashboard__subtitle {
+    color: var(--text-2);
+    font-size: 1rem;
+}
+
+.cs-dashboard__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+}
+
+.cs-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 999px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    background: var(--accent-color, var(--button-primary-bg));
+    color: var(--button-primary-text);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cs-button--secondary {
+    background: transparent;
+    color: var(--text-color);
+    border: 1px solid var(--border-color, var(--outline));
+}
+
+.cs-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.cs-inbox {
+    background: var(--lighter);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 28px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+}
+
+.cs-inbox__header {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.cs-inbox__title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-color);
+}
+
+.cs-inbox__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    color: var(--text-2);
+    font-size: 0.9rem;
+}
+
+.cs-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    background: var(--outline);
+    color: var(--text-color);
+}
+
+.cs-pill--app {
+    background: var(--highlight, var(--button-secondary-bg));
+    color: var(--button-secondary-text);
+}
+
+.cs-pill--category {
+    background: rgba(55, 114, 255, 0.12);
+    color: var(--text-color);
+}
+
+.cs-pill--priority-low {
+    background: rgba(46, 204, 113, 0.15);
+    color: #2ecc71;
+}
+
+.cs-pill--priority-medium {
+    background: rgba(241, 196, 15, 0.15);
+    color: #f1c40f;
+}
+
+.cs-pill--priority-high {
+    background: rgba(230, 126, 34, 0.15);
+    color: #e67e22;
+}
+
+.cs-pill--priority-urgent {
+    background: rgba(231, 76, 60, 0.15);
+    color: #e74c3c;
+}
+
+.cs-chat-readers {
+    display: inline-flex;
+    gap: 6px;
+    align-items: center;
+    font-size: 1.15rem;
+}
+
+.cs-chat-readers__avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--base);
+    border: 1px solid var(--outline);
+    font-size: 1rem;
+}
+
+.cs-chat-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+}
+
+.cs-chat-table thead {
+    background: rgba(0, 0, 0, 0.04);
+}
+
+.cs-row-sub {
+    font-size: 0.78rem;
+    color: var(--text-2);
+    margin-top: 4px;
+}
+
+.cs-chat-table th,
+.cs-chat-table td {
+    padding: 12px 10px;
+    vertical-align: middle;
+    color: var(--text-color);
+}
+
+.cs-chat-table tbody tr:hover {
+    background: rgba(0, 0, 0, 0.04);
+}
+
+.cs-upvote-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.cs-empty-state {
+    padding: 18px;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--text-2);
+    text-align: center;
+    font-size: 0.95rem;
+}
+
+.cs-modal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 2000;
+    padding: 20px;
+}
+
+.cs-modal--open {
+    display: flex;
+}
+
+.cs-loading,
+#cs-chat-loading {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 16px;
+    color: var(--text-2);
+}
+
+#cs-chat-loading {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 10;
+}
+
+.cs-modal__dialog {
+    width: min(960px, 100%);
+    max-height: 92vh;
+    background: var(--lighter);
+    border-radius: 18px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.35);
+}
+
+.cs-modal__header {
+    padding: 20px 26px;
+    border-bottom: 1px solid var(--outline);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.cs-modal__body {
+    padding: 20px 26px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.cs-modal__footer {
+    padding: 18px 26px;
+    border-top: 1px solid var(--outline);
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.cs-modal__close {
+    background: none;
+    border: none;
+    color: var(--text-2);
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.cs-chat-thread {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.cs-chat-message {
+    background: var(--base);
+    border-radius: 14px;
+    padding: 16px;
+    border: 1px solid var(--outline);
+}
+
+.cs-chat-message__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+    gap: 12px;
+}
+
+.cs-chat-message__author {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+}
+
+.cs-chat-message__body {
+    white-space: pre-wrap;
+    line-height: 1.5;
+    color: var(--text-color);
+}
+
+.cs-chat-message__attachments {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.cs-chat-message__attachment {
+    width: 120px;
+    height: 120px;
+    border-radius: 10px;
+    background-size: cover;
+    background-position: center;
+    border: 1px solid var(--outline);
+}
+
+.cs-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.cs-form__row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.cs-form__field {
+    flex: 1 1 240px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.cs-form__field label {
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.cs-form__field input,
+.cs-form__field select,
+.cs-form__field textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--outline);
+    background: var(--base);
+    color: var(--text-color);
+}
+
+.cs-form__field textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.cs-tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.cs-tag {
+    padding: 4px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--outline);
+    cursor: pointer;
+    background: var(--base);
+    color: var(--text-color);
+    font-size: 0.85rem;
+}
+
+.cs-tag--selected {
+    background: var(--accent-color, var(--button-primary-bg));
+    color: var(--button-primary-text);
+    border-color: transparent;
+}
+
+.cs-message-input {
+    border: 1px solid var(--outline);
+    border-radius: 14px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: var(--base);
+}
+
+.cs-message-input textarea {
+    min-height: 100px;
+    border-radius: 10px;
+    border: 1px solid var(--outline);
+    background: transparent;
+    color: var(--text-color);
+    padding: 10px 12px;
+}
+
+.cs-message-input__actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.cs-attachment-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.cs-attachment-preview__item {
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    border: 1px solid var(--outline);
+    background-size: cover;
+    background-position: center;
+}
+
+@media (max-width: 768px) {
+    .cs-dashboard {
+        padding: 0 12px 48px;
+    }
+
+    .cs-inbox {
+        padding: 18px;
+    }
+
+    .cs-modal__dialog {
+        width: 100%;
+        max-height: 94vh;
+    }
+
+    .cs-form__row {
+        flex-direction: column;
+    }
+
+    .cs-chat-table th,
+    .cs-chat-table td {
+        padding: 10px 8px;
+    }
+
+    .support-details dl {
+        grid-template-columns: 1fr;
+    }
+}
