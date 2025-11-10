@@ -1,0 +1,197 @@
+Alright.  I've setup the new Buwana Chat Support system tables in the Buwana database. Let us go ahead and create the new Buwana Chat Support System (CS) inside the Buwana platform. '  The schema of all the new relevant tables for the chat system can be found at cs_system/cs_tables.sql
+
+           Please put all APIs for the chat system into cs_systems/api/
+
+           Please put all unique styles for the cs system in styles/cs_system.css  Use as much as possible existing buwana styles to be sure that dark and light mode work for the cs system in the same way as it works for the rest of the app.
+
+'
+We will start by building the landing for the Chat Support System using the currently setup page at en/feedback.php   Keep this page name and work with its structure so that all regular Buwana-authenticated users (i.e. users_tb > role = ecobricker (case insensitive)) arriving from any Buwana-registered app can create support chats within this system and view the chats that they have created. Create a dataTable for each App that the user creates chats from, and label each table by app name (via app_id).  i.e.  Your GoBrik support chats.   You EarthCal support chat.  Etc.  Thus a user may have more than one table of chats on their dashboard.  However, put the datatable of the current client app first at the top always.
+
+The CS landing page should behave differently depending on user role:
+
+Normal Buwana users (standard users):
+
+Show “Your app_name Support Chat” inboxes only.
+
+Each row lists: title, priority, status, category, updated time.
+
+Users can create new chats, view existing chats, or reply within them.
+
+
+For Buwana Support Admin team (users_tb > role = admin (case insensitive)):
+
+Show both a personal inbox (chats they are assigned to or have participated in) and a global inbox (all chats) that aggregates all Buwana apps chats.
+
+Chats should be sortable by latest app, activity and by priority.
+
+In the chat list (data table), show:
+
+Category as a colored pill (category field).  App as colored pill too (later we'll use the app icons).
+
+A preview list of support-team member avatars/emojis representing those who have accessed/read the chat already. Support member “read state” is drawn from cs_chat_readers_tb.
+
+The following database structure already exists and must be used:
+
+cs_chats_tb
+
+id (PK)
+
+user_id (FK)
+
+app_id (FK to apps_tb)
+
+language_id (FK to languages_tb)
+
+title
+
+description
+
+status enum(open, in_progress, resolved, closed)
+
+priority enum(low, medium, high, urgent)
+
+category
+
+assigned_to
+
+created_at
+
+updated_at
+
+resolved_at
+
+closed_at
+
+cs_messages_tb
+
+id (PK)
+
+chat_id (FK to cs_chats_tb)
+
+user_id (FK)
+
+language_id (FK)
+
+body
+
+parent_id
+
+created_at
+
+updated_at
+
+cs_attachments_tb
+
+id (PK)
+
+chat_id (FK)
+
+message_id (FK)
+
+file_url
+
+file_type
+
+created_at
+
+cs_chat_upvotes_tb
+
+id (PK)
+
+chat_id (FK)
+
+user_id (FK)
+
+created_at
+
+cs_chat_tags_tb
+
+id (PK)
+
+name
+
+slug
+
+description
+
+created_at
+
+updated_at
+
+cs_chat_tag_map_tb
+
+id (PK)
+
+chat_id (FK)
+
+tag_id (FK)
+
+created_at
+
+cs_chat_readers_tb
+
+id (PK)
+
+chat_id (FK)
+
+user_id (FK)
+
+last_read_at
+
+cs_message_reads_tb
+
+id (PK)
+
+message_id (FK)
+
+user_id (FK)
+
+read_at
+
+The CS system must allow:
+
+1. Creating new support chats
+
+2. Viewing and replying to chats (child messages in order)
+
+3. Uploading attachments (specifically images to start):  For this purpose upload all  attachment uploads as webp format files into cs_system/attachments/2025/  For all images upload, generate a 150px x 150px webp thumbnail with 77 quality.  Upload this to  cs_system/attachments/2025/thumbs/
+
+3. Tagging, prioritizing, and assigning chats to support staff
+
+4. Upvoting chats
+
+5. Tracking read state at both chat and message level.  She the users_tb > earthling_emoji of the user if they have accessed a chat and if they have read a message
+
+6. Filtering by app_id, status, priority, tag
+
+UI requirements:
+
+1. For admin staff, show global and personal inboxes with all app messages aggregated.
+
+2. For normal users, show only their own chats
+
+3. Data table row must include category pill and small support-member earthling_emojis indicating who has read the chat (from cs_chat_readers_tb)
+
+4. Chats should be displayed ordered by recent activity, with sortable priority and sortable by app.
+
+Codex will generate:
+
+1. Backend PHP routes and controllers in cs_system/api/
+
+2. Database CRUD logic
+
+3. Authorization/permissions
+
+4. Styling for the cs_system in its own unique stylesheet in /styles/cs_system.css
+
+5. Image file upload handling, saving and thumbnailing to the server.
+
+6. Filtering and sorting logic
+
+
+
+
+
+
+
+
