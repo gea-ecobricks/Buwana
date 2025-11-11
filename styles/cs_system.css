@@ -399,6 +399,48 @@
     resize: vertical;
 }
 
+.cs-form--stacked {
+    gap: 12px;
+}
+
+.cs-form--stacked .cs-form__field {
+    flex: 1 1 100%;
+    gap: 4px;
+}
+
+.cs-new-chat-modal {
+    width: min(540px, 100%);
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.cs-new-chat-modal__title {
+    margin: 0;
+    text-align: center;
+}
+
+.cs-new-chat-form {
+    gap: 12px;
+}
+
+.cs-new-chat-form__fields {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 60vh;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.cs-new-chat-form__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
 .cs-tag-list {
     display: flex;
     flex-wrap: wrap;

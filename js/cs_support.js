@@ -26,15 +26,14 @@ class CsSupportApp {
         this.messageFileInput = document.getElementById('cs-message-attachments');
         this.messagePreview = document.getElementById('cs-message-attachment-preview');
         this.chatModalUpvote = document.getElementById('cs-chat-modal-upvote');
-        this.newChatModal = document.getElementById('cs-new-chat-modal');
-        this.newChatModalClose = this.newChatModal?.querySelector('[data-close]');
-        this.newChatForm = document.getElementById('cs-new-chat-form');
-        this.newChatAppSelect = document.getElementById('cs-new-chat-app');
-        this.newChatPriority = document.getElementById('cs-new-chat-priority');
-        this.newChatTags = document.getElementById('cs-new-chat-tags');
-        this.newChatCustomTags = document.getElementById('cs-new-chat-custom-tags');
-        this.newChatPreview = document.getElementById('cs-new-chat-attachment-preview');
-        this.newChatFileInput = document.getElementById('cs-new-chat-attachments');
+        this.modalContentBox = document.getElementById('modal-content-box');
+        this.newChatForm = null;
+        this.newChatAppSelect = null;
+        this.newChatPriority = null;
+        this.newChatTags = null;
+        this.newChatCustomTags = null;
+        this.newChatPreview = null;
+        this.newChatFileInput = null;
         this.loadingIndicator = document.getElementById('cs-loading');
 
         this.tables = new Map();
@@ -115,31 +114,6 @@ class CsSupportApp {
             });
         }
 
-        if (this.newChatModalClose) {
-            this.newChatModalClose.addEventListener('click', () => this.closeModal(this.newChatModal));
-        }
-
-        if (this.newChatModal) {
-            this.newChatModal.addEventListener('click', (event) => {
-                if (event.target === this.newChatModal) {
-                    this.closeModal(this.newChatModal);
-                }
-            });
-        }
-
-        if (this.newChatForm) {
-            this.newChatForm.addEventListener('submit', (event) => {
-                event.preventDefault();
-                this.submitNewChat();
-            });
-        }
-
-        if (this.newChatFileInput) {
-            this.newChatFileInput.addEventListener('change', (event) => {
-                this.pendingNewChatFiles = Array.from(event.target.files || []);
-                this.renderAttachmentPreview(this.pendingNewChatFiles, this.newChatPreview);
-            });
-        }
     }
 
     handleTableClick(event) {
@@ -745,12 +719,7 @@ class CsSupportApp {
                 body: formData,
             });
             if (response.data && response.data.chat) {
-                this.closeModal(this.newChatModal);
-                this.newChatForm.reset();
-                if (this.newChatPreview) {
-                    this.newChatPreview.innerHTML = '';
-                }
-                this.pendingNewChatFiles = [];
+                this.closeNewChatModal();
                 await this.loadDashboard();
                 this.openChatModal(response.data.chat.id);
             }
@@ -859,31 +828,48 @@ class CsSupportApp {
     }
 
     updateNewChatOptions() {
+        this.populateDatalist('cs-category-list', this.meta.categories || []);
         if (!this.newChatAppSelect) {
             return;
         }
+
         this.newChatAppSelect.innerHTML = '';
-        this.populateDatalist('cs-category-list', this.meta.categories || []);
-        this.connectedApps.forEach((app) => {
-            const option = document.createElement('option');
-            option.value = String(app.app_id);
-            option.textContent = app.app_display_name;
-            if (String(app.app_id) === String(this.config.currentAppId)) {
-                option.selected = true;
-            }
-            this.newChatAppSelect.appendChild(option);
-        });
-        if (!this.connectedApps.length && this.config.currentAppId) {
+        this.newChatAppSelect.disabled = false;
+        this.newChatAppSelect.required = true;
+
+        if (this.connectedApps.length) {
+            this.connectedApps.forEach((app) => {
+                const option = document.createElement('option');
+                option.value = String(app.app_id);
+                option.textContent = app.app_display_name;
+                if (String(app.app_id) === String(this.config.currentAppId)) {
+                    option.selected = true;
+                }
+                this.newChatAppSelect.appendChild(option);
+            });
+        } else if (this.config.currentAppId) {
             const option = document.createElement('option');
             option.value = String(this.config.currentAppId);
             option.textContent = this.config.currentAppName || 'Current app';
             option.selected = true;
             this.newChatAppSelect.appendChild(option);
+        } else {
+            const option = document.createElement('option');
+            option.value = '';
+            option.textContent = 'No connected apps available';
+            option.disabled = true;
+            option.selected = true;
+            this.newChatAppSelect.appendChild(option);
+            this.newChatAppSelect.disabled = true;
+            this.newChatAppSelect.required = false;
         }
 
         this.populateSelect(this.newChatPriority, this.meta.priorities, 'medium');
         if (this.newChatTags) {
             this.renderTagSelector(this.newChatTags, []);
+        }
+        if (this.newChatCustomTags) {
+            this.newChatCustomTags.value = '';
         }
     }
 
@@ -985,22 +971,127 @@ class CsSupportApp {
         return span;
     }
 
-    openNewChatModal() {
-        this.populateSelect(this.newChatPriority, this.meta.priorities, 'medium');
-        if (this.newChatTags) {
-            this.renderTagSelector(this.newChatTags, []);
+    buildNewChatModalContent() {
+        return `
+            <div class="cs-new-chat-modal">
+                <h2 class="cs-new-chat-modal__title">Start a new support chat</h2>
+                <form id="cs-new-chat-form" class="cs-form cs-form--stacked cs-new-chat-form">
+                    <div class="cs-new-chat-form__fields">
+                        <div class="cs-form__field">
+                            <label for="cs-new-chat-title">Title</label>
+                            <input type="text" id="cs-new-chat-title" name="title" required>
+                        </div>
+                        <div class="cs-form__field">
+                            <label for="cs-new-chat-app">App</label>
+                            <select id="cs-new-chat-app" name="app_id" required></select>
+                        </div>
+                        <div class="cs-form__field">
+                            <label for="cs-new-chat-priority">Priority</label>
+                            <select id="cs-new-chat-priority" name="priority"></select>
+                        </div>
+                        <div class="cs-form__field">
+                            <label for="cs-new-chat-description">Describe your issue</label>
+                            <textarea id="cs-new-chat-description" name="description" required></textarea>
+                        </div>
+                        <div class="cs-form__field">
+                            <label>Tags</label>
+                            <div id="cs-new-chat-tags" class="cs-tag-list"></div>
+                            <input type="text" id="cs-new-chat-custom-tags" placeholder="Add new tags separated by commas">
+                        </div>
+                        <div class="cs-form__field">
+                            <label for="cs-new-chat-attachments">Attach images</label>
+                            <input type="file" id="cs-new-chat-attachments" accept="image/*" multiple>
+                            <div id="cs-new-chat-attachment-preview" class="cs-attachment-preview"></div>
+                        </div>
+                    </div>
+                    <div class="cs-new-chat-form__actions">
+                        <button type="button" class="submit-button" data-cancel-new-chat>Cancel</button>
+                        <button type="submit" class="submit-button enabled">Create chat</button>
+                    </div>
+                </form>
+            </div>
+        `;
+    }
+
+    initializeNewChatForm() {
+        const modalBox = this.modalContentBox || document.getElementById('modal-content-box');
+        if (!modalBox) {
+            return;
         }
-        if (this.newChatCustomTags) {
-            this.newChatCustomTags.value = '';
+
+        this.modalContentBox = modalBox;
+
+        this.newChatForm = modalBox.querySelector('#cs-new-chat-form');
+        if (!this.newChatForm) {
+            return;
         }
+
+        this.newChatAppSelect = this.newChatForm.querySelector('#cs-new-chat-app');
+        this.newChatPriority = this.newChatForm.querySelector('#cs-new-chat-priority');
+        this.newChatTags = this.newChatForm.querySelector('#cs-new-chat-tags');
+        this.newChatCustomTags = this.newChatForm.querySelector('#cs-new-chat-custom-tags');
+        this.newChatPreview = this.newChatForm.querySelector('#cs-new-chat-attachment-preview');
+        this.newChatFileInput = this.newChatForm.querySelector('#cs-new-chat-attachments');
+
+        this.pendingNewChatFiles = [];
+        this.updateNewChatOptions();
+
+        if (this.newChatPreview) {
+            this.newChatPreview.innerHTML = '';
+        }
+
         if (this.newChatFileInput) {
             this.newChatFileInput.value = '';
+            this.newChatFileInput.addEventListener('change', (event) => {
+                this.pendingNewChatFiles = Array.from(event.target.files || []);
+                this.renderAttachmentPreview(this.pendingNewChatFiles, this.newChatPreview);
+            });
+        }
+
+        const cancelButton = this.newChatForm.querySelector('[data-cancel-new-chat]');
+        if (cancelButton) {
+            cancelButton.addEventListener('click', () => this.closeNewChatModal());
+        }
+
+        this.newChatForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            this.submitNewChat();
+        });
+
+        const titleInput = this.newChatForm.querySelector('#cs-new-chat-title');
+        if (titleInput) {
+            setTimeout(() => titleInput.focus(), 0);
+        }
+    }
+
+    closeNewChatModal() {
+        if (this.newChatForm) {
+            this.newChatForm.reset();
         }
         if (this.newChatPreview) {
             this.newChatPreview.innerHTML = '';
         }
         this.pendingNewChatFiles = [];
-        this.openModal(this.newChatModal);
+        if (typeof window.closeInfoModal === 'function') {
+            window.closeInfoModal();
+        }
+        this.newChatForm = null;
+        this.newChatAppSelect = null;
+        this.newChatPriority = null;
+        this.newChatTags = null;
+        this.newChatCustomTags = null;
+        this.newChatPreview = null;
+        this.newChatFileInput = null;
+    }
+
+    openNewChatModal() {
+        if (typeof window.openModal !== 'function') {
+            console.warn('Modal system is not available');
+            return;
+        }
+
+        window.openModal(this.buildNewChatModalContent());
+        this.initializeNewChatForm();
     }
 }
 
