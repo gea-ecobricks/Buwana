@@ -1,6 +1,6 @@
 const en_Page_Translations = {
-    "001-support-title": "👥 Your Support Conversations",
-    "002-support-description": "Contact and converse the with Buwana Development Team.",
+    "001-support-title": "Buwana Support",
+    "002-support-description": "Contact and converse with our Development Team.",
     "003-user-info-heading": "Account details for this conversation",
     "004-buwana-id": "<strong>Buwana ID:</strong>",
     "005-full-name": "<strong>Full Name:</strong>",
