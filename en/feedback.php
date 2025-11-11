@@ -7,7 +7,7 @@ if (!file_exists('../buwanaconn_env.php')) {
 require_once '../buwanaconn_env.php';
 
 $lang = basename(dirname($_SERVER['SCRIPT_NAME']));
-$version = '0.21';
+$version = '0.22';
 $page = 'feedback';
 $lastModified = date("Y-m-d\\TH:i:s\\Z", filemtime(__FILE__));
 
@@ -134,11 +134,11 @@ function displayValue($value): string
 
             <div class="cs-dashboard">
                 <div class="cs-dashboard__header">
-                     <div style="text-align:center;width:100%;margin:auto;margin-top:20px">
+                     <div style="text-align:center;width:100%;margin:auto;margin-top:1px">
                                     <div id="status-message" data-lang-id="001-support-title">Buwana Support Center</div>
                                     <div id="sub-status-message" data-lang-id="002-support-description">Chat with the with Buwana Development Team.</div>
                                 </div>
-                    <div class="cs-dashboard__actions" style="margin:auto;">
+                    <div class="cs-dashboard__actions" style="margin:auto;margin-top:5px;">
                         <button type="button" id="cs-new-chat-btn" class="submit-button enabled">💬 New Chat</button>
                     </div>
                 </div>
