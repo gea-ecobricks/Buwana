@@ -377,11 +377,13 @@ max-height: 200px;
      <a href=""><span style="margin-right:5px;">Logged in as </span><span style="margin-right:auto;"><?= htmlspecialchars($first_name) ?></span></a>
      <span style="margin-right:-8px;"><?= htmlspecialchars($earthling_emoji) ?></span>
    </div>
+   <?php /* ?>
    <div class="menu-page-item">
      <a href="<?= htmlspecialchars($logout_url) ?>">Log out</a>
      <span style="margin-right:-8px;" title="Log out">🐳</span>
 
    </div>
+   <?php */ ?>
    <?php
 
     $profile_url = 'edit-profile.php';
@@ -460,6 +462,9 @@ max-height: 200px;
 
 <h4 class="app-slogan" style="margin-top:30px"><?= htmlspecialchars($app_info['app_slogan']) ?></h4>
 
+<p style="margin:auto;margin-bottom: 5px;font-size: smaller; text-align: center;" data-lang-id="1000-authentication-by" >Authentication by</p>
+<div class="buwana-word-mark" alt="Buwana Logo" title="Authentication by Buwana" onclick="navigateTo('index.php')" style="cursor:pointer;"></div>
+
 <p class="app-slogan-links" style="margin:0 auto 12px; text-align:center; font-family: 'Mulish', sans-serif; font-size:0.85rem;">
     <a href="javascript:void(0);" onclick="openAboutBuwana(); return false;">Buwana</a>
     <span style="margin: 0 6px;">|</span>
@@ -467,9 +472,6 @@ max-height: 200px;
     <span style="margin: 0 6px;">|</span>
     <a href="javascript:void(0);" onclick="openAboutEarthen(); return false;">Earthen</a>
 </p>
-
-<p style="margin:auto;margin-bottom: 5px;font-size: smaller; text-align: center;" data-lang-id="1000-authentication-by" >Authentication by</p>
-<div class="buwana-word-mark" alt="Buwana Logo" title="Authentication by Buwana" onclick="navigateTo('index.php')" style="cursor:pointer;"></div>
 
   </div> <!-- close overlay-content-settings -->
 </div> <!-- close main menu -->

@@ -69,6 +69,12 @@
     align-items: center;
 }
 
+.cs-dashboard__actions--center {
+    justify-content: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .cs-button {
     display: inline-flex;
     align-items: center;
@@ -143,6 +149,16 @@
     color: var(--text-color);
 }
 
+.cs-pill--status-open {
+    background: rgba(46, 204, 113, 0.18);
+    color: #1f8a4c;
+}
+
+.cs-pill--status-closed {
+    background: #d1d5db;
+    color: #4b5563;
+}
+
 .cs-pill--app {
     background: var(--highlight, var(--button-secondary-bg));
     color: var(--button-secondary-text);
@@ -197,17 +213,28 @@
     margin-top: 12px;
 }
 
-.cs-row-sub {
+.cs-chat-title {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: baseline;
+}
+
+.cs-chat-title__text {
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.cs-chat-title__tags {
     font-size: 0.78rem;
     color: var(--text-2);
-    margin-top: 4px;
 }
 
 .cs-upvote-toggle {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 4px;
+    gap: 6px;
     min-width: 56px;
     padding: 6px 14px;
     border-radius: 999px;
@@ -219,6 +246,13 @@
     transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
+.cs-upvote-toggle--zero,
+.cs-upvote-toggle.is-upvoted {
+    background: #d1d5db;
+    border-color: #c5cad3;
+    color: #374151;
+}
+
 .cs-upvote-toggle .cs-upvote-count {
     font-variant-numeric: tabular-nums;
 }
@@ -228,35 +262,52 @@
     font-size: 1rem;
 }
 
-.cs-upvote-toggle:hover {
-    background: rgba(46, 204, 113, 0.12);
+.cs-upvote-toggle:not(.is-upvoted):hover {
+    background: #2ecc71;
     border-color: #2ecc71;
-    color: #2ecc71;
+    color: #ffffff;
 }
 
-.cs-upvote-toggle:hover .cs-upvote-count {
-    display: none;
-}
-
-.cs-upvote-toggle:hover .cs-upvote-icon {
+.cs-upvote-toggle:not(.is-upvoted):hover .cs-upvote-icon {
     display: inline;
 }
 
-.cs-upvote-toggle.is-upvoted {
-    background: rgba(231, 76, 60, 0.12);
+.cs-upvote-toggle.is-upvoted:hover {
+    background: #e74c3c;
     border-color: #e74c3c;
-    color: #e74c3c;
+    color: #ffffff;
 }
 
-.cs-upvote-toggle.is-upvoted:hover {
-    background: rgba(231, 76, 60, 0.18);
-    border-color: #e74c3c;
-    color: #e74c3c;
+.cs-upvote-toggle.is-upvoted:hover .cs-upvote-icon {
+    display: inline;
 }
 
 .cs-upvote-toggle:focus-visible {
     outline: 2px solid #3772ff;
     outline-offset: 2px;
+}
+
+.cs-chat-meta-summary {
+    background: var(--lighter);
+    border: 1px solid var(--outline);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+    display: grid;
+    gap: 8px;
+    font-size: 0.9rem;
+    color: var(--text-color);
+}
+
+.cs-chat-meta-summary__item {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.cs-chat-meta-summary__label {
+    font-weight: 600;
+    color: var(--text-2);
 }
 
 .cs-empty-state {
@@ -469,6 +520,10 @@
     max-height: 60vh;
     overflow-y: auto;
     padding-right: 4px;
+}
+
+.cs-new-chat-form textarea#cs-new-chat-description {
+    background: var(--show-hide);
 }
 
 .cs-new-chat-form__actions {
