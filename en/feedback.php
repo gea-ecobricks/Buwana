@@ -7,7 +7,7 @@ if (!file_exists('../buwanaconn_env.php')) {
 require_once '../buwanaconn_env.php';
 
 $lang = basename(dirname($_SERVER['SCRIPT_NAME']));
-$version = '0.1';
+$version = '0.2';
 $page = 'feedback';
 $lastModified = date("Y-m-d\\TH:i:s\\Z", filemtime(__FILE__));
 
@@ -128,58 +128,19 @@ function displayValue($value): string
                  data-dark-img="../svgs/bug-report-night.svg">
             </div>
 
-            <div style="text-align:center;width:100%;margin:auto;">
-                <div id="status-message" data-lang-id="001-support-title">👥 Your Support Conversations</div>
-                <div id="sub-status-message" data-lang-id="002-support-description">Contact and converse the with Buwana Development Team.</div>
-            </div>
 
-            <div class="support-details">
-                <h3 data-lang-id="003-user-info-heading">Account details for this conversation</h3>
-                <dl>
-                    <div class="info-row">
-                        <dt data-lang-id="004-buwana-id"><strong>Buwana ID:</strong></dt>
-                        <dd><?= displayValue($buwana_id); ?></dd>
-                    </div>
-                    <div class="info-row">
-                        <dt data-lang-id="005-full-name"><strong>Full Name:</strong></dt>
-                        <dd><?= displayValue($full_name); ?></dd>
-                    </div>
-                    <div class="info-row">
-                        <dt data-lang-id="006-first-name"><strong>First Name:</strong></dt>
-                        <dd><?= displayValue($first_name); ?></dd>
-                    </div>
-                    <div class="info-row">
-                        <dt data-lang-id="007-email"><strong>Email:</strong></dt>
-                        <dd><?= displayValue($email); ?></dd>
-                    </div>
-                    <div class="info-row">
-                        <dt data-lang-id="008-language"><strong>Preferred Language:</strong></dt>
-                        <dd><?= displayValue($preferred_language_display); ?></dd>
-                    </div>
-                    <div class="info-row">
-                        <dt data-lang-id="009-emoji"><strong>User Emoji:</strong></dt>
-                        <dd><?= displayValue($earthling_emoji); ?></dd>
-                    </div>
-                    <div class="info-row">
-                        <dt><strong>User Role:</strong></dt>
-                        <dd><?= displayValue($role); ?></dd>
-                    </div>
-                    <div class="info-row">
-                        <dt data-lang-id="010-country"><strong>Country:</strong></dt>
-                        <dd><?= displayValue($country_name); ?></dd>
-                    </div>
-                </dl>
-            </div>
+
+
 
             <div class="cs-dashboard">
                 <div class="cs-dashboard__header">
-                    <div>
-                        <div class="cs-dashboard__title">Buwana Support Center</div>
-                        <div class="cs-dashboard__subtitle">Reach out to the support team, manage conversations, and stay up to date.</div>
-                    </div>
+                     <div style="text-align:center;width:100%;margin:auto;margin-top:20px">
+                                    <div id="status-message" data-lang-id="001-support-title">Buwana Support Center</div>
+                                    <div id="sub-status-message" data-lang-id="002-support-description">Chat with the with Buwana Development Team.</div>
+                                </div>
                     <div class="cs-dashboard__actions">
-                        <button type="button" id="cs-new-chat-btn" class="cs-button">Start new chat</button>
-                        <button type="button" id="cs-refresh-btn" class="cs-button cs-button--secondary">Refresh</button>
+                        <button type="button" id="cs-new-chat-btn" class="submit-button enabled">💬 New Chat</button>
+                        <button type="button" id="cs-refresh-btn" class="submit-button" style="background-color:grey;">🔄 Refresh</button>
                     </div>
                 </div>
 
@@ -195,6 +156,41 @@ function displayValue($value): string
                     <div id="cs-admin-global"></div>
                 </section>
             </div>
+
+        <div class="support-details">
+                        <h3 data-lang-id="003-user-info-heading">Account details for this conversation</h3>
+                        <dl>
+                            <div class="info-row">
+                                <dt data-lang-id="004-buwana-id"><strong>Buwana ID:</strong></dt>
+                                <dd><?= displayValue($buwana_id); ?></dd>
+                            </div>
+                            <div class="info-row">
+                                <dt data-lang-id="005-full-name"><strong>Full Name:</strong></dt>
+                                <dd><?= displayValue($full_name); ?></dd>
+                            </div>
+
+                            <div class="info-row">
+                                <dt data-lang-id="007-email"><strong>Email:</strong></dt>
+                                <dd><?= displayValue($email); ?></dd>
+                            </div>
+                            <div class="info-row">
+                                <dt data-lang-id="008-language"><strong>Preferred Language:</strong></dt>
+                                <dd><?= displayValue($preferred_language_display); ?></dd>
+                            </div>
+                            <div class="info-row">
+                                <dt data-lang-id="009-emoji"><strong>User Emoji:</strong></dt>
+                                <dd><?= displayValue($earthling_emoji); ?></dd>
+                            </div>
+                            <div class="info-row">
+                                <dt><strong>User Role:</strong></dt>
+                                <dd><?= displayValue($role); ?></dd>
+                            </div>
+                            <div class="info-row">
+                                <dt data-lang-id="010-country"><strong>Country:</strong></dt>
+                                <dd><?= displayValue($country_name); ?></dd>
+                            </div>
+                        </dl>
+                    </div>
         </div>
     </div>
 </div>
@@ -309,6 +305,7 @@ function displayValue($value): string
         </form>
     </div>
 </div>
+</div>  <!-- close main div that was opened in the header-2025-->
 
 <datalist id="cs-category-list"></datalist>
 
