@@ -257,56 +257,6 @@ function displayValue($value): string
     </div>
 </div>
 
-<div id="cs-new-chat-modal" class="cs-modal">
-    <div class="cs-modal__dialog" style="max-width:720px;">
-        <div class="cs-modal__header">
-            <h2 style="margin:0;">Start a new support chat</h2>
-            <button type="button" class="cs-modal__close" data-close>&times;</button>
-        </div>
-        <form id="cs-new-chat-form" class="cs-form">
-            <div class="cs-modal__body">
-                <div class="cs-form__row">
-                    <div class="cs-form__field">
-                        <label for="cs-new-chat-title">Title</label>
-                        <input type="text" id="cs-new-chat-title" name="title" required>
-                    </div>
-                    <div class="cs-form__field">
-                        <label for="cs-new-chat-app">App</label>
-                        <select id="cs-new-chat-app" name="app_id" required></select>
-                    </div>
-                </div>
-                <div class="cs-form__row">
-                    <div class="cs-form__field">
-                        <label for="cs-new-chat-priority">Priority</label>
-                        <select id="cs-new-chat-priority" name="priority"></select>
-                    </div>
-                    <div class="cs-form__field">
-                        <label for="cs-new-chat-category">Category</label>
-                        <input type="text" id="cs-new-chat-category" name="category" list="cs-category-list">
-                    </div>
-                </div>
-                <div class="cs-form__field">
-                    <label for="cs-new-chat-description">Describe your issue</label>
-                    <textarea id="cs-new-chat-description" name="description" required></textarea>
-                </div>
-                <div class="cs-form__field">
-                    <label>Tags</label>
-                    <div id="cs-new-chat-tags" class="cs-tag-list"></div>
-                    <input type="text" id="cs-new-chat-custom-tags" placeholder="Add new tags separated by commas">
-                </div>
-                <div class="cs-form__field">
-                    <label for="cs-new-chat-attachments">Attach images</label>
-                    <input type="file" id="cs-new-chat-attachments" accept="image/*" multiple>
-                    <div id="cs-new-chat-attachment-preview" class="cs-attachment-preview"></div>
-                </div>
-            </div>
-            <div class="cs-modal__footer">
-                <button type="button" class="cs-button cs-button--secondary" data-close>Cancel</button>
-                <button type="submit" class="cs-button">Create chat</button>
-            </div>
-        </form>
-    </div>
-</div>
 </div>  <!-- close main div that was opened in the header-2025-->
 
 <datalist id="cs-category-list"></datalist>
