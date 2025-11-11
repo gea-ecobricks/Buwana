@@ -138,7 +138,7 @@ function displayValue($value): string
                                     <div id="status-message" data-lang-id="001-support-title">Buwana Support Center</div>
                                     <div id="sub-status-message" data-lang-id="002-support-description">Chat with the with Buwana Development Team.</div>
                                 </div>
-                    <div class="cs-dashboard__actions" style="margin:auto;margin-top:-15px;">
+                    <div class="cs-dashboard__actions cs-dashboard__actions--center" style="margin-top:-15px;">
                         <button type="button" id="cs-new-chat-btn" class="submit-button enabled">💬 New Chat</button>
                     </div>
                 </div>
@@ -154,7 +154,7 @@ function displayValue($value): string
                     <div id="cs-admin-personal"></div>
                     <div id="cs-admin-global"></div>
                 </section>
-                      <div class="cs-dashboard__actions" style="margin:auto;">
+                      <div class="cs-dashboard__actions cs-dashboard__actions--center">
                                     <button type="button" id="cs-refresh-btn" class="submit-button" style="background-color:grey;">🔄 Refresh</button>
                                 </div>
             </div>

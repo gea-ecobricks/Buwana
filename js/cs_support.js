@@ -18,6 +18,7 @@ class CsSupportApp {
         this.chatMetaAssigned = null;
         this.chatMetaTags = null;
         this.chatMetaCustomTags = null;
+        this.chatMetaSummary = null;
         this.chatThreadEl = null;
         this.messageForm = null;
         this.messageBody = null;
@@ -108,6 +109,7 @@ class CsSupportApp {
                     <div id="cs-chat-loading" class="cs-loading">
                         <span>Loading chat…</span>
                     </div>
+                    <div id="cs-chat-meta-summary" class="cs-chat-meta-summary hidden" aria-live="polite"></div>
                     <form id="cs-chat-meta-form" class="cs-form cs-chat-meta">
                         <div class="cs-form__row">
                             <div class="cs-form__field">
@@ -159,6 +161,7 @@ class CsSupportApp {
 
         this.chatModalTitle = modalBox.querySelector('#cs-chat-modal-title');
         this.chatModalSubtitle = modalBox.querySelector('#cs-chat-modal-subtitle');
+        this.chatMetaSummary = modalBox.querySelector('#cs-chat-meta-summary');
         this.chatMetaForm = modalBox.querySelector('#cs-chat-meta-form');
         this.chatMetaPriority = modalBox.querySelector('#cs-chat-meta-priority');
         this.chatMetaStatus = modalBox.querySelector('#cs-chat-meta-status');
@@ -193,14 +196,16 @@ class CsSupportApp {
         if (!button) {
             return;
         }
+        const safeCount = Number.isFinite(count) ? count : 0;
         const countEl = button.querySelector('.cs-upvote-count');
         const iconEl = button.querySelector('.cs-upvote-icon');
         button.dataset.chatUpvote = this.currentChat ? String(this.currentChat.id) : '';
         button.setAttribute('aria-pressed', hasUpvoted ? 'true' : 'false');
         button.setAttribute('aria-label', hasUpvoted ? 'Remove upvote' : 'Add upvote');
         button.classList.toggle('is-upvoted', Boolean(hasUpvoted));
+        button.classList.toggle('cs-upvote-toggle--zero', safeCount === 0);
         if (countEl) {
-            countEl.textContent = String(count ?? 0);
+            countEl.textContent = String(safeCount);
         }
         if (iconEl) {
             iconEl.textContent = hasUpvoted ? '−' : '+';
@@ -408,10 +413,13 @@ class CsSupportApp {
                 title: 'Title',
                 render: (data, type, row) => {
                     if (type === 'display') {
+                        const tagText = this.formatTagText(row.tags);
+                        const safeTitle = this.escapeHtml(data);
+                        const tagsMarkup = tagText ? `<span class="cs-chat-title__tags">${tagText}</span>` : '';
                         return `
-                            <div>
-                                <strong>${this.escapeHtml(data)}</strong>
-                                <div class="cs-row-sub">${this.renderTagList(row.tags)}</div>
+                            <div class="cs-chat-title">
+                                <span class="cs-chat-title__text">${safeTitle}</span>
+                                ${tagsMarkup}
                             </div>`;
                     }
                     return data;
@@ -451,7 +459,15 @@ class CsSupportApp {
                 className: 'col-status',
                 render: (status, type) => {
                     if (type === 'display') {
-                        return `<span class="cs-pill">${status}</span>`;
+                        const normalized = (status || '').toLowerCase();
+                        const displayStatus = this.formatTitleCase(status);
+                        let klass = 'cs-pill';
+                        if (normalized === 'open') {
+                            klass += ' cs-pill--status-open';
+                        } else if (normalized === 'closed') {
+                            klass += ' cs-pill--status-closed';
+                        }
+                        return `<span class="${klass}">${this.escapeHtml(displayStatus || status || '')}</span>`;
                     }
                     return status;
                 },
@@ -492,8 +508,14 @@ class CsSupportApp {
                     const pressed = isActive ? 'true' : 'false';
                     const label = isActive ? 'Remove upvote' : 'Add upvote';
                     const icon = isActive ? '−' : '+';
-                    const activeClass = isActive ? ' is-upvoted' : '';
-                    return `<button type="button" class="cs-upvote-toggle${activeClass}" data-chat-upvote="${row.id}" aria-pressed="${pressed}" aria-label="${label}">
+                    const classList = ['cs-upvote-toggle'];
+                    if (isActive) {
+                        classList.push('is-upvoted');
+                    }
+                    if (safeCount === 0) {
+                        classList.push('cs-upvote-toggle--zero');
+                    }
+                    return `<button type="button" class="${classList.join(' ')}" data-chat-upvote="${row.id}" aria-pressed="${pressed}" aria-label="${label}">
                             <span class="cs-upvote-count">${safeCount}</span>
                             <span class="cs-upvote-icon" aria-hidden="true">${icon}</span>
                         </button>`;
@@ -539,11 +561,13 @@ class CsSupportApp {
         return `<div class="cs-chat-readers">${avatars}</div>`;
     }
 
-    renderTagList(tags) {
-        if (!tags || !tags.length) {
+    formatTagText(tags) {
+        if (!Array.isArray(tags) || !tags.length) {
             return '';
         }
-        return tags.map((tag) => `<span class="cs-pill">#${this.escapeHtml(tag.name)}</span>`).join(' ');
+        return tags
+            .map((tag) => `#${this.escapeHtml(tag.name)}`)
+            .join(' ');
     }
 
     async openChatModal(chatId) {
@@ -584,14 +608,16 @@ class CsSupportApp {
             return;
         }
 
+        const isAdmin = Boolean(this.config.isAdmin);
+
         if (this.chatModalTitle) {
             this.chatModalTitle.textContent = this.currentChat.title;
         }
         if (this.chatModalSubtitle) {
             const subtitleParts = [
                 this.currentChat.app?.app_display_name,
-                `Priority: ${this.currentChat.priority}`,
-                `Status: ${this.currentChat.status}`,
+                this.currentChat.priority ? `Priority: ${this.formatTitleCase(this.currentChat.priority)}` : '',
+                this.currentChat.status ? `Status: ${this.formatTitleCase(this.currentChat.status)}` : '',
             ].filter(Boolean);
             this.chatModalSubtitle.textContent = subtitleParts.join(' • ');
         }
@@ -600,34 +626,80 @@ class CsSupportApp {
             this.updateUpvoteButton(this.chatModalUpvote, this.currentChat.upvote_count, this.currentChat.has_upvoted);
         }
 
-        if (this.chatMetaPriority) {
-            this.populateSelect(this.chatMetaPriority, this.meta.priorities, this.currentChat.priority);
-        }
-
-        if (this.chatMetaStatus) {
-            this.populateSelect(this.chatMetaStatus, this.meta.statuses, this.currentChat.status);
-            if (!this.config.isAdmin) {
-                this.chatMetaStatus.disabled = true;
+        if (this.chatMetaSummary) {
+            if (isAdmin) {
+                this.chatMetaSummary.classList.add('hidden');
+                this.chatMetaSummary.innerHTML = '';
             } else {
-                this.chatMetaStatus.disabled = false;
+                this.chatMetaSummary.classList.remove('hidden');
+                this.renderChatSummary();
             }
         }
 
-        if (this.chatMetaCategory) {
-            this.populateDatalist('cs-category-list', this.meta.categories);
-            this.chatMetaCategory.value = this.currentChat.category || '';
+        if (this.chatMetaForm) {
+            this.chatMetaForm.classList.toggle('hidden', !isAdmin);
         }
 
-        if (this.chatMetaAssigned) {
-            this.populateAssigneeSelect();
-        }
+        if (isAdmin) {
+            if (this.chatMetaPriority) {
+                this.populateSelect(this.chatMetaPriority, this.meta.priorities, this.currentChat.priority);
+                this.chatMetaPriority.disabled = false;
+            }
 
-        if (this.chatMetaTags) {
-            this.renderTagSelector(this.chatMetaTags, this.currentChat.tags || []);
-        }
+            if (this.chatMetaStatus) {
+                this.populateSelect(this.chatMetaStatus, this.meta.statuses, this.currentChat.status);
+                this.chatMetaStatus.disabled = false;
+            }
 
-        if (this.chatMetaCustomTags) {
-            this.chatMetaCustomTags.value = '';
+            if (this.chatMetaCategory) {
+                this.populateDatalist('cs-category-list', this.meta.categories);
+                this.chatMetaCategory.value = this.currentChat.category || '';
+                this.chatMetaCategory.disabled = false;
+                this.chatMetaCategory.removeAttribute('readonly');
+            }
+
+            if (this.chatMetaAssigned) {
+                this.populateAssigneeSelect();
+            }
+
+            if (this.chatMetaTags) {
+                this.renderTagSelector(this.chatMetaTags, this.currentChat.tags || []);
+            }
+
+            if (this.chatMetaCustomTags) {
+                this.chatMetaCustomTags.value = '';
+                this.chatMetaCustomTags.disabled = false;
+            }
+        } else {
+            if (this.chatMetaPriority) {
+                this.chatMetaPriority.innerHTML = '';
+                this.chatMetaPriority.disabled = true;
+            }
+
+            if (this.chatMetaStatus) {
+                this.chatMetaStatus.innerHTML = '';
+                this.chatMetaStatus.disabled = true;
+            }
+
+            if (this.chatMetaCategory) {
+                this.chatMetaCategory.value = this.currentChat.category || '';
+                this.chatMetaCategory.disabled = true;
+                this.chatMetaCategory.setAttribute('readonly', 'readonly');
+            }
+
+            if (this.chatMetaAssigned) {
+                this.chatMetaAssigned.innerHTML = '';
+                this.chatMetaAssigned.disabled = true;
+            }
+
+            if (this.chatMetaTags) {
+                this.chatMetaTags.innerHTML = '';
+            }
+
+            if (this.chatMetaCustomTags) {
+                this.chatMetaCustomTags.value = '';
+                this.chatMetaCustomTags.disabled = true;
+            }
         }
 
         if (this.chatThreadEl) {
@@ -659,11 +731,17 @@ class CsSupportApp {
             });
         }
 
+        if (this.messageForm) {
+            this.messageForm.classList.toggle('hidden', !isAdmin);
+        }
+
         if (this.messageBody) {
             this.messageBody.value = '';
+            this.messageBody.disabled = !isAdmin;
         }
         if (this.messageFileInput) {
             this.messageFileInput.value = '';
+            this.messageFileInput.disabled = !isAdmin;
         }
         if (this.messagePreview) {
             this.messagePreview.innerHTML = '';
@@ -726,6 +804,37 @@ class CsSupportApp {
             });
             container.appendChild(button);
         });
+    }
+
+    formatAssignedDisplay(assigned) {
+        if (!assigned) {
+            return this.escapeHtml('Unassigned');
+        }
+        const name = assigned.first_name || assigned.name || 'Support';
+        const emoji = assigned.earthling_emoji ? ` ${assigned.earthling_emoji}` : '';
+        return this.escapeHtml(`${name}${emoji}`);
+    }
+
+    renderChatSummary() {
+        if (!this.chatMetaSummary || !this.currentChat) {
+            return;
+        }
+        const summaryItems = [
+            { label: 'Priority', value: this.escapeHtml(this.formatTitleCase(this.currentChat.priority) || '') },
+            { label: 'Status', value: this.escapeHtml(this.formatTitleCase(this.currentChat.status) || '') },
+            { label: 'Category', value: this.currentChat.category ? this.escapeHtml(this.currentChat.category) : '' },
+            { label: 'Assigned to', value: this.formatAssignedDisplay(this.currentChat.assigned_to) },
+            { label: 'Tags', value: this.formatTagText(this.currentChat.tags) },
+        ];
+
+        this.chatMetaSummary.innerHTML = summaryItems
+            .map(({ label, value }) => {
+                const safeLabel = this.escapeHtml(label);
+                const hasValue = typeof value === 'string' ? value.trim() !== '' : Boolean(value);
+                const safeValue = hasValue ? value : '—';
+                return `<div class="cs-chat-meta-summary__item"><span class="cs-chat-meta-summary__label">${safeLabel}</span><span>${safeValue}</span></div>`;
+            })
+            .join('');
     }
 
     populateDatalist(listId, options) {
@@ -1065,6 +1174,17 @@ class CsSupportApp {
         } catch (error) {
             return value;
         }
+    }
+
+    formatTitleCase(value) {
+        if (value === null || value === undefined) {
+            return '';
+        }
+        return String(value)
+            .toLowerCase()
+            .split('_')
+            .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+            .join(' ');
     }
 
     createMetaText(text) {
