@@ -403,12 +403,31 @@ max-height: 200px;
     if (!empty($params)) {
         $profile_url .= '?' . implode('&', $params);
     }
+
+    $support_chat_url = null;
+    if (!empty($buwana_id) && !empty($client_id)) {
+        $lang_segment = isset($lang) && $lang !== '' ? '/' . rawurlencode($lang) : '/en';
+        $support_chat_url = $lang_segment . '/feedback.php';
+        $support_query = http_build_query([
+            'buwana' => $buwana_id,
+            'app' => $client_id,
+        ]);
+        if ($support_query) {
+            $support_chat_url .= '?' . $support_query;
+        }
+    }
    ?>
     <div class="menu-page-item">
         <a href="<?= htmlspecialchars($app_info['app_dashboard_url']) ?>">Dashboard</a>
           <span class="status-circle" style="background-color: GREEN;" title="Terms of Use"></span>
 
       </div>
+   <?php if (!empty($support_chat_url)): ?>
+      <div class="menu-page-item">
+        <a href="<?= htmlspecialchars($support_chat_url) ?>">Support Chats</a>
+        <span class="status-circle" style="background-color: DODGERBLUE;" title="Support chats"></span>
+      </div>
+   <?php endif; ?>
    <div class="menu-page-item">
      <a href="<?= htmlspecialchars($profile_url) ?>">Edit user profile</a>
        <span class="status-circle" style="background-color: LIMEGREEN;" title="Terms of Use"></span>
@@ -433,35 +452,21 @@ max-height: 200px;
   <span class="status-circle" style="background-color: YELLOW;" title="Terms of Use"></span>
 </div>
 <div class="menu-page-item">
-<a href="#" onclick="openBuwanaPrivacy(); return false;" data-lang-id="1000-privacy-policy">Privacy</a>
-
-  <span class="status-circle" style="background-color: RED;" title="Privacy Policy"></span>
-</div>
-
-<div class="menu-page-item">
         <a href="javascript:void(0);" onclick="openAboutApp()">
           About <?= htmlspecialchars($app_info['app_display_name']) ?>
         </a>
     <span class="status-circle" style="background-color: fuchsia;" title="About the app"></span>
     </div>
 
-<div class="menu-page-item">
-        <a href="javascript:void(0);" onclick="openAboutEarthen()" data-lang-id="1000-about-earthen">
-          About Earthen
-        </a>
-    <span class="status-circle" style="background-color: fuchsia;" title="Under development"></span>
-    </div>
-
-
-<div class="menu-page-item">
-  <a href="javascript:void(0);" onclick="openAboutBuwana()" data-lang-id="1000-about-buwana">
-    About Buwana
-  </a>
-  <span class="status-circle" style="background-color: Blue;" title="About the Buwana Project"></span>
-</div>
-
-
 <h4 class="app-slogan" style="margin-top:30px"><?= htmlspecialchars($app_info['app_slogan']) ?></h4>
+
+<p class="app-slogan-links" style="margin:0 auto 12px; text-align:center; font-family: 'Mulish', sans-serif; font-size:0.85rem;">
+    <a href="javascript:void(0);" onclick="openAboutBuwana(); return false;">Buwana</a>
+    <span style="margin: 0 6px;">|</span>
+    <a href="javascript:void(0);" onclick="openBuwanaPrivacy(); return false;">Privacy</a>
+    <span style="margin: 0 6px;">|</span>
+    <a href="javascript:void(0);" onclick="openAboutEarthen(); return false;">Earthen</a>
+</p>
 
 <p style="margin:auto;margin-bottom: 5px;font-size: smaller; text-align: center;" data-lang-id="1000-authentication-by" >Authentication by</p>
 <div class="buwana-word-mark" alt="Buwana Logo" title="Authentication by Buwana" onclick="navigateTo('index.php')" style="cursor:pointer;"></div>

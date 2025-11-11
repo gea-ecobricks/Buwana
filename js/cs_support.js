@@ -8,25 +8,22 @@ class CsSupportApp {
         this.adminGlobalEl = document.getElementById('cs-admin-global');
         this.newChatButton = document.getElementById('cs-new-chat-btn');
         this.refreshButton = document.getElementById('cs-refresh-btn');
-        this.chatModal = document.getElementById('cs-chat-modal');
-        this.chatModalClose = this.chatModal?.querySelector('[data-close]');
-        this.chatModalTitle = document.getElementById('cs-chat-modal-title');
-        this.chatModalSubtitle = document.getElementById('cs-chat-modal-subtitle');
-        this.chatMetaForm = document.getElementById('cs-chat-meta-form');
-        this.chatMetaPriority = document.getElementById('cs-chat-meta-priority');
-        this.chatMetaStatus = document.getElementById('cs-chat-meta-status');
-        this.chatMetaCategory = document.getElementById('cs-chat-meta-category');
-        this.chatMetaAssigned = document.getElementById('cs-chat-meta-assigned');
-        this.chatMetaTags = document.getElementById('cs-chat-meta-tags');
-        this.chatMetaCustomTags = document.getElementById('cs-chat-meta-custom-tags');
-        this.chatMetaSaveBtn = document.getElementById('cs-chat-meta-save');
-        this.chatThreadEl = document.getElementById('cs-chat-thread');
-        this.messageForm = document.getElementById('cs-message-form');
-        this.messageBody = document.getElementById('cs-message-body');
-        this.messageFileInput = document.getElementById('cs-message-attachments');
-        this.messagePreview = document.getElementById('cs-message-attachment-preview');
-        this.chatModalUpvote = document.getElementById('cs-chat-modal-upvote');
         this.modalContentBox = document.getElementById('modal-content-box');
+        this.chatModalTitle = null;
+        this.chatModalSubtitle = null;
+        this.chatMetaForm = null;
+        this.chatMetaPriority = null;
+        this.chatMetaStatus = null;
+        this.chatMetaCategory = null;
+        this.chatMetaAssigned = null;
+        this.chatMetaTags = null;
+        this.chatMetaCustomTags = null;
+        this.chatThreadEl = null;
+        this.messageForm = null;
+        this.messageBody = null;
+        this.messageFileInput = null;
+        this.messagePreview = null;
+        this.chatModalUpvote = null;
         this.newChatForm = null;
         this.newChatAppSelect = null;
         this.newChatPriority = null;
@@ -49,6 +46,25 @@ class CsSupportApp {
         this.currentMessages = [];
         this.pendingMessageFiles = [];
         this.pendingNewChatFiles = [];
+
+        this.handleChatMetaSubmit = (event) => {
+            event.preventDefault();
+            this.submitChatMeta();
+        };
+        this.handleMessageSubmit = (event) => {
+            event.preventDefault();
+            this.submitMessage();
+        };
+        this.handleMessageFileChange = (event) => {
+            this.pendingMessageFiles = Array.from(event.target.files || []);
+            this.renderAttachmentPreview(this.pendingMessageFiles, this.messagePreview);
+        };
+        this.handleModalUpvote = (event) => {
+            event.preventDefault();
+            if (this.currentChat) {
+                this.toggleUpvote(this.currentChat.id);
+            }
+        };
     }
 
     init() {
@@ -73,47 +89,122 @@ class CsSupportApp {
             this.adminSectionEl.addEventListener('click', (event) => this.handleTableClick(event));
         }
 
-        if (this.chatModalClose) {
-            this.chatModalClose.addEventListener('click', () => this.closeModal(this.chatModal));
+    }
+
+    buildChatModalShell() {
+        return `
+            <section class="cs-chat-modal">
+                <header class="cs-chat-modal__header">
+                    <div>
+                        <h2 id="cs-chat-modal-title" class="cs-chat-modal__title"></h2>
+                        <div id="cs-chat-modal-subtitle" class="cs-chat-modal__subtitle"></div>
+                    </div>
+                    <button type="button" id="cs-chat-modal-upvote" class="cs-upvote-toggle" data-chat-upvote="" aria-pressed="false" aria-label="Add upvote">
+                        <span class="cs-upvote-count">0</span>
+                        <span class="cs-upvote-icon" aria-hidden="true">+</span>
+                    </button>
+                </header>
+                <div class="cs-chat-modal__body">
+                    <div id="cs-chat-loading" class="cs-loading">
+                        <span>Loading chat…</span>
+                    </div>
+                    <form id="cs-chat-meta-form" class="cs-form cs-chat-meta">
+                        <div class="cs-form__row">
+                            <div class="cs-form__field">
+                                <label for="cs-chat-meta-priority">Priority</label>
+                                <select id="cs-chat-meta-priority" name="priority"></select>
+                            </div>
+                            <div class="cs-form__field">
+                                <label for="cs-chat-meta-status">Status</label>
+                                <select id="cs-chat-meta-status" name="status"></select>
+                            </div>
+                            <div class="cs-form__field">
+                                <label for="cs-chat-meta-category">Category</label>
+                                <input type="text" id="cs-chat-meta-category" name="category" list="cs-category-list" placeholder="Select or type a category">
+                            </div>
+                            <div class="cs-form__field">
+                                <label for="cs-chat-meta-assigned">Assigned to</label>
+                                <select id="cs-chat-meta-assigned" name="assigned_to"></select>
+                            </div>
+                        </div>
+                        <div class="cs-form__field">
+                            <label>Tags</label>
+                            <div id="cs-chat-meta-tags" class="cs-tag-list"></div>
+                            <input type="text" id="cs-chat-meta-custom-tags" placeholder="Add new tags separated by commas">
+                        </div>
+                        <button id="cs-chat-meta-save" type="submit" class="cs-button cs-button--secondary" style="align-self:flex-start;">Save updates</button>
+                    </form>
+                    <div id="cs-chat-thread" class="cs-chat-thread"></div>
+                    <form id="cs-message-form" class="cs-message-input">
+                        <label for="cs-message-body" class="cs-message-input__label">Reply</label>
+                        <textarea id="cs-message-body" name="body" placeholder="Type your response"></textarea>
+                        <div class="cs-message-input__actions">
+                            <div class="cs-message-input__attachments">
+                                <input type="file" id="cs-message-attachments" accept="image/*" multiple>
+                                <div id="cs-message-attachment-preview" class="cs-attachment-preview"></div>
+                            </div>
+                            <button type="submit" class="cs-button">Send reply</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+        `;
+    }
+
+    initializeChatModalElements() {
+        const modalBox = this.modalContentBox || document.getElementById('modal-content-box');
+        if (!modalBox) {
+            return;
         }
 
-        if (this.chatModal) {
-            this.chatModal.addEventListener('click', (event) => {
-                if (event.target === this.chatModal) {
-                    this.closeModal(this.chatModal);
-                }
-            });
-        }
+        this.chatModalTitle = modalBox.querySelector('#cs-chat-modal-title');
+        this.chatModalSubtitle = modalBox.querySelector('#cs-chat-modal-subtitle');
+        this.chatMetaForm = modalBox.querySelector('#cs-chat-meta-form');
+        this.chatMetaPriority = modalBox.querySelector('#cs-chat-meta-priority');
+        this.chatMetaStatus = modalBox.querySelector('#cs-chat-meta-status');
+        this.chatMetaCategory = modalBox.querySelector('#cs-chat-meta-category');
+        this.chatMetaAssigned = modalBox.querySelector('#cs-chat-meta-assigned');
+        this.chatMetaTags = modalBox.querySelector('#cs-chat-meta-tags');
+        this.chatMetaCustomTags = modalBox.querySelector('#cs-chat-meta-custom-tags');
+        this.chatThreadEl = modalBox.querySelector('#cs-chat-thread');
+        this.messageForm = modalBox.querySelector('#cs-message-form');
+        this.messageBody = modalBox.querySelector('#cs-message-body');
+        this.messageFileInput = modalBox.querySelector('#cs-message-attachments');
+        this.messagePreview = modalBox.querySelector('#cs-message-attachment-preview');
+        this.chatModalUpvote = modalBox.querySelector('#cs-chat-modal-upvote');
 
         if (this.chatMetaForm) {
-            this.chatMetaForm.addEventListener('submit', (event) => {
-                event.preventDefault();
-                this.submitChatMeta();
-            });
+            this.chatMetaForm.addEventListener('submit', this.handleChatMetaSubmit);
         }
-
         if (this.messageForm) {
-            this.messageForm.addEventListener('submit', (event) => {
-                event.preventDefault();
-                this.submitMessage();
-            });
+            this.messageForm.addEventListener('submit', this.handleMessageSubmit);
         }
-
         if (this.messageFileInput) {
-            this.messageFileInput.addEventListener('change', (event) => {
-                this.pendingMessageFiles = Array.from(event.target.files || []);
-                this.renderAttachmentPreview(this.pendingMessageFiles, this.messagePreview);
-            });
+            this.messageFileInput.addEventListener('change', this.handleMessageFileChange);
         }
-
         if (this.chatModalUpvote) {
-            this.chatModalUpvote.addEventListener('click', () => {
-                if (this.currentChat) {
-                    this.toggleUpvote(this.currentChat.id);
-                }
-            });
+            this.chatModalUpvote.addEventListener('click', this.handleModalUpvote);
         }
 
+        this.pendingMessageFiles = [];
+    }
+
+    updateUpvoteButton(button, count, hasUpvoted) {
+        if (!button) {
+            return;
+        }
+        const countEl = button.querySelector('.cs-upvote-count');
+        const iconEl = button.querySelector('.cs-upvote-icon');
+        button.dataset.chatUpvote = this.currentChat ? String(this.currentChat.id) : '';
+        button.setAttribute('aria-pressed', hasUpvoted ? 'true' : 'false');
+        button.setAttribute('aria-label', hasUpvoted ? 'Remove upvote' : 'Add upvote');
+        button.classList.toggle('is-upvoted', Boolean(hasUpvoted));
+        if (countEl) {
+            countEl.textContent = String(count ?? 0);
+        }
+        if (iconEl) {
+            iconEl.textContent = hasUpvoted ? '−' : '+';
+        }
     }
 
     handleTableClick(event) {
@@ -206,7 +297,6 @@ class CsSupportApp {
                         <th>Title</th>
                         <th>Priority</th>
                         <th>Status</th>
-                        <th>Category</th>
                         <th>Updated</th>
                         <th>Readers</th>
                         <th>Upvotes</th>
@@ -277,7 +367,6 @@ class CsSupportApp {
                     <th>App</th>
                     <th>Priority</th>
                     <th>Status</th>
-                    <th>Category</th>
                     <th>Updated</th>
                     <th>Readers</th>
                     <th>Upvotes</th>
@@ -347,6 +436,7 @@ class CsSupportApp {
             {
                 data: 'priority',
                 title: 'Priority',
+                className: 'col-priority',
                 render: (priority, type) => {
                     if (type === 'display') {
                         const klass = `cs-pill cs-pill--priority-${priority}`;
@@ -358,16 +448,18 @@ class CsSupportApp {
             {
                 data: 'status',
                 title: 'Status',
-                render: (status) => `<span class="cs-pill">${status}</span>`,
-            },
-            {
-                data: 'category',
-                title: 'Category',
-                render: (category) => (category ? `<span class="cs-pill cs-pill--category">${this.escapeHtml(category)}</span>` : '—'),
+                className: 'col-status',
+                render: (status, type) => {
+                    if (type === 'display') {
+                        return `<span class="cs-pill">${status}</span>`;
+                    }
+                    return status;
+                },
             },
             {
                 data: 'updated_at',
                 title: 'Updated',
+                className: 'col-updated',
                 render: (value, type) => {
                     if (type === 'display') {
                         return this.formatDate(value);
@@ -378,26 +470,39 @@ class CsSupportApp {
             {
                 data: 'readers',
                 title: 'Readers',
+                className: 'col-readers',
                 orderable: false,
-                render: (readers) => this.renderReaders(readers),
+                render: (readers, type) => {
+                    if (type === 'display') {
+                        return this.renderReaders(readers);
+                    }
+                    return Array.isArray(readers) ? readers.length : 0;
+                },
             },
             {
-                data: null,
+                data: 'upvote_count',
                 title: 'Upvotes',
-                render: (row) => {
-                    const btnClass = row.has_upvoted ? 'cs-button cs-button--secondary' : 'cs-button';
-                    return `
-                        <div class="cs-upvote-group">
-                            <span>${row.upvote_count}</span>
-                            <button type="button" class="${btnClass}" data-chat-upvote="${row.id}">
-                                ${row.has_upvoted ? 'Unvote' : 'Upvote'}
-                            </button>
-                        </div>`;
+                className: 'col-upvotes',
+                render: (count, type, row) => {
+                    const safeCount = Number.isFinite(count) ? count : 0;
+                    if (type !== 'display') {
+                        return safeCount;
+                    }
+                    const isActive = row.has_upvoted;
+                    const pressed = isActive ? 'true' : 'false';
+                    const label = isActive ? 'Remove upvote' : 'Add upvote';
+                    const icon = isActive ? '−' : '+';
+                    const activeClass = isActive ? ' is-upvoted' : '';
+                    return `<button type="button" class="cs-upvote-toggle${activeClass}" data-chat-upvote="${row.id}" aria-pressed="${pressed}" aria-label="${label}">
+                            <span class="cs-upvote-count">${safeCount}</span>
+                            <span class="cs-upvote-icon" aria-hidden="true">${icon}</span>
+                        </button>`;
                 },
             },
             {
                 data: null,
                 title: 'Actions',
+                className: 'col-actions',
                 orderable: false,
                 render: (row) => `
                     <button type="button" class="cs-button cs-button--secondary" data-chat-open="${row.id}">
@@ -410,7 +515,7 @@ class CsSupportApp {
             $(tableElement).DataTable().destroy();
         }
 
-        const updatedColumnIndex = includeAppColumn ? 5 : 4;
+        const updatedColumnIndex = includeAppColumn ? 4 : 3;
         const table = $(tableElement).DataTable({
             data,
             columns,
@@ -442,8 +547,16 @@ class CsSupportApp {
     }
 
     async openChatModal(chatId) {
+        if (typeof window.openModal !== 'function') {
+            console.warn('Modal system is not available');
+            return;
+        }
+
+        window.openModal(this.buildChatModalShell());
+        this.initializeChatModalElements();
+        this.setModalLoading(true);
+
         try {
-            this.setModalLoading(true);
             const payload = await this.request('get_chat.php', {
                 method: 'POST',
                 body: { chat_id: chatId },
@@ -452,13 +565,15 @@ class CsSupportApp {
             this.currentChat = chat;
             this.currentMessages = messages || [];
             this.populateChatModal();
-            this.openModal(this.chatModal);
             const messageIds = this.currentMessages.map((message) => message.id);
             if (messageIds.length) {
                 this.markMessagesRead(chatId, messageIds);
             }
         } catch (error) {
             console.error('Unable to open chat', error);
+            if (this.chatThreadEl) {
+                this.chatThreadEl.innerHTML = '<div class="cs-empty-state">Unable to load chat at this time.</div>';
+            }
         } finally {
             this.setModalLoading(false);
         }
@@ -482,8 +597,7 @@ class CsSupportApp {
         }
 
         if (this.chatModalUpvote) {
-            this.chatModalUpvote.dataset.chatUpvote = this.currentChat.id;
-            this.chatModalUpvote.textContent = this.currentChat.has_upvoted ? `Unvote (${this.currentChat.upvote_count})` : `Upvote (${this.currentChat.upvote_count})`;
+            this.updateUpvoteButton(this.chatModalUpvote, this.currentChat.upvote_count, this.currentChat.has_upvoted);
         }
 
         if (this.chatMetaPriority) {
@@ -776,7 +890,7 @@ class CsSupportApp {
                     this.currentChat.has_upvoted = response.data.has_upvoted;
                     this.currentChat.upvote_count = response.data.upvote_count;
                     if (this.chatModalUpvote) {
-                        this.chatModalUpvote.textContent = response.data.has_upvoted ? `Unvote (${response.data.upvote_count})` : `Upvote (${response.data.upvote_count})`;
+                        this.updateUpvoteButton(this.chatModalUpvote, response.data.upvote_count, response.data.has_upvoted);
                     }
                 }
             }
@@ -898,18 +1012,6 @@ class CsSupportApp {
         const overlay = document.getElementById('cs-chat-loading');
         if (overlay) {
             overlay.style.display = isLoading ? 'flex' : 'none';
-        }
-    }
-
-    openModal(modal) {
-        if (modal) {
-            modal.classList.add('cs-modal--open');
-        }
-    }
-
-    closeModal(modal) {
-        if (modal) {
-            modal.classList.remove('cs-modal--open');
         }
     }
 

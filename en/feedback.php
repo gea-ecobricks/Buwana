@@ -197,66 +197,6 @@ function displayValue($value): string
     </div>
 </div>
 
-<div id="cs-chat-modal" class="cs-modal">
-    <div class="cs-modal__dialog">
-        <div class="cs-modal__header">
-            <div>
-                <h2 id="cs-chat-modal-title" class="cs-dashboard__title" style="font-size:1.5rem;margin:0;"></h2>
-                <div class="cs-dashboard__subtitle" id="cs-chat-modal-subtitle"></div>
-            </div>
-            <div style="display:flex;gap:10px;align-items:center;">
-                <button type="button" id="cs-chat-modal-upvote" class="cs-button cs-button--secondary">Upvote</button>
-                <button type="button" class="cs-modal__close" data-close>&times;</button>
-            </div>
-        </div>
-        <div class="cs-modal__body" style="position:relative;">
-            <div id="cs-chat-loading" class="cs-loading">
-                <span>Loading chat…</span>
-            </div>
-            <form id="cs-chat-meta-form" class="cs-form">
-                <div class="cs-form__row">
-                    <div class="cs-form__field">
-                        <label for="cs-chat-meta-priority">Priority</label>
-                        <select id="cs-chat-meta-priority" name="priority"></select>
-                    </div>
-                    <div class="cs-form__field">
-                        <label for="cs-chat-meta-status">Status</label>
-                        <select id="cs-chat-meta-status" name="status"></select>
-                    </div>
-                    <div class="cs-form__field">
-                        <label for="cs-chat-meta-category">Category</label>
-                        <input type="text" id="cs-chat-meta-category" name="category" list="cs-category-list" placeholder="Select or type a category">
-                    </div>
-                    <div class="cs-form__field">
-                        <label for="cs-chat-meta-assigned">Assigned to</label>
-                        <select id="cs-chat-meta-assigned" name="assigned_to"></select>
-                    </div>
-                </div>
-                <div class="cs-form__field">
-                    <label>Tags</label>
-                    <div id="cs-chat-meta-tags" class="cs-tag-list"></div>
-                    <input type="text" id="cs-chat-meta-custom-tags" placeholder="Add new tags separated by commas">
-                </div>
-                <button id="cs-chat-meta-save" type="submit" class="cs-button cs-button--secondary" style="align-self:flex-start;">Save updates</button>
-            </form>
-
-            <div id="cs-chat-thread" class="cs-chat-thread"></div>
-
-            <form id="cs-message-form" class="cs-message-input">
-                <label for="cs-message-body" style="font-weight:600;">Reply</label>
-                <textarea id="cs-message-body" name="body" placeholder="Type your response"></textarea>
-                <div class="cs-message-input__actions">
-                    <div>
-                        <input type="file" id="cs-message-attachments" accept="image/*" multiple>
-                        <div id="cs-message-attachment-preview" class="cs-attachment-preview"></div>
-                    </div>
-                    <button type="submit" class="cs-button">Send reply</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
 </div>  <!-- close main div that was opened in the header-2025-->
 
 <datalist id="cs-category-list"></datalist>
