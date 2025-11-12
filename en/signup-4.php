@@ -204,7 +204,7 @@ https://github.com/gea-ecobricks/buwana/-->
                 <div class="form-item" id="community-section" style="display:none;padding-bottom:10px;">
                              <p data-lang-id="010-are-you-part-community">Are you part of a local community on Buwana?</p>
                              <div class="float-label-group" style="margin-top: -32px;">
-                               <input type="text" id="community_name" name="community_name" aria-label="Community Name" style="padding-left:45px;margin-top: 25px;" placeholder=" ">
+                               <input type="text" id="community_name" name="community_name" aria-label="Community Name" style="padding: 11px;padding-left:45px;margin-top: 22px;" placeholder=" ">
                                <label for="community_name" data-lang-id="011-community-connect" style="border-radius:10px 10px 0px 0px;padding-bottom:10px;padding-left:27px;">Select your community...</label>
                              <div id="community-loading-spinner" class="spinner" style="display:none;"></div>
                                                  <div id="community-pin" class="pin-icon">👥</div>
