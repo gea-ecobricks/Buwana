@@ -19,6 +19,7 @@ class CsSupportApp {
         this.chatMetaTags = null;
         this.chatMetaCustomTags = null;
         this.chatMetaSummary = null;
+        this.chatMetaSummaryParent = null;
         this.chatThreadEl = null;
         this.messageForm = null;
         this.messageBody = null;
@@ -162,6 +163,7 @@ class CsSupportApp {
         this.chatModalTitle = modalBox.querySelector('#cs-chat-modal-title');
         this.chatModalSubtitle = modalBox.querySelector('#cs-chat-modal-subtitle');
         this.chatMetaSummary = modalBox.querySelector('#cs-chat-meta-summary');
+        this.chatMetaSummaryParent = this.chatMetaSummary ? this.chatMetaSummary.parentElement : null;
         this.chatMetaForm = modalBox.querySelector('#cs-chat-meta-form');
         this.chatMetaPriority = modalBox.querySelector('#cs-chat-meta-priority');
         this.chatMetaStatus = modalBox.querySelector('#cs-chat-meta-status');
@@ -276,6 +278,10 @@ class CsSupportApp {
 
             const header = document.createElement('div');
             header.className = 'cs-inbox__header';
+
+            const heading = document.createElement('div');
+            heading.className = 'cs-inbox__heading';
+
             const title = document.createElement('div');
             title.className = 'cs-inbox__title';
             title.textContent = `${app.is_current ? 'Your' : 'Past'} ${app.app_display_name} Support Chats`;
@@ -288,8 +294,19 @@ class CsSupportApp {
             metaRow.appendChild(pill);
             metaRow.appendChild(this.createMetaText(`${chats.length} conversation${chats.length === 1 ? '' : 's'}`));
 
-            header.appendChild(title);
-            header.appendChild(metaRow);
+            heading.appendChild(title);
+            heading.appendChild(metaRow);
+            header.appendChild(heading);
+
+            const iconUrl = this.resolveAssetUrl(app.app_square_icon_url);
+            if (iconUrl) {
+                const icon = document.createElement('img');
+                icon.className = 'cs-inbox__icon';
+                icon.src = iconUrl;
+                icon.alt = `${app.app_display_name} icon`;
+                icon.loading = 'lazy';
+                header.appendChild(icon);
+            }
 
             const tableId = `cs-chat-table-${app.app_id}-${Math.random().toString(36).slice(2, 7)}`;
             const table = document.createElement('table');
@@ -299,12 +316,12 @@ class CsSupportApp {
             table.innerHTML = `
                 <thead>
                     <tr>
-                        <th>Title</th>
+                        <th>Chat subjects</th>
+                        <th>Updated</th>
                         <th>Priority</th>
                         <th>Status</th>
-                        <th>Updated</th>
-                        <th>Readers</th>
                         <th>Upvotes</th>
+                        <th>Readers</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -356,10 +373,13 @@ class CsSupportApp {
         wrapper.className = 'cs-inbox';
         const header = document.createElement('div');
         header.className = 'cs-inbox__header';
+        const heading = document.createElement('div');
+        heading.className = 'cs-inbox__heading';
         const hTitle = document.createElement('div');
         hTitle.className = 'cs-inbox__title';
         hTitle.textContent = title;
-        header.appendChild(hTitle);
+        heading.appendChild(hTitle);
+        header.appendChild(heading);
         wrapper.appendChild(header);
 
         const table = document.createElement('table');
@@ -368,13 +388,13 @@ class CsSupportApp {
         table.innerHTML = `
             <thead>
                 <tr>
-                    <th>Title</th>
+                    <th>Chat subjects</th>
+                    <th>Updated</th>
                     <th>App</th>
                     <th>Priority</th>
                     <th>Status</th>
-                    <th>Updated</th>
-                    <th>Readers</th>
                     <th>Upvotes</th>
+                    <th>Readers</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -410,19 +430,29 @@ class CsSupportApp {
         const columns = [
             {
                 data: 'title',
-                title: 'Title',
+                title: 'Chat subjects',
                 render: (data, type, row) => {
                     if (type === 'display') {
                         const tagText = this.formatTagText(row.tags);
                         const safeTitle = this.escapeHtml(data);
-                        const tagsMarkup = tagText ? `<span class="cs-chat-title__tags">${tagText}</span>` : '';
+                        const tooltip = tagText ? ` title="${tagText}"` : '';
                         return `
                             <div class="cs-chat-title">
-                                <span class="cs-chat-title__text">${safeTitle}</span>
-                                ${tagsMarkup}
+                                <span class="cs-chat-title__text"${tooltip}>${safeTitle}</span>
                             </div>`;
                     }
                     return data;
+                },
+            },
+            {
+                data: 'updated_at',
+                title: 'Updated',
+                className: 'col-updated',
+                render: (value, type) => {
+                    if (type === 'display') {
+                        return this.formatDate(value);
+                    }
+                    return value;
                 },
             },
         ];
@@ -473,29 +503,6 @@ class CsSupportApp {
                 },
             },
             {
-                data: 'updated_at',
-                title: 'Updated',
-                className: 'col-updated',
-                render: (value, type) => {
-                    if (type === 'display') {
-                        return this.formatDate(value);
-                    }
-                    return value;
-                },
-            },
-            {
-                data: 'readers',
-                title: 'Readers',
-                className: 'col-readers',
-                orderable: false,
-                render: (readers, type) => {
-                    if (type === 'display') {
-                        return this.renderReaders(readers);
-                    }
-                    return Array.isArray(readers) ? readers.length : 0;
-                },
-            },
-            {
                 data: 'upvote_count',
                 title: 'Upvotes',
                 className: 'col-upvotes',
@@ -522,6 +529,18 @@ class CsSupportApp {
                 },
             },
             {
+                data: 'readers',
+                title: 'Readers',
+                className: 'col-readers',
+                orderable: false,
+                render: (readers, type) => {
+                    if (type === 'display') {
+                        return this.renderReaders(readers);
+                    }
+                    return Array.isArray(readers) ? readers.length : 0;
+                },
+            },
+            {
                 data: null,
                 title: 'Actions',
                 className: 'col-actions',
@@ -537,7 +556,7 @@ class CsSupportApp {
             $(tableElement).DataTable().destroy();
         }
 
-        const updatedColumnIndex = includeAppColumn ? 4 : 3;
+        const updatedColumnIndex = 1;
         const table = $(tableElement).DataTable({
             data,
             columns,
@@ -628,11 +647,17 @@ class CsSupportApp {
 
         if (this.chatMetaSummary) {
             if (isAdmin) {
+                if (this.chatMetaSummaryParent && this.chatMetaSummary.parentElement !== this.chatMetaSummaryParent) {
+                    this.chatMetaSummaryParent.appendChild(this.chatMetaSummary);
+                }
                 this.chatMetaSummary.classList.add('hidden');
                 this.chatMetaSummary.innerHTML = '';
             } else {
                 this.chatMetaSummary.classList.remove('hidden');
                 this.renderChatSummary();
+                if (this.chatThreadEl && this.chatMetaSummary.parentElement !== this.chatThreadEl) {
+                    this.chatThreadEl.prepend(this.chatMetaSummary);
+                }
             }
         }
 
@@ -1185,6 +1210,26 @@ class CsSupportApp {
             .split('_')
             .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
             .join(' ');
+    }
+
+    resolveAssetUrl(value) {
+        if (value === null || value === undefined) {
+            return '';
+        }
+        const trimmed = String(value).trim();
+        if (trimmed === '') {
+            return '';
+        }
+        if (/^https?:/i.test(trimmed)) {
+            return trimmed;
+        }
+        if (trimmed.startsWith('../')) {
+            return trimmed;
+        }
+        if (trimmed.startsWith('/')) {
+            return `..${trimmed}`;
+        }
+        return `../${trimmed.replace(/^\/+/, '')}`;
     }
 
     createMetaText(text) {

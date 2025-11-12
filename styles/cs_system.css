@@ -91,9 +91,9 @@
 }
 
 .cs-button--secondary {
-    background: transparent;
+    background: #7070707d;
     color: var(--text-color);
-    border: 1px solid var(--border-color, var(--outline));
+    border: 1px solid transparent;
 }
 
 .cs-button:hover {
@@ -112,9 +112,18 @@
 
 .cs-inbox__header {
     display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 16px;
+    position: relative;
+}
+
+.cs-inbox__heading {
+    display: flex;
     flex-direction: column;
     gap: 10px;
-    margin-bottom: 16px;
+    flex: 1;
 }
 
 .cs-inbox__title {
@@ -127,12 +136,29 @@
 }
 
 .cs-inbox__meta {
-    display: flex;
+    display: inline-flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 8px;
     align-items: center;
     color: var(--text-2);
     font-size: 0.9rem;
+    background: var(--base);
+    border: 1px solid var(--outline);
+    border-radius: 12px;
+    padding: 6px 12px;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+    max-width: 100%;
+}
+
+.cs-inbox__icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    object-fit: cover;
+    background: var(--base);
+    border: 1px solid var(--outline);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+    flex-shrink: 0;
 }
 
 .cs-pill {
@@ -220,6 +246,11 @@
     align-items: baseline;
 }
 
+.cs-chat-title__text[title] {
+    cursor: help;
+}
+
+
 .cs-chat-title__text {
     font-weight: 700;
     color: var(--text-color);
@@ -292,7 +323,8 @@
     border: 1px solid var(--outline);
     border-radius: 12px;
     padding: 16px;
-    margin-bottom: 20px;
+    margin-bottom: 0;
+    width: 100%;
     display: grid;
     gap: 8px;
     font-size: 0.9rem;
@@ -340,9 +372,9 @@
     width: min(960px, 100%);
     margin: 0 auto;
     padding: 24px 28px;
-    background: var(--lighter);
-    border-radius: 18px;
-    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.35);
+    background: transparent;
+    border-radius: 0;
+    box-shadow: none;
     display: flex;
     flex-direction: column;
     gap: 20px;
