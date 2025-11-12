@@ -606,7 +606,7 @@ table.dataTable tbody td.sorting_2,
 table.dataTable tbody th.sorting_2,
 table.dataTable tbody td.sorting_3,
 table.dataTable tbody th.sorting_3 {
-    background-color: var(--table-background-hover);
+    background-color: var(--accordion-background);
     color: var(--text-color);
 }
 

@@ -20,11 +20,22 @@ if ($currentClientId) {
     }
 }
 
+if ($currentApp && isset($currentApp['app_id'])) {
+    $currentApp['app_id'] = intval($currentApp['app_id']);
+}
+
 $connectedApps = cs_fetch_connected_apps($buwana_conn, intval($user['buwana_id']));
-$chats = cs_fetch_chats($buwana_conn, [
+$chatFilters = [
     'current_user_id' => intval($user['buwana_id']),
     'owner_id' => intval($user['buwana_id']),
-]);
+];
+
+if (!$isAdmin && $currentApp && isset($currentApp['app_id'])) {
+    $chatFilters['app_id'] = intval($currentApp['app_id']);
+    $connectedApps = [intval($currentApp['app_id']) => $currentApp];
+}
+
+$chats = cs_fetch_chats($buwana_conn, $chatFilters);
 
 $appInboxes = cs_group_chats_by_app($chats, $connectedApps, $currentApp);
 
