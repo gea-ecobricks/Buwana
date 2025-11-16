@@ -8,7 +8,7 @@
    version="1.1"
    id="svg6272"
    inkscape:version="1.4.2 (2aeb623e1d, 2025-05-12)"
-   sodipodi:docname="marine-animals-top.svg"
+   sodipodi:docname="turtle-banner.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -56,20 +56,20 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.49497475"
-     inkscape:cx="1022.2744"
-     inkscape:cy="334.36049"
+     inkscape:cx="703.06617"
+     inkscape:cy="221.22341"
      inkscape:document-units="mm"
-     inkscape:current-layer="g15097"
+     inkscape:current-layer="g13186"
      showgrid="false"
      fit-margin-top="0"
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     inkscape:window-width="1920"
-     inkscape:window-height="1129"
+     inkscape:window-width="1033"
+     inkscape:window-height="697"
      inkscape:window-x="0"
      inkscape:window-y="32"
-     inkscape:window-maximized="1"
+     inkscape:window-maximized="0"
      inkscape:showpageshadow="2"
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1" />
@@ -374,36 +374,37 @@
              style="fill:#38200e" />
         </g>
         <g
-           id="g13180">
+           id="g13180"
+           style="fill:#5e7300;fill-opacity:1">
           <path
              id="path13166"
              d="m -2731.056,-701.351 c 0,0 8.154,15.833 -6.376,40.578 0,0 -50.25,47.018 -123.181,47.844 l 2.274,-11.504 c 6.885,-40.186 38.374,-78.797 73.471,-88.006 10.599,-2.85 21.164,-2.925 31.336,0.24 7.868,2.452 15.445,6.282 22.476,10.848 z"
              stroke-miterlimit="10"
              inkscape:connector-curvature="0"
-             style="fill:#875f2a;stroke:#231f20;stroke-width:2.155;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10" />
+             style="fill:#5e7300;stroke:#231f20;stroke-width:2.155;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;fill-opacity:1" />
           <path
              id="path13168"
              d="m -2739.04,-706.067 c 0,0 9.398,25.563 -9.931,39.558 0,0 -17.712,17.726 -47.007,28.562 -18.033,10.269 -35.32,12.88 -35.32,12.88 0,0 -17.381,8.806 -27.514,3.046"
              stroke-miterlimit="10"
              inkscape:connector-curvature="0"
-             style="fill:none;stroke:#231f20;stroke-width:1.0267;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10" />
+             style="fill:#5e7300;stroke:#231f20;stroke-width:1.0267;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;fill-opacity:1" />
           <polyline
              id="polyline13170"
              points="    -2766.186,-714.481 -2777.076,-698.257 -2807.376,-696.553 -2818.961,-678.39 -2841.257,-667.61 -2840.935,-644.29     -2855.109,-637.881   "
              stroke-miterlimit="10"
-             style="fill:none;stroke:#231f20;stroke-width:1.0267;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10" />
+             style="fill:#5e7300;stroke:#231f20;stroke-width:1.0267;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;fill-opacity:1" />
           <path
              id="path13172"
              d="m -2777.076,-698.257 c 0,0 11.741,15.04 28.105,31.747"
              stroke-miterlimit="10"
              inkscape:connector-curvature="0"
-             style="fill:none;stroke:#231f20;stroke-width:1.0267;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10" />
+             style="fill:#5e7300;stroke:#231f20;stroke-width:1.0267;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;fill-opacity:1" />
           <path
              id="path13174"
              d="m -2818.961,-678.39 c 0,0 11.135,23.526 22.983,40.441"
              stroke-miterlimit="10"
              inkscape:connector-curvature="0"
-             style="fill:none;stroke:#231f20;stroke-width:1.0267;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10" />
+             style="fill:#5e7300;stroke:#231f20;stroke-width:1.0267;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;fill-opacity:1" />
           <line
              id="line13176"
              y2="-625.06799"
@@ -411,7 +412,7 @@
              y1="-644.28998"
              x1="-2840.9351"
              stroke-miterlimit="10"
-             style="fill:none;stroke:#231f20;stroke-width:1.0267;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10" />
+             style="fill:#5e7300;stroke:#231f20;stroke-width:1.0267;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;fill-opacity:1" />
           <line
              id="line13178"
              y2="-699.987"
@@ -419,7 +420,7 @@
              y1="-696.55298"
              x1="-2807.376"
              stroke-miterlimit="10"
-             style="fill:none;stroke:#231f20;stroke-width:1.0267;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10" />
+             style="fill:#5e7300;stroke:#231f20;stroke-width:1.0267;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;fill-opacity:1" />
         </g>
         <path
            id="path13182"
