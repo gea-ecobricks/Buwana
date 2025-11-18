@@ -79,6 +79,7 @@ $email = $email ?? '';
 $earthling_emoji = $earthling_emoji ?? '';
 $country_name = $country_name ?? '';
 $role = $role ?? '';
+$isAdminUser = stripos($role, 'admin') !== false;
 $languages_native_name = $languages_native_name ?? '';
 $language_name_en = $language_name_en ?? '';
 $language_name_es = $language_name_es ?? '';
@@ -213,7 +214,7 @@ function displayValue($value): string
         clientId: '<?= htmlspecialchars($client_id, ENT_QUOTES, 'UTF-8'); ?>',
         currentAppId: <?= intval($app_info['app_id'] ?? 0); ?>,
         currentAppName: '<?= htmlspecialchars($app_info['app_display_name'] ?? ($app_info['app_name'] ?? 'App'), ENT_QUOTES, 'UTF-8'); ?>',
-        isAdmin: <?= (strcasecmp($role ?? '', 'admin') === 0) ? 'true' : 'false'; ?>,
+        isAdmin: <?= $isAdminUser ? 'true' : 'false'; ?>,
     };
 </script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

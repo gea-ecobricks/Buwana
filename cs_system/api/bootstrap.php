@@ -87,7 +87,7 @@ function cs_get_current_user(mysqli $conn): array
 function cs_is_admin_user(array $user): bool
 {
     $role = strtolower(trim($user['role'] ?? ''));
-    return $role === 'admin';
+    return $role !== '' && strpos($role, 'admin') !== false;
 }
 
 /**

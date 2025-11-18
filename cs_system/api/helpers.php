@@ -30,7 +30,7 @@ function cs_fetch_support_staff(mysqli $conn): array
     $staff = [];
     $sql = "SELECT buwana_id, first_name, full_name, earthling_emoji
             FROM users_tb
-            WHERE LOWER(role) = 'admin'
+            WHERE LOWER(role) LIKE '%admin%'
             ORDER BY first_name";
     $result = $conn->query($sql);
     if ($result) {
