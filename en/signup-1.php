@@ -27,6 +27,20 @@ $buwana_id = null;
 
 // ✅ Direct session check instead of calling a function
 if (!empty($_SESSION['buwana_id'])) {
+    $client_id = $app_info['client_id'] ?? ($_SESSION['client_id'] ?? null);
+
+    if (!empty($client_id)) {
+        require_once '../api/check_user_app_connection.php';
+        // Ensure logged-in visitors are only redirected if they are already linked to this app.
+        $connected = check_user_app_connection($buwana_conn, $_SESSION['buwana_id'], $client_id, $lang, false);
+
+        if (!$connected) {
+            $connect_url = "/$lang/app-connect.php?id=" . urlencode($_SESSION['buwana_id']) . "&client_id=" . urlencode($client_id);
+            header("Location: $connect_url");
+            exit();
+        }
+    }
+
     $redirect_url = $_SESSION['redirect_url'] ?? $app_info['app_url'] ?? 'https://gobrik.com';
     echo "<script>
         alert('Looks like you already have an account and are logged in! Let\'s take you to your dashboard.');
