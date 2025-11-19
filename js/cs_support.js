@@ -3,11 +3,16 @@ class CsSupportApp {
         this.config = config;
         this.apiBase = config.apiBase.replace(/\/$/, '');
         this.appInboxesEl = document.getElementById('cs-app-inboxes');
+        this.personalSectionEl = document.getElementById('cs-personal-section');
         this.adminSectionEl = document.getElementById('cs-admin-section');
         this.adminPersonalEl = document.getElementById('cs-admin-personal');
         this.adminGlobalEl = document.getElementById('cs-admin-global');
         this.newChatButton = document.getElementById('cs-new-chat-btn');
-        this.refreshButton = document.getElementById('cs-refresh-btn');
+        this.refreshButtons = Array.from(document.querySelectorAll('.cs-refresh-btn'));
+        const legacyRefresh = document.getElementById('cs-refresh-btn');
+        if (legacyRefresh && !this.refreshButtons.includes(legacyRefresh)) {
+            this.refreshButtons.push(legacyRefresh);
+        }
         this.modalContentBox = document.getElementById('modal-content-box');
         this.chatModalTitle = null;
         this.chatModalSubtitle = null;
@@ -79,8 +84,10 @@ class CsSupportApp {
             this.newChatButton.addEventListener('click', () => this.openNewChatModal());
         }
 
-        if (this.refreshButton) {
-            this.refreshButton.addEventListener('click', () => this.loadDashboard());
+        if (this.refreshButtons.length) {
+            this.refreshButtons.forEach((button) => {
+                button.addEventListener('click', () => this.loadDashboard());
+            });
         }
 
         if (this.appInboxesEl) {
@@ -246,9 +253,21 @@ class CsSupportApp {
             this.connectedApps = data.connected_apps || [];
             this.renderAppInboxes(data.app_inboxes || []);
 
+            if (this.personalSectionEl) {
+                this.personalSectionEl.classList.remove('hidden');
+            }
+
             if (this.adminSectionEl && this.config.isAdmin && data.admin) {
-                this.renderAdminInboxes(data.admin);
-                this.adminSectionEl.classList.remove('hidden');
+                const hasAdminData = (Array.isArray(data.admin.global) && data.admin.global.length) ||
+                    (Array.isArray(data.admin.personal) && data.admin.personal.length);
+                if (hasAdminData) {
+                    this.renderAdminInboxes(data.admin);
+                    this.adminSectionEl.classList.remove('hidden');
+                } else {
+                    this.adminSectionEl.classList.add('hidden');
+                }
+            } else if (this.adminSectionEl) {
+                this.adminSectionEl.classList.add('hidden');
             }
 
             this.updateNewChatOptions();
@@ -256,6 +275,9 @@ class CsSupportApp {
             console.error('Failed to load dashboard', error);
             if (this.appInboxesEl) {
                 this.appInboxesEl.innerHTML = `<div class="cs-empty-state">Unable to load chat inbox at this time.</div>`;
+            }
+            if (this.personalSectionEl) {
+                this.personalSectionEl.classList.remove('hidden');
             }
         } finally {
             this.setLoading(false);
@@ -267,9 +289,16 @@ class CsSupportApp {
             return;
         }
 
+        const hasInboxes = Array.isArray(appInboxes) && appInboxes.length > 0;
+
         this.appInboxesEl.innerHTML = '';
         this.tables.clear();
         this.chatRegistry.clear();
+
+        if (!hasInboxes) {
+            this.appInboxesEl.innerHTML = '<div class="cs-empty-state">No personal support chats yet.</div>';
+            return;
+        }
 
         appInboxes.forEach((section) => {
             const { app, chats } = section;
@@ -356,16 +385,25 @@ class CsSupportApp {
             this.adminGlobalEl.innerHTML = '';
         }
 
-        if (adminData.personal && this.adminPersonalEl) {
-            const tableId = `cs-admin-personal-${Math.random().toString(36).slice(2, 7)}`;
-            const table = this.buildAdminTable(tableId, 'Your assigned chats', this.adminPersonalEl);
-            this.buildDataTable(table, adminData.personal, { includeAppColumn: true });
+        const hasGlobal = Array.isArray(adminData.global) && adminData.global.length;
+        const hasPersonal = Array.isArray(adminData.personal) && adminData.personal.length;
+
+        if (!hasGlobal && this.adminGlobalEl) {
+            this.adminGlobalEl.innerHTML = '<div class="cs-empty-state">No global support chats available.</div>';
         }
 
-        if (adminData.global && this.adminGlobalEl) {
-            const tableId = `cs-admin-global-${Math.random().toString(36).slice(2, 7)}`;
-            const table = this.buildAdminTable(tableId, 'All app support chats', this.adminGlobalEl);
+        if (!hasPersonal && this.adminPersonalEl) {
+            this.adminPersonalEl.innerHTML = '<div class="cs-empty-state">No assigned support chats yet.</div>';
+        }
+
+        if (hasGlobal && this.adminGlobalEl) {
+            const table = this.buildAdminTable('cs-admin-global-table', 'All App Support Chats', this.adminGlobalEl);
             this.buildDataTable(table, adminData.global, { includeAppColumn: true });
+        }
+
+        if (hasPersonal && this.adminPersonalEl) {
+            const table = this.buildAdminTable('cs-admin-personal-table', 'Your Assigned Support Chats', this.adminPersonalEl);
+            this.buildDataTable(table, adminData.personal, { includeAppColumn: true });
         }
     }
 
@@ -587,6 +625,22 @@ class CsSupportApp {
         });
 
         this.tables.set(tableElement.id, { table, includeAppColumn });
+        this.relocateLengthControl(tableElement);
+    }
+
+    relocateLengthControl(tableElement) {
+        if (!tableElement || typeof tableElement.insertAdjacentElement !== 'function') {
+            return;
+        }
+        const wrapper = tableElement.closest('.dataTables_wrapper');
+        if (!wrapper) {
+            return;
+        }
+        const lengthControl = wrapper.querySelector('.dataTables_length');
+        if (lengthControl) {
+            tableElement.insertAdjacentElement('afterend', lengthControl);
+            lengthControl.classList.add('cs-table-length');
+        }
     }
 
     renderReaders(readers) {
