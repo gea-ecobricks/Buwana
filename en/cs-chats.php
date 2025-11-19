@@ -99,24 +99,16 @@ if (!$isAdminUser) {
 
             <div class="cs-dashboard">
                 <div class="cs-dashboard__header">
-                    <div style="text-align:center;width:100%;margin:auto;margin-top:1px">
+                    <div class="cs-dashboard__intro">
                         <div id="status-message">Admin Chat Support</div>
                         <p id="sub-status-message">View and manage support requests from all Buwana users across all Buwana apps</p>
                     </div>
+                    <div id="cs-active-app-icons" class="cs-dashboard__icons" aria-live="polite" aria-label="Apps with open chats"></div>
                 </div>
 
                 <div id="cs-loading" class="cs-loading">
                     <span>Loading support chats…</span>
                 </div>
-
-                <section id="cs-personal-section" class="cs-panel hidden">
-                    <div class="cs-panel__body">
-                        <div id="cs-app-inboxes"></div>
-                    </div>
-                    <div class="cs-panel__actions">
-                        <button type="button" class="cs-button cs-button--secondary cs-refresh-btn">🔄 Refresh</button>
-                    </div>
-                </section>
 
                 <section id="cs-admin-section" class="cs-panel hidden">
                     <div class="cs-panel__body">

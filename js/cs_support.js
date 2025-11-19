@@ -3,7 +3,7 @@ class CsSupportApp {
         this.config = config;
         this.apiBase = config.apiBase.replace(/\/$/, '');
         this.appInboxesEl = document.getElementById('cs-app-inboxes');
-        this.personalSectionEl = document.getElementById('cs-personal-section');
+        this.activeAppIconsEl = document.getElementById('cs-active-app-icons');
         this.adminSectionEl = document.getElementById('cs-admin-section');
         this.adminPersonalEl = document.getElementById('cs-admin-personal');
         this.adminGlobalEl = document.getElementById('cs-admin-global');
@@ -249,13 +249,11 @@ class CsSupportApp {
             });
 
             const { data } = payload;
+            this.resetTableState();
             this.meta = data.meta || {};
             this.connectedApps = data.connected_apps || [];
             this.renderAppInboxes(data.app_inboxes || []);
-
-            if (this.personalSectionEl) {
-                this.personalSectionEl.classList.remove('hidden');
-            }
+            this.renderActiveAppIcons(data.app_inboxes || [], data.admin || {});
 
             if (this.adminSectionEl && this.config.isAdmin && data.admin) {
                 const hasAdminData = (Array.isArray(data.admin.global) && data.admin.global.length) ||
@@ -276,12 +274,19 @@ class CsSupportApp {
             if (this.appInboxesEl) {
                 this.appInboxesEl.innerHTML = `<div class="cs-empty-state">Unable to load chat inbox at this time.</div>`;
             }
-            if (this.personalSectionEl) {
-                this.personalSectionEl.classList.remove('hidden');
-            }
         } finally {
             this.setLoading(false);
         }
+    }
+
+    resetTableState() {
+        this.tables.forEach((entry) => {
+            if (entry && entry.table && typeof entry.table.destroy === 'function') {
+                entry.table.destroy();
+            }
+        });
+        this.tables.clear();
+        this.chatRegistry.clear();
     }
 
     renderAppInboxes(appInboxes) {
@@ -292,8 +297,6 @@ class CsSupportApp {
         const hasInboxes = Array.isArray(appInboxes) && appInboxes.length > 0;
 
         this.appInboxesEl.innerHTML = '';
-        this.tables.clear();
-        this.chatRegistry.clear();
 
         if (!hasInboxes) {
             this.appInboxesEl.innerHTML = '<div class="cs-empty-state">No personal support chats yet.</div>';
@@ -370,6 +373,75 @@ class CsSupportApp {
 
             this.appInboxesEl.appendChild(wrapper);
             this.buildDataTable(table, chats, { includeAppColumn: false });
+        });
+    }
+
+    renderActiveAppIcons(appInboxes, adminData = {}) {
+        if (!this.activeAppIconsEl) {
+            return;
+        }
+
+        const iconMap = new Map();
+        const addApp = (app) => {
+            if (!app) {
+                return;
+            }
+            const identifier = app.app_id ?? app.client_id ?? app.id ?? app.app_name ?? app.app_display_name;
+            const key = identifier ? String(identifier) : `app-${iconMap.size}`;
+            if (iconMap.has(key)) {
+                return;
+            }
+            const displayName = app.app_display_name || app.app_name || 'App';
+            const iconUrl = this.resolveAssetUrl(app.app_square_icon_url || app.app_icon_url || app.icon_url || '');
+            iconMap.set(key, { name: displayName, iconUrl });
+        };
+
+        (appInboxes || []).forEach((section) => {
+            if (section && section.app && Array.isArray(section.chats) && section.chats.length) {
+                addApp(section.app);
+            }
+        });
+
+        const appendFromChats = (chats) => {
+            (chats || []).forEach((chat) => {
+                if (chat && chat.app) {
+                    addApp(chat.app);
+                }
+            });
+        };
+
+        appendFromChats(adminData.global);
+        appendFromChats(adminData.personal);
+
+        this.activeAppIconsEl.innerHTML = '';
+
+        if (!iconMap.size) {
+            const empty = document.createElement('div');
+            empty.className = 'cs-dashboard__icons-empty';
+            empty.textContent = 'No open app chats';
+            this.activeAppIconsEl.appendChild(empty);
+            return;
+        }
+
+        const apps = Array.from(iconMap.values()).sort((a, b) => a.name.localeCompare(b.name));
+        apps.forEach((app) => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'cs-dashboard__icon';
+            wrapper.title = app.name;
+            if (app.iconUrl) {
+                const img = document.createElement('img');
+                img.src = app.iconUrl;
+                img.alt = `${app.name} icon`;
+                img.loading = 'lazy';
+                wrapper.appendChild(img);
+            } else {
+                const fallback = document.createElement('span');
+                fallback.className = 'cs-dashboard__icon-initials';
+                const initials = app.name.trim().charAt(0).toUpperCase() || 'A';
+                fallback.textContent = initials;
+                wrapper.appendChild(fallback);
+            }
+            this.activeAppIconsEl.appendChild(wrapper);
         });
     }
 

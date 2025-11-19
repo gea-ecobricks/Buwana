@@ -304,10 +304,12 @@ table.dataTable td {
   padding: 5px;
   background-color: transparent;
   padding: 4px;
+  width: 55px;
 }
 .dataTables_wrapper .dataTables_filter {
   float: right;
   text-align: right;
+  margin-bottom: 15px;
 }
 .dataTables_wrapper .dataTables_filter input {
   border: 1px solid #aaa;
