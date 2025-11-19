@@ -204,7 +204,7 @@ function cs_fetch_chats(mysqli $conn, array $options = []): array
                    c.assigned_to, c.created_at, c.updated_at, c.resolved_at, c.closed_at,
                    a.app_name, a.app_display_name, a.client_id, a.app_square_icon_url,
                    au.first_name AS assigned_first_name, au.earthling_emoji AS assigned_emoji,
-                   owner.first_name AS owner_first_name, owner.earthling_emoji AS owner_emoji,
+                   owner.first_name AS owner_first_name, owner.full_name AS owner_full_name, owner.earthling_emoji AS owner_emoji,
                    (SELECT COUNT(*) FROM cs_chat_upvotes_tb cu WHERE cu.chat_id = c.id) AS upvote_count,
                    (SELECT COUNT(*) FROM cs_messages_tb m WHERE m.chat_id = c.id) AS message_count,
                    IF(cu_user.user_id IS NULL, 0, 1) AS has_upvoted
@@ -259,6 +259,7 @@ function cs_fetch_chats(mysqli $conn, array $options = []): array
             'owner' => [
                 'id' => intval($row['user_id']),
                 'first_name' => $row['owner_first_name'],
+                'full_name' => $row['owner_full_name'] ?: $row['owner_first_name'],
                 'earthling_emoji' => $row['owner_emoji'],
             ],
             'app' => [

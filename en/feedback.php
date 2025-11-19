@@ -149,12 +149,6 @@ function displayValue($value): string
                 </div>
 
                 <div id="cs-app-inboxes"></div>
-
-                <section id="cs-admin-section" class="hidden">
-                    <h3 class="cs-inbox__title">Support admin inbox</h3>
-                    <div id="cs-admin-personal"></div>
-                    <div id="cs-admin-global"></div>
-                </section>
                       <div class="cs-dashboard__actions cs-dashboard__actions--center">
                                     <button type="button" id="cs-refresh-btn" class="submit-button" style="background-color:grey;">🔄 Refresh</button>
                                 </div>

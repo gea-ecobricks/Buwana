@@ -317,6 +317,7 @@ class CsSupportApp {
                 <thead>
                     <tr>
                         <th>Chat subjects</th>
+                        <th>From</th>
                         <th>Updated</th>
                         <th>Priority</th>
                         <th>Status</th>
@@ -389,6 +390,7 @@ class CsSupportApp {
             <thead>
                 <tr>
                     <th>Chat subjects</th>
+                    <th>From</th>
                     <th>Updated</th>
                     <th>App</th>
                     <th>Priority</th>
@@ -415,6 +417,7 @@ class CsSupportApp {
             return {
                 id: chat.id,
                 title: chat.title,
+                owner: chat.owner || null,
                 app: chat.app,
                 priority: chat.priority,
                 status: chat.status,
@@ -442,6 +445,24 @@ class CsSupportApp {
                             </div>`;
                     }
                     return data;
+                },
+            },
+            {
+                data: 'owner',
+                title: 'From',
+                className: 'col-owner',
+                render: (owner, type) => {
+                    const name = owner && (owner.full_name || owner.first_name) ? owner.full_name || owner.first_name : '';
+                    if (type !== 'display') {
+                        return name;
+                    }
+                    if (!owner || !name) {
+                        return '—';
+                    }
+                    const emoji = owner.earthling_emoji || '';
+                    const emojiSpan = emoji ? `<span class="cs-owner-emoji">${this.escapeHtml(emoji)}</span>` : '';
+                    const spacer = emojiSpan ? ' ' : '';
+                    return `<div class="cs-owner">${this.escapeHtml(name)}${spacer}${emojiSpan}</div>`;
                 },
             },
             {
@@ -556,7 +577,7 @@ class CsSupportApp {
             $(tableElement).DataTable().destroy();
         }
 
-        const updatedColumnIndex = 1;
+        const updatedColumnIndex = 2;
         const table = $(tableElement).DataTable({
             data,
             columns,
