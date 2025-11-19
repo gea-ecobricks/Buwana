@@ -215,11 +215,20 @@ class CsSupportApp {
     }
 
     handleTableClick(event) {
-        const viewBtn = event.target.closest('[data-chat-open]');
-        if (viewBtn) {
-            const chatId = parseInt(viewBtn.getAttribute('data-chat-open'), 10);
+        const manageTurtleBtn = event.target.closest('[data-chat-open]');
+        if (manageTurtleBtn) {
+            const chatId = parseInt(manageTurtleBtn.getAttribute('data-chat-open'), 10);
             if (chatId) {
                 this.openChatModal(chatId);
+            }
+            return;
+        }
+
+        const manageBottlesBtn = event.target.closest('[data-manage-bottles]');
+        if (manageBottlesBtn) {
+            const chatId = parseInt(manageBottlesBtn.getAttribute('data-manage-bottles'), 10);
+            if (chatId) {
+                this.openManageBottlesModal(chatId);
             }
             return;
         }
@@ -229,6 +238,18 @@ class CsSupportApp {
             const chatId = parseInt(upvoteBtn.getAttribute('data-chat-upvote'), 10);
             if (chatId) {
                 this.toggleUpvote(chatId);
+            }
+            return;
+        }
+
+        const clickedRow = event.target.closest('tr[data-chat-row]');
+        if (clickedRow) {
+            const isActionControl = event.target.closest('button, a, [data-manage-bottles], [data-chat-upvote]');
+            if (!isActionControl) {
+                const chatId = parseInt(clickedRow.getAttribute('data-chat-row'), 10);
+                if (chatId) {
+                    this.openChatModal(chatId);
+                }
             }
         }
     }
@@ -322,7 +343,7 @@ class CsSupportApp {
                         <th>Status</th>
                         <th>Upvotes</th>
                         <th>Readers</th>
-                        <th>Actions</th>
+                        <th>Manage</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -395,7 +416,7 @@ class CsSupportApp {
                     <th>Status</th>
                     <th>Upvotes</th>
                     <th>Readers</th>
-                    <th>Actions</th>
+                    <th>Manage</th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -542,13 +563,18 @@ class CsSupportApp {
             },
             {
                 data: null,
-                title: 'Actions',
+                title: 'Manage',
                 className: 'col-actions',
                 orderable: false,
                 render: (row) => `
-                    <button type="button" class="cs-button cs-button--secondary" data-chat-open="${row.id}">
-                        View
-                    </button>`,
+                    <div class="cs-manage-buttons">
+                        <button type="button" class="cs-button" data-chat-open="${row.id}">
+                            ⚙️ Turtles
+                        </button>
+                        <button type="button" class="cs-button cs-button--secondary" data-manage-bottles="${row.id}">
+                            🔗 Bottles
+                        </button>
+                    </div>`,
             }
         );
 
@@ -563,9 +589,49 @@ class CsSupportApp {
             order: [[updatedColumnIndex, 'desc']],
             responsive: true,
             autoWidth: false,
+            createdRow: (row, rowData) => {
+                row.setAttribute('data-chat-row', rowData.id);
+                row.classList.add('cs-chat-row');
+            },
         });
 
         this.tables.set(tableElement.id, { table, includeAppColumn });
+    }
+
+    openManageBottlesModal(chatId) {
+        if (typeof window.openModal !== 'function') {
+            return;
+        }
+
+        const registryEntry = this.chatRegistry.get(chatId);
+        if (!registryEntry) {
+            return;
+        }
+
+        const chat = registryEntry.chat || {};
+        const title = this.escapeHtml(chat.title || 'Untitled turtle');
+        const appName = this.escapeHtml(chat.app?.app_display_name || 'Buwana App');
+        const updated = this.formatDate(chat.updated_at || '');
+        const status = this.formatTitleCase(chat.status || 'open');
+        const priority = this.formatTitleCase(chat.priority || 'medium');
+
+        const content = `
+            <section class="cs-manage-modal">
+                <header class="cs-manage-modal__header">
+                    <h2>🔗 Manage Bottles</h2>
+                    <p>${title}</p>
+                </header>
+                <div class="cs-manage-modal__body">
+                    <p><strong>App:</strong> ${appName}</p>
+                    <p><strong>Status:</strong> ${status}</p>
+                    <p><strong>Priority:</strong> ${priority}</p>
+                    <p><strong>Last update:</strong> ${updated || '—'}</p>
+                    <p class="cs-manage-modal__hint">Use this space to review bottle links or attach updates related to this turtle entry.</p>
+                </div>
+            </section>
+        `;
+
+        window.openModal(content);
     }
 
     renderReaders(readers) {
