@@ -1,10 +1,10 @@
 <?php
-require_once 'earthenAuth_helper.php';
+require_once __DIR__ . '/../earthenAuth_helper.php';
 
-if (!file_exists('buwanaconn_env.php')) {
+if (!file_exists(__DIR__ . '/../buwanaconn_env.php')) {
     die('Buwana DB config not found.');
 }
-require_once 'buwanaconn_env.php';
+require_once __DIR__ . '/../buwanaconn_env.php';
 
 $langInput = $_GET['lang'] ?? 'en';
 $lang = strtolower(preg_replace('/[^a-z]/i', '', $langInput) ?: 'en');
@@ -39,7 +39,7 @@ if ($stmt_connection) {
     die('Error preparing statement for connection lookup: ' . $buwana_conn->error);
 }
 
-require_once 'fetch_app_info.php';
+require_once __DIR__ . '/../fetch_app_info.php';
 
 $sql_user_info = "SELECT u.full_name, u.first_name, u.email, u.language_id, u.earthling_emoji, u.country_id, u.role,
                          l.language_name_en, l.language_name_es, l.language_name_fr, l.language_name_id, l.languages_native_name,
@@ -86,15 +86,15 @@ if (!$isAdminUser) {
 <html lang="<?= htmlspecialchars($lang, ENT_QUOTES, 'UTF-8'); ?>">
 <head>
 <meta charset="UTF-8">
-<?php require_once("includes/feedback-inc.php"); ?>
+<?php require_once __DIR__ . '/../includes/feedback-inc.php'; ?>
 
 <div class="page-panel-group">
     <div id="form-submission-box" style="height:fit-content;">
         <div class="form-container" style="padding-top:120px">
             <div id="top-page-image"
                  class="top-page-image"
-                 data-light-img="svgs/bug-report-day.svg"
-                 data-dark-img="svgs/bug-report-night.svg">
+                 data-light-img="../svgs/bug-report-day.svg"
+                 data-dark-img="../svgs/bug-report-night.svg">
             </div>
 
             <div class="cs-dashboard">
@@ -103,18 +103,29 @@ if (!$isAdminUser) {
                         <div id="status-message">Admin Chat Support</div>
                         <p id="sub-status-message">View and manage support requests from all Buwana users across all Buwana apps</p>
                     </div>
-                    <div class="cs-dashboard__actions cs-dashboard__actions--center">
-                        <button type="button" id="cs-refresh-btn" class="submit-button" style="background-color:grey;">🔄 Refresh</button>
-                    </div>
                 </div>
 
                 <div id="cs-loading" class="cs-loading">
                     <span>Loading support chats…</span>
                 </div>
 
-                <section id="cs-admin-section">
-                    <div id="cs-admin-personal"></div>
-                    <div id="cs-admin-global"></div>
+                <section id="cs-personal-section" class="cs-panel hidden">
+                    <div class="cs-panel__body">
+                        <div id="cs-app-inboxes"></div>
+                    </div>
+                    <div class="cs-panel__actions">
+                        <button type="button" class="cs-button cs-button--secondary cs-refresh-btn">🔄 Refresh</button>
+                    </div>
+                </section>
+
+                <section id="cs-admin-section" class="cs-panel hidden">
+                    <div class="cs-panel__body">
+                        <div id="cs-admin-global"></div>
+                        <div id="cs-admin-personal"></div>
+                    </div>
+                    <div class="cs-panel__actions">
+                        <button type="button" class="cs-button cs-button--secondary cs-refresh-btn">🔄 Refresh</button>
+                    </div>
                 </section>
             </div>
         </div>
@@ -125,13 +136,13 @@ if (!$isAdminUser) {
 
 <datalist id="cs-category-list"></datalist>
 
-<?php require_once("footer-2025.php"); ?>
+<?php require_once __DIR__ . '/../footer-2025.php'; ?>
 
-<?php require_once("scripts/app_modals.php");?>
+<?php require_once __DIR__ . '/../scripts/app_modals.php';?>
 
 <script>
     window.csSupportConfig = {
-        apiBase: 'cs_system/api',
+        apiBase: '../cs_system/api',
         buwanaId: <?= intval($buwana_id); ?>,
         languageId: <?= intval($language_id ?? 0); ?>,
         clientId: '<?= htmlspecialchars($client_id, ENT_QUOTES, 'UTF-8'); ?>',
@@ -141,8 +152,8 @@ if (!$isAdminUser) {
     };
 </script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="scripts/jquery.dataTables.js"></script>
-<script src="js/cs_support.js?v=<?= $version; ?>"></script>
+<script src="../scripts/jquery.dataTables.js"></script>
+<script src="../js/cs_support.js?v=<?= $version; ?>"></script>
 
 </body>
 </html>

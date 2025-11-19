@@ -91,9 +91,9 @@
 }
 
 .cs-button--secondary {
-    background: #7070707d;
-    color: var(--text-color);
-    border: 1px solid transparent;
+    background: #d1d5db;
+    color: #374151;
+    border: 1px solid #c5cad3;
 }
 
 .cs-button:hover {
@@ -127,7 +127,7 @@
 }
 
 .cs-inbox__title {
-    font-size: 1.3rem;
+    font-size: 1.77em;
     font-weight: 700;
     display: flex;
     align-items: center;
@@ -277,11 +277,16 @@
     transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
-.cs-upvote-toggle--zero,
-.cs-upvote-toggle.is-upvoted {
+.cs-upvote-toggle--zero {
     background: #d1d5db;
     border-color: #c5cad3;
     color: #374151;
+}
+
+.cs-upvote-toggle.is-upvoted {
+    background: #7070707d;
+    border-color: transparent;
+    color: var(--text-color);
 }
 
 .cs-upvote-toggle .cs-upvote-count {
@@ -311,6 +316,46 @@
 
 .cs-upvote-toggle.is-upvoted:hover .cs-upvote-icon {
     display: inline;
+}
+
+.cs-panel {
+    background: transparent;
+    padding-bottom: 8px;
+    margin-bottom: 32px;
+}
+
+.cs-panel__body {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+
+.cs-panel__actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 16px;
+}
+
+.cs-panel__actions .cs-button {
+    min-width: 140px;
+}
+
+.cs-table-length {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 8px;
+}
+
+.cs-table-length label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+}
+
+.cs-table-length select {
+    min-width: 72px;
 }
 
 .cs-upvote-toggle:focus-visible {
