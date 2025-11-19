@@ -14,6 +14,7 @@ use Firebase\JWT\JWT;
 $buwana_id = isset($_POST['buwana_id']) ? (int) $_POST['buwana_id'] : null;
 $client_id = $_POST['client_id'] ?? null;
 $redirect = isset($_POST['redirect']) ? filter_var($_POST['redirect'], FILTER_SANITIZE_SPECIAL_CHARS) : '';
+$is_first_time_connection = false;
 
 // Validate inputs
 if (!$buwana_id || !$client_id) {
@@ -42,14 +43,21 @@ if ($client_id === 'lear_a30d677a7b08') {
         $insert_stmt->bind_param('isss', $buwana_id, $client_id, $status, $connected_at);
         $insert_stmt->execute();
         $insert_stmt->close();
+        $is_first_time_connection = true;
     } else {
         $check_stmt->close();
     }
 
     // Redirect to Moodle's login page to initiate the proper OIDC flow
     $moodle_login_url = "https://learning.ecobricks.org/login/index.php";
-    $redirect_param = !empty($redirect) ? '&redirect=' . urlencode($redirect) : '';
-    header("Location: {$moodle_login_url}?auth=oidc{$redirect_param}");
+    $redirect_url = "{$moodle_login_url}?auth=oidc";
+    if (!empty($redirect)) {
+        $redirect_url .= '&redirect=' . urlencode($redirect);
+    }
+    if ($is_first_time_connection) {
+        $redirect_url .= '&status=firsttime';
+    }
+    header("Location: {$redirect_url}");
     exit;
 }
 
@@ -142,6 +150,7 @@ if ($check_stmt->num_rows === 0) {
     $insert_stmt->bind_param('isss', $buwana_id, $client_id, $status, $connected_at);
     $insert_stmt->execute();
     $insert_stmt->close();
+    $is_first_time_connection = true;
 } else {
     $check_stmt->close();
 }
@@ -209,6 +218,10 @@ if (!empty($redirect)) {
 }
 if (!empty($params)) {
     $redirect_url .= (strpos($redirect_url, '?') === false ? '?' : '&') . http_build_query($params);
+}
+
+if ($is_first_time_connection) {
+    $redirect_url .= (strpos($redirect_url, '?') === false ? '?' : '&') . 'status=firsttime';
 }
 
 header("Location: $redirect_url");
