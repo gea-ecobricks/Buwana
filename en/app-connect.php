@@ -27,6 +27,21 @@ $buwana_id = $_GET['id'] ?? null;
 $client_id = $app_info['client_id'] ?? null;
 $redirect = isset($_GET['redirect']) ? filter_var($_GET['redirect'], FILTER_SANITIZE_SPECIAL_CHARS) : '';
 
+// Determine if this is the user's first connection attempt for this app
+$is_first_time_connection = true;
+if ($buwana_id && $client_id) {
+    $connection_check_stmt = $buwana_conn->prepare("SELECT 1 FROM user_app_connections_tb WHERE buwana_id = ? AND client_id = ? LIMIT 1");
+    if ($connection_check_stmt) {
+        $connection_check_stmt->bind_param('is', $buwana_id, $client_id);
+        $connection_check_stmt->execute();
+        $connection_check_stmt->store_result();
+        if ($connection_check_stmt->num_rows > 0) {
+            $is_first_time_connection = false;
+        }
+        $connection_check_stmt->close();
+    }
+}
+
 // --- Conditional validation and JavaScript fallback handling
 if (!$buwana_id && !$client_id) {
     echo "<script>alert('Sorry! Something went wrong. Please select your Buwana app and login again.'); window.location.href = 'index.php';</script>";
@@ -262,10 +277,10 @@ padding-top: 10px !important;
 
 
 
-       <p style="margin-top:15px;margin-bottom:20px;">
-            <?= htmlspecialchars($first_name) ?>, <span data-lang-id="002-looks-like"> it looks like you are trying to login to </span> <?= htmlspecialchars($app_info['app_display_name']) ?><span data-lang-id="002b-first-time"> for the first time!  Nice. 👍</span>
-            <span data-lang-id="003-to-do-so">To do so, we will connect your Buwana account to </span> <?= htmlspecialchars($app_info['app_display_name']) ?> <span data-lang-id="003b-and">and allow it to access the following scopes:</span>
-       </p>
+        <p style="margin-top:15px;margin-bottom:20px;">
+             <?= htmlspecialchars($first_name) ?>, <span data-lang-id="002-looks-like"> it looks like you are trying to login to </span> <?= htmlspecialchars($app_info['app_display_name']) ?><?php if ($is_first_time_connection): ?><span data-lang-id="002b-first-time"> for the first time!  Nice. 👍</span><?php endif; ?>
+             <span data-lang-id="003-to-do-so">To do so, we will connect your Buwana account to </span> <?= htmlspecialchars($app_info['app_display_name']) ?> <span data-lang-id="003b-and">and allow it to access the following scopes:</span>
+        </p>
 
         <?php
             $profile_group = ['openid','email','profile','address','phone','buwana:earthlingEmoji','buwana:location.continent'];
