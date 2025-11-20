@@ -1,0 +1,32 @@
+[
+  {
+    "name": "Russell",
+    "full_name": "Russell Maier",
+    "title": "GEA Director",
+    "earthling_emoji": "🌏",
+    "continent": "Asia",
+    "watershed": "Citarum Watershed",
+    "profile_text": "Co-founding director of the Global Ecobrick Alliance who guides the overall Buwana vision, ethics, and regenerative road map.",
+    "profile_pic": "../webps/ecobrick-team-blank.webp"
+  },
+  {
+    "name": "Ani",
+    "full_name": "Ani Himawati",
+    "title": "Experience Designer",
+    "earthling_emoji": "🌿",
+    "continent": "Asia",
+    "watershed": "Kapuas Watershed",
+    "profile_text": "Coordinates the human experience of the EarthenAuth platform and helps craft the pathways that feel welcoming for every earthling.",
+    "profile_pic": "../webps/ecobrick-team-blank.webp"
+  },
+  {
+    "name": "Nate",
+    "full_name": "Nathan Grigg",
+    "title": "Lead Developer",
+    "earthling_emoji": "🛠️",
+    "continent": "North America",
+    "watershed": "Columbia River Watershed",
+    "profile_text": "Maintains the Buwana codebase, the integrations, and the infrastructure that lets allied apps connect securely.",
+    "profile_pic": "../webps/ecobrick-team-blank.webp"
+  }
+]

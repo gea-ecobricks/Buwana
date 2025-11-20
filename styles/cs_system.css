@@ -158,6 +158,41 @@
     border: 1px solid var(--outline, rgba(255, 255, 255, 0.2));
 }
 
+.cs-manage-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+.cs-manage-modal {
+    padding: 24px;
+    color: var(--text-color);
+}
+
+.cs-manage-modal__header {
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+.cs-manage-modal__header h2 {
+    margin: 0;
+    font-size: 1.4rem;
+}
+
+.cs-manage-modal__body {
+    background: var(--lighter);
+    border-radius: 12px;
+    padding: 18px;
+    line-height: 1.6;
+}
+
+.cs-manage-modal__hint {
+    margin-top: 12px;
+    font-size: 0.95em;
+    color: var(--subdued-text);
+}
+
 .cs-button:hover {
     transform: translateY(-1px);
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
