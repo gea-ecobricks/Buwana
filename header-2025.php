@@ -6,6 +6,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 $is_logged_in = !empty($_SESSION['buwana_id']);
+$isAdminUser = $isAdminUser ?? false;
 
 // Pull key session values if they haven't been explicitly defined
 $client_id = $client_id ?? ($_SESSION['client_id'] ?? null);
@@ -406,9 +407,10 @@ max-height: 200px;
         $profile_url .= '?' . implode('&', $params);
     }
 
+    $lang_segment = isset($lang) && $lang !== '' ? '/' . rawurlencode($lang) : '/en';
+
     $support_chat_url = null;
     if (!empty($buwana_id) && !empty($client_id)) {
-        $lang_segment = isset($lang) && $lang !== '' ? '/' . rawurlencode($lang) : '/en';
         $support_chat_url = $lang_segment . '/feedback.php';
         $support_query = http_build_query([
             'buwana' => $buwana_id,
@@ -417,6 +419,18 @@ max-height: 200px;
         if ($support_query) {
             $support_chat_url .= '?' . $support_query;
         }
+    }
+
+    $admin_chat_url = $lang_segment . '/cs-chats.php';
+    $admin_params = [];
+    if (!empty($buwana_id)) {
+        $admin_params[] = 'buwana=' . urlencode($buwana_id);
+    }
+    if (!empty($client_id)) {
+        $admin_params[] = 'app=' . urlencode($client_id);
+    }
+    if (!empty($admin_params)) {
+        $admin_chat_url .= '?' . implode('&', $admin_params);
     }
    ?>
     <div class="menu-page-item">
@@ -428,6 +442,12 @@ max-height: 200px;
       <div class="menu-page-item">
         <a href="<?= htmlspecialchars($support_chat_url) ?>">Support Chats</a>
         <span class="status-circle" style="background-color: DODGERBLUE;" title="Support chats"></span>
+      </div>
+   <?php endif; ?>
+   <?php if ($isAdminUser): ?>
+      <div class="menu-page-item">
+        <a href="<?= htmlspecialchars($admin_chat_url) ?>">Admin Chat System</a>
+        <span class="status-circle" style="background-color: ORANGE;" title="Admin chats"></span>
       </div>
    <?php endif; ?>
    <div class="menu-page-item">

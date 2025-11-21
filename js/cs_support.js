@@ -79,6 +79,46 @@ class CsSupportApp {
         this.loadDashboard();
     }
 
+    getCurrentAppIdentifiers() {
+        const identifiers = [];
+        if (this.config.currentAppId) {
+            identifiers.push(String(this.config.currentAppId));
+        }
+        if (this.config.clientId) {
+            identifiers.push(String(this.config.clientId));
+        }
+        return identifiers;
+    }
+
+    filterInboxesByCurrentApp(appInboxes) {
+        const identifiers = this.getCurrentAppIdentifiers();
+        if (!identifiers.length) {
+            return appInboxes || [];
+        }
+
+        return (appInboxes || []).filter((section) => {
+            const app = section && section.app ? section.app : {};
+            const appIdentifiers = [app.app_id, app.client_id, app.id, app.app_name, app.app_display_name]
+                .filter((value) => value !== undefined && value !== null)
+                .map((value) => String(value));
+            return appIdentifiers.some((value) => identifiers.includes(value));
+        });
+    }
+
+    filterConnectedApps(connectedApps) {
+        const identifiers = this.getCurrentAppIdentifiers();
+        if (!identifiers.length) {
+            return connectedApps || [];
+        }
+
+        return (connectedApps || []).filter((app) => {
+            const values = [app.app_id, app.client_id, app.id, app.app_name, app.app_display_name]
+                .filter((value) => value !== undefined && value !== null)
+                .map((value) => String(value));
+            return values.some((value) => identifiers.includes(value));
+        });
+    }
+
     bindEvents() {
         if (this.newChatButton) {
             this.newChatButton.addEventListener('click', () => this.openNewChatModal());
@@ -251,9 +291,10 @@ class CsSupportApp {
             const { data } = payload;
             this.resetTableState();
             this.meta = data.meta || {};
-            this.connectedApps = data.connected_apps || [];
-            this.renderAppInboxes(data.app_inboxes || []);
-            this.renderActiveAppIcons(data.app_inboxes || [], data.admin || {});
+            this.connectedApps = this.filterConnectedApps(data.connected_apps || []);
+            const filteredInboxes = this.filterInboxesByCurrentApp(data.app_inboxes || []);
+            this.renderAppInboxes(filteredInboxes);
+            this.renderActiveAppIcons(filteredInboxes, data.admin || {});
 
             if (this.adminSectionEl && this.config.isAdmin && data.admin) {
                 const hasAdminData = (Array.isArray(data.admin.global) && data.admin.global.length) ||
@@ -362,7 +403,10 @@ class CsSupportApp {
             `;
 
             wrapper.appendChild(header);
-            wrapper.appendChild(table);
+            const tableContainer = document.createElement('div');
+            tableContainer.className = 'cs-chat-table-container';
+            tableContainer.appendChild(table);
+            wrapper.appendChild(tableContainer);
 
             if (!chats.length) {
                 const empty = document.createElement('div');
@@ -512,7 +556,10 @@ class CsSupportApp {
             </thead>
             <tbody></tbody>
         `;
-        wrapper.appendChild(table);
+        const tableContainer = document.createElement('div');
+        tableContainer.className = 'cs-chat-table-container';
+        tableContainer.appendChild(table);
+        wrapper.appendChild(tableContainer);
         container.appendChild(wrapper);
         return table;
     }
@@ -569,10 +616,7 @@ class CsSupportApp {
                     if (!owner || !name) {
                         return '—';
                     }
-                    const emoji = owner.earthling_emoji || '';
-                    const emojiSpan = emoji ? `<span class="cs-owner-emoji">${this.escapeHtml(emoji)}</span>` : '';
-                    const spacer = emojiSpan ? ' ' : '';
-                    return `<div class="cs-owner">${this.escapeHtml(name)}${spacer}${emojiSpan}</div>`;
+                    return `<div class="cs-owner">${this.escapeHtml(name)}</div>`;
                 },
             },
             {
