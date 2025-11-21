@@ -1,7 +1,21 @@
+.page-panel-group {
+    width: 100%;
+    padding: 0 12px;
+    box-sizing: border-box;
+}
+
+.page-panel-group .form-container {
+    width: min(100%, 1000px);
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
 .cs-dashboard {
     margin: 40px auto;
     max-width: 1200px;
     padding: 0 16px 64px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .hidden {
@@ -14,6 +28,8 @@
     padding: 24px;
     margin-bottom: 32px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .support-details h3 {
@@ -51,6 +67,7 @@
     margin-bottom: 24px;
     position: relative;
     align-items: center;
+    width: 100%;
 }
 
 .cs-dashboard__intro {
@@ -111,6 +128,16 @@
         align-self: center;
         justify-content: center;
     }
+}
+
+.cs-chat-table-container {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.cs-chat-table {
+    width: 100% !important;
+    box-sizing: border-box;
 }
 
 .cs-dashboard__title {

@@ -120,6 +120,9 @@ function displayValue($value): string
 <meta charset="UTF-8">
 <?php require_once("../includes/feedback-inc.php"); ?>
 
+</head>
+<body>
+
 <div class="page-panel-group">
     <div id="form-submission-box" style="height:fit-content;">
         <div class="form-container" style="padding-top:120px">
