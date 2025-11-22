@@ -626,7 +626,7 @@ display:none;
 
 @media screen and (max-width: 769px) {
   #main-menu-overlay .menu-page-item {
-    font-size: calc(1.4em - 1em);
+    font-size: 1.1em;
   }
   #main-menu-overlay .app-slogan {
     display: none;
