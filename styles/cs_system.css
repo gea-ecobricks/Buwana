@@ -96,11 +96,11 @@
 }
 
 .cs-dashboard__icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 14px;
+    width: 33px;
+    height: 33px;
+    border-radius: 11px;
     border: 1px solid var(--outline);
-    background: var(--base);
+    background: transparent;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -132,8 +132,10 @@
 
 .cs-chat-table-container {
     width: 100%;
+    max-width: 100%;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    position: relative;
 }
 
 .cs-chat-table {
@@ -144,7 +146,23 @@
 
 .dataTables_wrapper {
     width: 100%;
+    max-width: 100%;
     overflow-x: auto;
+}
+
+.cs-chat-table-container .dataTables_wrapper {
+    display: block;
+}
+
+.cs-chat-table-container .dataTables_scroll,
+.cs-chat-table-container .dataTables_scrollHead,
+.cs-chat-table-container .dataTables_scrollBody {
+    width: 100% !important;
+    max-width: 100%;
+}
+
+.cs-chat-table-container .dataTables_scrollBody {
+    overflow-x: auto !important;
 }
 
 .cs-dashboard__title {
