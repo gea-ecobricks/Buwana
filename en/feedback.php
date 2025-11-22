@@ -157,40 +157,6 @@ function displayValue($value): string
                                 </div>
             </div>
 
-        <div class="support-details">
-                        <h3 data-lang-id="003-user-info-heading">Account details for this conversation</h3>
-                        <dl>
-                            <div class="info-row">
-                                <dt data-lang-id="004-buwana-id"><strong>Buwana ID:</strong></dt>
-                                <dd><?= displayValue($buwana_id); ?></dd>
-                            </div>
-                            <div class="info-row">
-                                <dt data-lang-id="005-full-name"><strong>Full Name:</strong></dt>
-                                <dd><?= displayValue($full_name); ?></dd>
-                            </div>
-
-                            <div class="info-row">
-                                <dt data-lang-id="007-email"><strong>Email:</strong></dt>
-                                <dd><?= displayValue($email); ?></dd>
-                            </div>
-                            <div class="info-row">
-                                <dt data-lang-id="008-language"><strong>Preferred Language:</strong></dt>
-                                <dd><?= displayValue($preferred_language_display); ?></dd>
-                            </div>
-                            <div class="info-row">
-                                <dt data-lang-id="009-emoji"><strong>User Emoji:</strong></dt>
-                                <dd><?= displayValue($earthling_emoji); ?></dd>
-                            </div>
-                            <div class="info-row">
-                                <dt><strong>User Role:</strong></dt>
-                                <dd><?= displayValue($role); ?></dd>
-                            </div>
-                            <div class="info-row">
-                                <dt data-lang-id="010-country"><strong>Country:</strong></dt>
-                                <dd><?= displayValue($country_name); ?></dd>
-                            </div>
-                        </dl>
-                    </div>
         </div>
     </div>
 </div>

@@ -371,14 +371,17 @@ class CsSupportApp {
             heading.appendChild(metaRow);
             header.appendChild(heading);
 
-            const iconUrl = this.resolveAssetUrl(app.app_square_icon_url);
+            const iconUrl = this.resolveAssetUrl(app.app_square_icon_url || app.app_icon_url || app.icon_url || '');
             if (iconUrl) {
+                const iconWrapper = document.createElement('div');
+                iconWrapper.className = 'cs-dashboard__icon';
                 const icon = document.createElement('img');
-                icon.className = 'cs-inbox__icon';
                 icon.src = iconUrl;
                 icon.alt = `${app.app_display_name} icon`;
+                icon.title = app.app_display_name;
                 icon.loading = 'lazy';
-                header.appendChild(icon);
+                iconWrapper.appendChild(icon);
+                heading.appendChild(iconWrapper);
             }
 
             const tableId = `cs-chat-table-${app.app_id}-${Math.random().toString(36).slice(2, 7)}`;
@@ -391,11 +394,11 @@ class CsSupportApp {
                     <tr>
                         <th>Chat subjects</th>
                         <th>From</th>
-                        <th>Updated</th>
+                        <th class="col-updated">Updated</th>
                         <th>Priority</th>
-                        <th>Status</th>
+                        <th class="col-status">Status</th>
                         <th>Upvotes</th>
-                        <th>Readers</th>
+                        <th class="col-readers">Readers</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -545,12 +548,12 @@ class CsSupportApp {
                 <tr>
                     <th>Chat subjects</th>
                     <th>From</th>
-                    <th>Updated</th>
+                    <th class="col-updated">Updated</th>
                     <th>App</th>
                     <th>Priority</th>
-                    <th>Status</th>
+                    <th class="col-status">Status</th>
                     <th>Upvotes</th>
-                    <th>Readers</th>
+                    <th class="col-readers">Readers</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -636,11 +639,18 @@ class CsSupportApp {
             columns.push({
                 data: 'app',
                 title: 'App',
+                className: 'col-app',
                 render: (app, type) => {
-                    if (type === 'display') {
-                        return `<span class="cs-pill cs-pill--app">${this.escapeHtml(app.app_display_name)}</span>`;
+                    const name = app?.app_display_name || app?.app_name || 'App';
+                    if (type !== 'display') {
+                        return name;
                     }
-                    return app.app_display_name;
+                    const iconUrl = this.resolveAssetUrl(app?.app_square_icon_url || app?.app_icon_url || app?.icon_url || '');
+                    const safeName = this.escapeHtml(name);
+                    if (iconUrl) {
+                        return `<span class="cs-app-icon" title="${safeName}"><img src="${iconUrl}" alt="${safeName} icon" loading="lazy"></span>`;
+                    }
+                    return `<span class="cs-pill cs-pill--app" title="${safeName}">${safeName}</span>`;
                 },
             });
         }
@@ -737,6 +747,7 @@ class CsSupportApp {
             columns,
             order: [[updatedColumnIndex, 'desc']],
             responsive: true,
+            scrollX: true,
             autoWidth: false,
         });
 
