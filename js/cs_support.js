@@ -747,8 +747,14 @@ class CsSupportApp {
             columns,
             order: [[updatedColumnIndex, 'desc']],
             responsive: true,
-            scrollX: true,
+            scrollX: false,
             autoWidth: false,
+            columnDefs: [
+                {
+                    targets: '_all',
+                    className: 'cs-table-wrap',
+                },
+            ],
         });
 
         this.tables.set(tableElement.id, { table, includeAppColumn });
