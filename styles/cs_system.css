@@ -221,7 +221,7 @@
     border-radius: 16px;
     padding: 24px;
     margin-bottom: 28px;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+    box-shadow: none;
     overflow-x: auto;
 }
 
@@ -257,13 +257,13 @@
     flex-wrap: wrap;
     gap: 8px;
     align-items: center;
-    color: var(--text-2);
+    color: var(--subdued-text);
     font-size: 0.9rem;
     background: var(--base);
     border: 1px solid var(--outline);
     border-radius: 12px;
     padding: 6px 12px;
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+    box-shadow: none;
     max-width: 100%;
 }
 
@@ -396,6 +396,11 @@
     color: var(--text-color);
 }
 
+.cs-chat-table th.col-subject,
+.cs-chat-table td.col-subject {
+    min-width: 100px;
+}
+
 .cs-chat-table th,
 .cs-chat-table td,
 .cs-table-wrap {
@@ -428,6 +433,11 @@
     font-weight: 700;
     cursor: pointer;
     transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.cs-chat-table th.col-actions,
+.cs-chat-table td.col-actions {
+    min-width: 60px;
 }
 
 .cs-upvote-toggle--zero {
@@ -838,7 +848,7 @@
 
 @media (max-width: 768px) {
     .cs-dashboard {
-        padding: 0 12px 48px;
+        padding: 0 0 48px;
     }
 
     .cs-inbox {
