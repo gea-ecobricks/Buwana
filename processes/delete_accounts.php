@@ -11,12 +11,18 @@ header('Content-Type: application/json');
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
+$earthcal_conn = $client_conn ?? null; // Normalize EarthCal connection handle
+
 $response = [];
 $successes = [];
 $failures = [];
 $overall_success = true;
 
 try {
+    if (!$earthcal_conn instanceof mysqli || $earthcal_conn->connect_errno) {
+        throw new Exception('EarthCal DB connection is not available.');
+    }
+
     // Accept buwana_id from query or session
     $buwana_id = $_GET['buwana_id'] ?? $_SESSION['buwana_id'] ?? '';
     if (empty($buwana_id) || !is_numeric($buwana_id)) {
@@ -103,7 +109,7 @@ try {
 
             case 'earthcal':
                 try {
-                    $cal_conn->begin_transaction();
+                    $earthcal_conn->begin_transaction();
 
                     $tables = [
                         'datecycles_tb',
@@ -114,18 +120,18 @@ try {
 
                     foreach ($tables as $table) {
                         $sql = "DELETE FROM {$table} WHERE buwana_id = ?";
-                        if ($stmt = $cal_conn->prepare($sql)) {
+                        if ($stmt = $earthcal_conn->prepare($sql)) {
                             $stmt->bind_param('i', $buwana_id);
                             $stmt->execute();
                             $stmt->close();
                         }
                     }
 
-                    $cal_conn->commit();
+                    $earthcal_conn->commit();
                     $successes[] = 'Deleted your Earthcal Account';
                 } catch (Exception $e) {
-                    if ($cal_conn->in_transaction) {
-                        $cal_conn->rollback();
+                    if ($earthcal_conn->in_transaction) {
+                        $earthcal_conn->rollback();
                     }
                     $failures[] = 'Failed to delete your Earthcal Account';
                     $overall_success = false;
@@ -214,8 +220,8 @@ try {
     if (isset($gobrik_conn) && $gobrik_conn->in_transaction) {
         $gobrik_conn->rollback();
     }
-    if (isset($cal_conn) && $cal_conn->in_transaction) {
-        $cal_conn->rollback();
+    if ($earthcal_conn instanceof mysqli && $earthcal_conn->in_transaction) {
+        $earthcal_conn->rollback();
     }
 
     $response = [
@@ -227,4 +233,3 @@ try {
 ob_end_clean();
 echo json_encode($response);
 exit();
-
