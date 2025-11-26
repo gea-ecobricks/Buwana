@@ -4,50 +4,45 @@ ob_start();
 // --------------------------------------------------------
 // Cron log setup
 // --------------------------------------------------------
-
 $log_file = __DIR__ . '/earthen_clean_up.log';
 
-// Log that the cron started
 file_put_contents(
     $log_file,
     '[' . date('Y-m-d H:i:s') . "] Earthen cleanup cron started\n",
     FILE_APPEND
 );
 
-// Send PHP errors into the same log file
 error_reporting(E_ALL);
 ini_set('log_errors', 1);
 ini_set('error_log', $log_file);
 
 // --------------------------------------------------------
-// Includes
+// Includes (cron-safe Ghost helpers)
 // --------------------------------------------------------
-//
-// This cron scans the Earthen (Ghost) members list for any
-// accounts with emails ending in "@test.com" and deletes them.
-//
-
 require_once __DIR__ . '/earthen_cron_helpers.php';
 
-// We'll accumulate detailed log messages for this run
-$log_messages = [];
+// Small helper to append to this cron's log
+function cron_log($msg) {
+    global $log_file;
+    file_put_contents(
+        $log_file,
+        '[' . date('Y-m-d H:i:s') . "] " . $msg . "\n",
+        FILE_APPEND
+    );
+}
 
 try {
-    // Make sure EARTHEN_KEY is available (createGhostJWT will throw if not)
-    $jwt = createGhostJWT(); // just to validate early
-    unset($jwt);             // we'll recreate per request anyway
+    $page      = 1;
+    $page_size = 50;
+    $total_deleted = 0;
 
-    $base_url = 'https://earthen.io/ghost/api/v4/admin/members/';
-    $limit    = 200;   // reasonable page size
-    $page     = 1;
-    $test_members = [];
+    while (true) {
+        // Ghost filter syntax for “email contains @test.com”
+        // We URL-encode the filter so the quotes don't break the URL.
+        $filter = urlencode("email:~'@test.com'");
+        $url    = "https://earthen.io/ghost/api/v4/admin/members/?filter={$filter}&limit={$page_size}&page={$page}";
 
-    // ----------------------------------------------------
-    // Page through all members and collect @test.com emails
-    // ----------------------------------------------------
-    do {
-        $jwt = createGhostJWT();
-        $url = $base_url . '?limit=' . $limit . '&page=' . $page;
+        $jwt = createGhostJWT(); // from earthen_cron_helpers.php
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -63,109 +58,82 @@ try {
         curl_close($ch);
 
         if ($curl_err) {
-            $log_messages[] = '[' . date('Y-m-d H:i:s') . "] cURL error while listing members (page {$page}): {$curl_err}";
-            throw new Exception('Error contacting Earthen (curl) while listing members.');
+            cron_log("Error fetching test members (curl): {$curl_err}");
+            throw new Exception("Error fetching test members (curl)");
         }
 
         if ($http_code < 200 || $http_code >= 300) {
-            $log_messages[] = '[' . date('Y-m-d H:i:s') . "] HTTP {$http_code} while listing members (page {$page}): {$response}";
-            throw new Exception("Earthen API returned HTTP {$http_code} while listing members.");
+            cron_log("Error fetching test members (HTTP {$http_code}): {$response}");
+            throw new Exception("Ghost API returned HTTP {$http_code} while listing members.");
         }
 
         $data = json_decode($response, true);
+        $members = $data['members'] ?? [];
 
-        if (!isset($data['members']) || !is_array($data['members'])) {
-            // No members array, break out
+        // No more members with @test.com – we are done.
+        if (empty($members)) {
+            cron_log("No more @test.com members found on page {$page}. Cleanup complete.");
             break;
         }
 
-        foreach ($data['members'] as $member) {
-            $email = $member['email'] ?? '';
-            $id    = $member['id'] ?? null;
+        cron_log("Page {$page}: found " . count($members) . " @test.com members.");
 
-            if (!$id || !$email) {
+        // Loop through this batch and delete each member
+        foreach ($members as $member) {
+            $member_id = $member['id']    ?? null;
+            $email     = $member['email'] ?? '(no-email)';
+
+            if (!$member_id) {
+                cron_log("Skipping member with missing id (email={$email}).");
                 continue;
             }
 
-            // Match any email ending with "@test.com" (case-insensitive)
-            if (preg_match('/@test\.com$/i', $email)) {
-                $test_members[] = [
-                    'id'    => $id,
-                    'email' => $email,
-                ];
-            }
-        }
-
-        // Pagination
-        $pagination = $data['meta']['pagination'] ?? null;
-        if ($pagination && !empty($pagination['next'])) {
-            $page = (int)$pagination['next'];
-            $has_next = true;
-        } else {
-            $has_next = false;
-        }
-
-    } while ($has_next);
-
-    if (empty($test_members)) {
-        $log_messages[] = '[' . date('Y-m-d H:i:s') . "] No @test.com members found in Earthen.";
-    } else {
-        $log_messages[] = '[' . date('Y-m-d H:i:s') . "] Found " . count($test_members) . " @test.com member(s) to delete.";
-
-        // ------------------------------------------------
-        // Delete each @test.com member by id
-        // ------------------------------------------------
-        foreach ($test_members as $member) {
-            $email = $member['email'];
-            $id    = $member['id'];
-
             try {
-                $jwt = createGhostJWT();
-                $delete_url = $base_url . $id . '/';
+                // DELETE /members/{id}/
+                $delete_url = "https://earthen.io/ghost/api/v4/admin/members/{$member_id}/";
+                $jwt_del    = createGhostJWT();
 
                 $ch = curl_init();
                 curl_setopt($ch, CURLOPT_URL, $delete_url);
                 curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                    'Authorization: Ghost ' . $jwt,
+                    'Authorization: Ghost ' . $jwt_del,
                     'Content-Type: application/json',
                 ]);
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
 
-                $response  = curl_exec($ch);
-                $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-                $curl_err  = curl_error($ch);
+                $del_response  = curl_exec($ch);
+                $del_http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                $del_curl_err  = curl_error($ch);
                 curl_close($ch);
 
-                if ($curl_err) {
-                    $log_messages[] =
-                        '[' . date('Y-m-d H:i:s') . "] ERROR deleting member {$email} ({$id}) - cURL error: {$curl_err}";
+                if ($del_curl_err) {
+                    cron_log("FAILED to delete {$email} (id={$member_id}) – curl error: {$del_curl_err}");
                     continue;
                 }
 
-                if ($http_code < 200 || $http_code >= 300) {
-                    $log_messages[] =
-                        '[' . date('Y-m-d H:i:s') . "] ERROR deleting member {$email} ({$id}) - HTTP {$http_code}: {$response}";
+                if ($del_http_code < 200 || $del_http_code >= 300) {
+                    cron_log("FAILED to delete {$email} (id={$member_id}) – HTTP {$del_http_code}: {$del_response}");
                     continue;
                 }
 
-                $log_messages[] =
-                    '[' . date('Y-m-d H:i:s') . "] Deleted Earthen member {$email} ({$id}) successfully (HTTP {$http_code}).";
+                $total_deleted++;
+                cron_log("Deleted Earthen member {$email} (id={$member_id})");
 
             } catch (Exception $e) {
-                $log_messages[] =
-                    '[' . date('Y-m-d H:i:s') . "] EXCEPTION deleting member {$email} ({$id}): " . $e->getMessage();
+                cron_log("Exception while deleting {$email} (id={$member_id}): " . $e->getMessage());
             }
         }
+
+        // Move to the next page. Depending on Ghost’s behaviour, newly deleted
+        // members may shift pages, but for test cleanup this is fine.
+        $page++;
     }
 
-} catch (Exception $e) {
-    $log_messages[] = '[' . date('Y-m-d H:i:s') . "] Cron error: " . $e->getMessage();
-}
+    cron_log("Earthen cleanup cron finished. Total deleted: {$total_deleted}");
 
-// Persist log entries for the current run.
-if (!empty($log_messages)) {
-    file_put_contents($log_file, implode(PHP_EOL, $log_messages) . PHP_EOL, FILE_APPEND);
+} catch (Exception $e) {
+    cron_log("Cron error: " . $e->getMessage());
 }
 
 ob_end_clean();
