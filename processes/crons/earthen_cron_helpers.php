@@ -3,41 +3,37 @@
  * Cron-safe Earthen / Ghost helpers.
  * - No HTML/JS output
  * - No reliance on browser DOM
- * - Throws Exceptions on error so caller can log nicely
- *
- * Requires:
- *   EARTHEN_KEY in the environment, in the format "{id}:{secret}"
+ * - Throws Exceptions on error so caller (cron) can log nicely
  */
 
 /**
+ * IMPORTANT:
+ *  - Replace the placeholder string below with your real Ghost Admin key.
+ *  - Format: "{id}:{secret}"
+ *  - This file is for cron use only (server-side, not exposed to clients).
+ */
+const EARTHEN_CRON_KEY = 'YOUR_GHOST_ADMIN_ID:YOUR_GHOST_ADMIN_SECRET';
+
+/**
  * URL-safe base64 encoder.
- *
- * @param string $data
- * @return string
  */
 function base64UrlEncode($data) {
     return str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($data));
 }
 
 /**
- * Build a Ghost Admin JWT using EARTHEN_KEY from the environment.
- *
- * EARTHEN_KEY must be in the format "{id}:{secret}".
- *
- * @return string
- * @throws Exception
+ * Build a Ghost Admin JWT using EARTHEN_CRON_KEY.
  */
 function createGhostJWT() {
-    // Retrieve the API key from the environment variable
-    $apiKey = getenv('EARTHEN_KEY');
+    $apiKey = EARTHEN_CRON_KEY;
 
     if (!$apiKey) {
-        throw new Exception('EARTHEN_KEY (Ghost Admin API key) not set in environment.');
+        throw new Exception('EARTHEN_CRON_KEY (Ghost Admin API key) not set in earthen_cron_helpers.php.');
     }
 
     $parts = explode(':', $apiKey, 2);
     if (count($parts) !== 2) {
-        throw new Exception('EARTHEN_KEY is not in the expected "{id}:{secret}" format.');
+        throw new Exception('EARTHEN_CRON_KEY is not in the expected "{id}:{secret}" format.');
     }
 
     list($id, $secret) = $parts;
@@ -72,10 +68,6 @@ function createGhostJWT() {
 
 /**
  * Get Ghost member ID for an email, or null if not found.
- *
- * @param string $email
- * @return string|null
- * @throws Exception
  */
 function getMemberIdByEmail($email) {
     $email_encoded = urlencode($email);
@@ -121,12 +113,7 @@ function getMemberIdByEmail($email) {
 /**
  * Unsubscribe a user from Earthen by deleting the Ghost member.
  *
- * Throws Exception on error.
- * Returns true on success, false if user not found.
- *
- * @param string $email
- * @return bool
- * @throws Exception
+ * Throws Exception on error. Returns true on success, false if not found.
  */
 function earthenUnsubscribe($email) {
     error_log("Earthen unsubscribe: process initiated for email: $email");
