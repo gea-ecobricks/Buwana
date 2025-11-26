@@ -4,22 +4,32 @@
  * - No HTML/JS output
  * - No reliance on browser DOM
  * - Throws Exceptions on error so caller can log nicely
+ *
+ * Requires:
+ *   EARTHEN_KEY in the environment, in the format "{id}:{secret}"
  */
 
-// URL-safe base64 encoder (same as you had)
+/**
+ * URL-safe base64 encoder.
+ *
+ * @param string $data
+ * @return string
+ */
 function base64UrlEncode($data) {
     return str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($data));
 }
 
 /**
- * Build a Ghost Admin JWT using EARTHEN_KEY.
+ * Build a Ghost Admin JWT using EARTHEN_KEY from the environment.
  *
- * EARTHEN_KEY must be in the format "{id}:{secret}" and is defined
- * in config/earthen_env.php.
+ * EARTHEN_KEY must be in the format "{id}:{secret}".
+ *
+ * @return string
+ * @throws Exception
  */
 function createGhostJWT() {
-    // Prefer the constant, fall back to env if it ever exists there
-    $apiKey = defined('EARTHEN_KEY') ? EARTHEN_KEY : getenv('EARTHEN_KEY');
+    // Retrieve the API key from the environment variable
+    $apiKey = getenv('EARTHEN_KEY');
 
     if (!$apiKey) {
         throw new Exception('EARTHEN_KEY (Ghost Admin API key) not set in environment.');
@@ -62,6 +72,10 @@ function createGhostJWT() {
 
 /**
  * Get Ghost member ID for an email, or null if not found.
+ *
+ * @param string $email
+ * @return string|null
+ * @throws Exception
  */
 function getMemberIdByEmail($email) {
     $email_encoded = urlencode($email);
@@ -107,7 +121,12 @@ function getMemberIdByEmail($email) {
 /**
  * Unsubscribe a user from Earthen by deleting the Ghost member.
  *
- * Throws Exception on error. Returns true on success, false if not found.
+ * Throws Exception on error.
+ * Returns true on success, false if user not found.
+ *
+ * @param string $email
+ * @return bool
+ * @throws Exception
  */
 function earthenUnsubscribe($email) {
     error_log("Earthen unsubscribe: process initiated for email: $email");
