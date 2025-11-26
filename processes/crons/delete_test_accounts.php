@@ -35,6 +35,8 @@ require_once __DIR__ . '/../../earthenAuth_helper.php';
 require_once __DIR__ . '/../../gobrikconn_env.php';
 require_once __DIR__ . '/../../buwanaconn_env.php';
 require_once __DIR__ . '/../../config/earthcal_env.php';
+require_once __DIR__ . '/../../config/earthen_env.php';
+
 // Use the cron-safe Earthen helpers
 require_once __DIR__ . '/earthen_cron_helpers.php';
 
