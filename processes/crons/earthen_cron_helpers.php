@@ -1,27 +1,27 @@
 <?php
 /**
- * URL-safe Base64 encode helper.
- *
- * @param string $data
- * @return string
+ * Cron-safe Earthen / Ghost helpers.
+ * - No HTML/JS output
+ * - No reliance on browser DOM
+ * - Throws Exceptions on error so caller can log nicely
  */
+
+// URL-safe base64 encoder (same as you had)
 function base64UrlEncode($data) {
     return str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($data));
 }
 
 /**
- * Create a Ghost Admin JWT for Earthen (v4 API).
+ * Build a Ghost Admin JWT using EARTHEN_KEY.
  *
- * Requires EARTHEN_KEY in the format: "{id}:{secret}"
- *
- * @return string
- * @throws Exception if the API key is missing or malformed.
+ * EARTHEN_KEY must be in the format "{id}:{secret}" and is defined
+ * in config/earthen_env.php.
  */
 function createGhostJWT() {
-    $apiKey = getenv('EARTHEN_KEY');
+    // Prefer the constant, fall back to env if it ever exists there
+    $apiKey = defined('EARTHEN_KEY') ? EARTHEN_KEY : getenv('EARTHEN_KEY');
 
     if (!$apiKey) {
-        // For cron, we throw instead of echoing HTML or exiting.
         throw new Exception('EARTHEN_KEY (Ghost Admin API key) not set in environment.');
     }
 
@@ -41,8 +41,8 @@ function createGhostJWT() {
     $now = time();
     $payload = json_encode([
         'iat' => $now,
-        'exp' => $now + 300,   // 5 minutes
-        'aud' => '/v4/admin/', // v4 admin audience
+        'exp' => $now + 300, // 5 minutes
+        'aud' => '/v4/admin/',
     ]);
 
     $base64UrlHeader  = base64UrlEncode($header);
@@ -61,16 +61,12 @@ function createGhostJWT() {
 }
 
 /**
- * Look up a Ghost member ID by email via the Earthen Ghost Admin API.
- *
- * @param string $email
- * @return string|null Member ID if found, null if not.
- * @throws Exception on HTTP/cURL/API errors.
+ * Get Ghost member ID for an email, or null if not found.
  */
 function getMemberIdByEmail($email) {
     $email_encoded = urlencode($email);
     $ghost_api_url = "https://earthen.io/ghost/api/v4/admin/members/?filter=email:$email_encoded";
-    $jwt = createGhostJWT();
+    $jwt           = createGhostJWT();
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $ghost_api_url);
@@ -86,47 +82,46 @@ function getMemberIdByEmail($email) {
     curl_close($ch);
 
     if ($curl_err) {
-        error_log("Earthen getMemberIdByEmail cURL error for {$email}: {$curl_err}");
-        throw new Exception('cURL error while fetching member from Earthen.');
+        error_log("Earthen getMemberIdByEmail cURL error: $curl_err");
+        throw new Exception('Error contacting Earthen (curl).');
     }
 
     if ($http_code < 200 || $http_code >= 300) {
-        error_log("Earthen getMemberIdByEmail HTTP {$http_code} for {$email}: {$response}");
-        throw new Exception("Earthen API returned HTTP status {$http_code}.");
+        error_log("Earthen getMemberIdByEmail HTTP $http_code: $response");
+        throw new Exception("Earthen API returned HTTP $http_code while looking up member.");
     }
 
-    $response_data = json_decode($response, true);
-
-    if (isset($response_data['members'][0]['id'])) {
-        $member_id = $response_data['members'][0]['id'];
-        error_log("Earthen getMemberIdByEmail: found member {$member_id} for {$email}");
-        return $member_id;
+    $data = json_decode($response, true);
+    if (
+        !isset($data['members']) ||
+        !is_array($data['members']) ||
+        count($data['members']) === 0
+    ) {
+        // Not an error: just "user not found"
+        return null;
     }
 
-    // No member found is not a transport error, just a logical “not found”.
-    error_log("Earthen getMemberIdByEmail: no member found for {$email}");
-    return null;
+    return $data['members'][0]['id'] ?? null;
 }
 
 /**
- * Unsubscribe (actually delete) a member from Earthen/Ghost by email.
+ * Unsubscribe a user from Earthen by deleting the Ghost member.
  *
- * @param string $email
- * @throws Exception if the user is not found or unsubscribe fails.
+ * Throws Exception on error. Returns true on success, false if not found.
  */
 function earthenUnsubscribe($email) {
-    error_log("Earthen unsubscribe: process initiated for email: {$email}");
+    error_log("Earthen unsubscribe: process initiated for email: $email");
 
     $member_id = getMemberIdByEmail($email);
-    error_log("Earthen unsubscribe: member ID retrieved: " . ($member_id ?: 'NULL'));
+    error_log("Earthen unsubscribe: member id for $email is " . ($member_id ?: 'null'));
 
     if (!$member_id) {
-        // For the cron, we treat "not found" as an exception; your caller catches it
-        throw new Exception("Earthen unsubscribe: user not found for email {$email}");
+        // Treat "not found" as non-fatal: there's nothing to delete.
+        return false;
     }
 
-    $ghost_api_url = "https://earthen.io/ghost/api/v4/admin/members/{$member_id}/";
-    $jwt = createGhostJWT();
+    $ghost_api_url = "https://earthen.io/ghost/api/v4/admin/members/$member_id/";
+    $jwt           = createGhostJWT();
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $ghost_api_url);
@@ -143,15 +138,15 @@ function earthenUnsubscribe($email) {
     curl_close($ch);
 
     if ($curl_err) {
-        error_log("Earthen unsubscribe cURL error for {$email} (member {$member_id}): {$curl_err}");
-        throw new Exception("Earthen unsubscribe cURL error for {$email}");
+        error_log("Earthen unsubscribe cURL error: $curl_err");
+        throw new Exception('Error contacting Earthen (curl) during unsubscribe.');
     }
 
-    if ($http_code >= 200 && $http_code < 300) {
-        error_log("Earthen unsubscribe: success for {$email}, HTTP {$http_code}");
-        return;
+    if ($http_code < 200 || $http_code >= 300) {
+        error_log("Earthen unsubscribe HTTP $http_code: $response");
+        throw new Exception("Earthen API returned HTTP $http_code during unsubscribe.");
     }
 
-    error_log("Earthen unsubscribe HTTP {$http_code} for {$email} (member {$member_id}): {$response}");
-    throw new Exception("Earthen unsubscribe failed with HTTP code {$http_code} for {$email}");
+    error_log("Earthen unsubscribe: completed successfully for $email (HTTP $http_code)");
+    return true;
 }
