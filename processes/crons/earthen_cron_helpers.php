@@ -3,65 +3,82 @@
  * Cron-safe Earthen / Ghost helpers.
  * - No HTML/JS output
  * - No reliance on browser DOM
- * - Throws Exceptions on error so caller (cron) can log nicely
+ * - Throws Exceptions on error so caller can log nicely
  */
 
-/**
- * IMPORTANT:
- *  - Replace the placeholder string below with your real Ghost Admin key.
- *  - Format: "{id}:{secret}"
- *  - This file is for cron use only (server-side, not exposed to clients).
- */
-const EARTHEN_CRON_KEY = 'YOUR_GHOST_ADMIN_ID:YOUR_GHOST_ADMIN_SECRET';
-
-/**
- * URL-safe base64 encoder.
- */
+// URL-safe base64 encoder
 function base64UrlEncode($data) {
     return str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($data));
 }
 
 /**
- * Parse and validate the Ghost Admin key.
+ * Fetch and validate the Ghost Admin API key from the environment.
+ *
+ * EARTHEN_KEY must be in the format: "{id}:{secret}"
+ * - id: any non-empty string (Ghost's key id)
+ * - secret: 64 hex chars (256-bit), e.g. /^[0-9a-fA-F]{64}$/
  *
  * @return array [id, secret]
- * @throws Exception
+ * @throws Exception on any format/validation problem
  */
-function getGhostKeyParts() {
-    $apiKey = EARTHEN_CRON_KEY;
+function getEarthenAdminKey() {
+    $raw = getenv('EARTHEN_KEY');
 
-    if (empty($apiKey)) {
-        throw new Exception('EARTHEN_CRON_KEY (Ghost Admin API key) not set in earthen_cron_helpers.php.');
+    if (!$raw) {
+        throw new Exception('EARTHEN_KEY (Ghost Admin API key) not set in environment.');
     }
 
-    // Exactly one colon: "id:secret"
-    $parts = explode(':', $apiKey, 2);
-    if (count($parts) !== 2) {
-        throw new Exception('EARTHEN_CRON_KEY must be in the format "{id}:{secret}" with a single colon.');
-    }
+    $raw = trim($raw);
 
-    list($id, $secret) = $parts;
-
-    if (empty($id) || empty($secret)) {
-        throw new Exception('EARTHEN_CRON_KEY has an empty id or secret part. Double-check you copied the Admin API key correctly.');
-    }
-
-    // The secret must be an even-length hex string
-    if (!ctype_xdigit($secret) || (strlen($secret) % 2) !== 0) {
+    // How many colons?
+    $colonCount = substr_count($raw, ':');
+    if ($colonCount !== 1) {
         throw new Exception(
-            'EARTHEN_CRON_KEY secret part is not a valid even-length hex string. ' .
-            'Make sure you copied the **Admin API key** exactly from Ghost (no extra colons, no truncation).'
+            "EARTHEN_KEY must be in the format \"id:secret\" with exactly 1 colon; found {$colonCount}."
         );
     }
+
+    // Split into id and secret
+    list($id, $secret) = explode(':', $raw, 2);
+    $id     = trim($id);
+    $secret = trim($secret);
+
+    if ($id === '' || $secret === '') {
+        throw new Exception('EARTHEN_KEY id or secret is empty after trimming.');
+    }
+
+    // Secret must be hex only
+    if (!preg_match('/^[0-9a-fA-F]+$/', $secret)) {
+        $len = strlen($secret);
+        throw new Exception(
+            "EARTHEN_KEY secret contains non-hex characters (length {$len}). " .
+            "Make sure you copied the **Admin API key** exactly from Ghost."
+        );
+    }
+
+    // Length must be even (Ghost secrets are typically 64 hex chars)
+    $len = strlen($secret);
+    if ($len % 2 !== 0) {
+        throw new Exception(
+            "EARTHEN_KEY secret length ({$len}) is not even. " .
+            "It should typically be 64 hex characters. Check for a missing or extra character."
+        );
+    }
+
+    // For debugging without leaking the actual key
+    error_log("Earthen key check: id length=" . strlen($id) . ", secret length={$len}");
 
     return [$id, $secret];
 }
 
 /**
- * Build a Ghost Admin JWT using EARTHEN_CRON_KEY.
+ * Build a Ghost Admin JWT using EARTHEN_KEY.
+ *
+ * @return string JWT
+ * @throws Exception if key is missing/invalid
  */
 function createGhostJWT() {
-    list($id, $secret) = getGhostKeyParts();
+    list($id, $secret) = getEarthenAdminKey();
 
     $header = json_encode([
         'typ' => 'JWT',
@@ -118,7 +135,6 @@ function getMemberIdByEmail($email) {
     }
 
     if ($http_code < 200 || $http_code >= 300) {
-        // Log a bit of context, but not the key
         error_log("Earthen getMemberIdByEmail HTTP $http_code: $response");
         throw new Exception("Earthen API returned HTTP $http_code while looking up member.");
     }
