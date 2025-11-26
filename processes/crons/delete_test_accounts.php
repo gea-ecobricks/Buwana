@@ -1,6 +1,14 @@
 <?php
 ob_start();
 
+// Daily maintenance cron that removes test accounts from the Buwana platform and
+// any connected applications, then unsubscribes the user from Earthen.
+// Steps:
+// 1. Find test credentials in Buwana.
+// 2. Delete user records from connected apps (Gobrik, Earthcal).
+// 3. Delete the user's Buwana account and credentials.
+// 4. Unsubscribe the account's email from Earthen.
+
 require_once '../../earthenAuth_helper.php';
 require_once '../../gobrikconn_env.php';
 require_once '../../buwanaconn_env.php';
@@ -11,6 +19,7 @@ $log_file = __DIR__ . '/delete_test_accounts.log';
 $log_messages = [];
 
 try {
+    // Pull a small batch of test accounts to process (safety limited to 10 for now).
     $sql = "SELECT c.buwana_id, u.email FROM credentials_tb c JOIN users_tb u ON c.buwana_id = u.buwana_id WHERE c.credential_key LIKE '%@test.com' LIMIT 10"; // Temporary limit to 10 accounts
     $result = $buwana_conn->query($sql);
     if (!$result) {
@@ -20,6 +29,7 @@ try {
     if ($result->num_rows === 0) {
         $log_messages[] = '[' . date('Y-m-d H:i:s') . "] No test accounts found.";
     } else {
+        // Process each test account one at a time so failures are isolated.
         while ($row = $result->fetch_assoc()) {
             $buwana_id = (int) $row['buwana_id'];
             $email_addr = $row['email'];
@@ -30,7 +40,8 @@ try {
             try {
                 $buwana_conn->begin_transaction();
 
-                // Fetch connected apps
+                // Fetch connected apps linked to this Buwana account so we can
+                // clean up downstream data before removing the core account.
                 $sql_fetch_apps = "SELECT client_id FROM user_app_connections_tb WHERE buwana_id = ?";
                 $stmt_fetch_apps = $buwana_conn->prepare($sql_fetch_apps);
                 if (!$stmt_fetch_apps) {
@@ -45,7 +56,7 @@ try {
                 }
                 $stmt_fetch_apps->close();
 
-                // Loop through connected apps and delete user from each
+                // Loop through connected apps and delete user from each.
                 foreach ($client_ids as $client_id) {
                     $stmt_app = $buwana_conn->prepare("SELECT app_name FROM apps_tb WHERE client_id = ?");
                     if (!$stmt_app) {
@@ -62,7 +73,7 @@ try {
                             try {
                                 $gobrik_conn->begin_transaction();
 
-                                // Find ecobricker_id via buwana_id
+                                // Remove the ecobricker profile tied to this Buwana user.
                                 $stmt_ecobricker = $gobrik_conn->prepare("SELECT ecobricker_id FROM tb_ecobrickers WHERE buwana_id = ?");
                                 if ($stmt_ecobricker) {
                                     $stmt_ecobricker->bind_param('i', $buwana_id);
@@ -97,6 +108,7 @@ try {
                             try {
                                 $cal_conn->begin_transaction();
 
+                                // Remove data across Earthcal tables keyed by buwana_id.
                                 $tables = [
                                     'datecycles_tb',
                                     'cal_subscriptions_tb',
@@ -125,12 +137,12 @@ try {
                             break;
 
                         default:
-                            // Unsupported apps are ignored
+                            // Unsupported apps are ignored; continue cleaning the rest.
                             break;
                     }
                 }
 
-                // Delete user's connections
+                // Delete user's app connection references in Buwana.
                 $stmt_delete_connections = $buwana_conn->prepare("DELETE FROM user_app_connections_tb WHERE buwana_id = ?");
                 if ($stmt_delete_connections) {
                     $stmt_delete_connections->bind_param('i', $buwana_id);
@@ -138,7 +150,7 @@ try {
                     $stmt_delete_connections->close();
                 }
 
-                // Delete user from users_tb
+                // Delete core Buwana user record.
                 $stmt_delete_user = $buwana_conn->prepare("DELETE FROM users_tb WHERE buwana_id = ?");
                 if (!$stmt_delete_user) {
                     throw new Exception('Error preparing statement for deleting user: ' . $buwana_conn->error);
@@ -147,7 +159,7 @@ try {
                 $stmt_delete_user->execute();
                 $stmt_delete_user->close();
 
-                // Delete credentials
+                // Delete stored credentials for the user.
                 $stmt_delete_credentials = $buwana_conn->prepare("DELETE FROM credentials_tb WHERE buwana_id = ?");
                 if (!$stmt_delete_credentials) {
                     throw new Exception('Error preparing statement for deleting credentials: ' . $buwana_conn->error);
@@ -159,7 +171,7 @@ try {
                 $buwana_conn->commit();
                 $successes[] = 'Deleted Buwana Account';
 
-                // Call Earthen unsubscribe
+                // Unsubscribe the user's email from Earthen mailing lists.
                 if (!empty($email_addr)) {
                     try {
                         earthenUnsubscribe($email_addr);
@@ -184,6 +196,7 @@ try {
                 $status = 'error';
             }
 
+            // Record per-account outcomes for the cron log.
             $log_messages[] = '[' . date('Y-m-d H:i:s') . "] buwana_id {$buwana_id} ({$email_addr}) - {$status}; Successes: " . implode('; ', $successes) . "; Failures: " . implode('; ', $failures);
         }
     }
@@ -191,6 +204,7 @@ try {
     $log_messages[] = '[' . date('Y-m-d H:i:s') . "] Cron error: " . $e->getMessage();
 }
 
+// Persist log entries for the current run.
 file_put_contents($log_file, implode(PHP_EOL, $log_messages) . PHP_EOL, FILE_APPEND);
 
 ob_end_clean();
