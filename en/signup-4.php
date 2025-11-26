@@ -199,7 +199,6 @@ https://github.com/gea-ecobricks/buwana/-->
 
 
 
-
                 <!-- COMMUNITY FIELD -->
                 <div class="form-item" id="community-section" style="display:none;padding-bottom:10px;">
                              <p data-lang-id="010-are-you-part-community">Are you part of a local community on Buwana?</p>
