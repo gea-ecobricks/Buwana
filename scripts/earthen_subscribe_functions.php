@@ -457,8 +457,6 @@ function createGhostJWTsubscribe() {
 }
 
 
-
-
 // Prepare the function to check the subscription status
 function checkEarthenEmailStatus2($email) {
     // Prepare and encode the email address for use in the API URL
