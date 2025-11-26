@@ -1,7 +1,7 @@
 <?php
 /**
  * Encodes data to a URL-safe Base64 format.
- * 
+ *
  * @param string $data Data to be encoded.
  * @return string URL-safe base64 encoded string.
  */
@@ -10,11 +10,10 @@ function base64UrlEncode($data) {
 }
 
 /**
- * Creates a JWT token for Ghost Admin API authentication.
+ * Creates a JWT token for Ghost Admin API authentication (v4).
+ * Uses the EARTHEN_KEY environment variable.
  * @return string JWT token.
- * @throws Exception if the API key is not found or invalid.
  */
-
 function createGhostJWT() {
     // Retrieve the API key from the environment variable
     $apiKey = getenv('EARTHEN_KEY');
@@ -24,8 +23,13 @@ function createGhostJWT() {
         exit();
     }
 
-    // Split the API Key into ID and Secret for JWT generation
-    list($id, $secret) = explode(':', $apiKey);
+    $parts = explode(':', $apiKey, 2);
+    if (count($parts) !== 2) {
+        displayError('API key format invalid.');
+        exit();
+    }
+
+    list($id, $secret) = $parts;
 
     // Prepare the header and payload for the JWT
     $header = json_encode(['typ' => 'JWT', 'alg' => 'HS256', 'kid' => $id]);
@@ -66,7 +70,6 @@ function displayError($error_type) {
  * Checks if the user is subscribed to any of the newsletters and marks the corresponding checkboxes.
  * If the user is not subscribed to any, the "Earthen" newsletter will be preselected.
  */
-
 function grabActiveEarthenSubs() {
     global $subscribed_newsletters; // Access the global variable to compare with user subscriptions
     $is_user_subscribed = !empty($subscribed_newsletters); // Determine if the user is subscribed to any newsletters
@@ -104,18 +107,18 @@ function grabActiveEarthenSubs() {
                 foreach ($response_data['newsletters'] as $newsletter) {
                     if ($newsletter['status'] === 'active') {
                         // Extract data
-                        $sub_id = htmlspecialchars($newsletter['id']);
-                        $sub_slug = htmlspecialchars($newsletter['slug']);
-                        $sub_name = htmlspecialchars($newsletter['name']);
+                        $sub_id          = htmlspecialchars($newsletter['id']);
+                        $sub_slug        = htmlspecialchars($newsletter['slug']);
+                        $sub_name        = htmlspecialchars($newsletter['name']);
                         $sub_description = htmlspecialchars($newsletter['description']);
                         $sub_sender_name = htmlspecialchars($newsletter['sender_name']);
-                        $sub_language = "English"; // Adjust if data in the JSON specifies a different language
-                        $sub_frequency = "1-3 posts a month"; // Hard-coded frequency for demonstration
+                        $sub_language    = "English"; // Adjust if data in the JSON specifies a different language
+                        $sub_frequency   = "1-3 posts a month"; // Hard-coded frequency for demonstration
 
-                      // Determine if this newsletter should be preselected
-$is_checked = in_array($sub_name, $subscribed_newsletters) ||
-              (!$is_user_subscribed && in_array($sub_name, ['Earthen', 'GoBrik News'])) ?
-              'checked' : '';
+                        // Determine if this newsletter should be preselected
+                        $is_checked = in_array($sub_name, $subscribed_newsletters) ||
+                                      (!$is_user_subscribed && in_array($sub_name, ['Earthen', 'GoBrik News'])) ?
+                                      'checked' : '';
 
                         // Apply the full selection styles if the box is checked
                         $selected_styles = $is_checked ? 'style="border: 2px solid green; background-color: var(--darker);"' : '';
@@ -154,11 +157,6 @@ $is_checked = in_array($sub_name, $subscribed_newsletters) ||
         displayError('Exception: ' . $e->getMessage());
     }
 }
-
-
-
-
-
 
 
 /**
@@ -207,7 +205,7 @@ function checkEarthenEmailStatus($email) {
             $response_data = json_decode($response, true);
 
             // Check if members are found
-            $registered = 0;
+            $registered  = 0;
             $newsletters = [];
 
             if ($response_data && isset($response_data['members']) && is_array($response_data['members']) && count($response_data['members']) > 0) {
@@ -224,11 +222,20 @@ function checkEarthenEmailStatus($email) {
                     $subscribed_newsletters = $newsletters; // Store the names in the global variable
                 }
 
-                $jsonResponse = json_encode(['status' => 'success', 'registered' => $registered, 'message' => 'User is subscribed.', 'newsletters' => $newsletters]);
+                $jsonResponse = json_encode([
+                    'status'     => 'success',
+                    'registered' => $registered,
+                    'message'    => 'User is subscribed.',
+                    'newsletters'=> $newsletters
+                ]);
                 logToConsole($jsonResponse); // Log the JSON response to the console
                 return $jsonResponse;
             } else {
-                $jsonResponse = json_encode(['status' => 'success', 'registered' => $registered, 'message' => 'User is not subscribed.']);
+                $jsonResponse = json_encode([
+                    'status'     => 'success',
+                    'registered' => $registered,
+                    'message'    => 'User is not subscribed.'
+                ]);
                 logToConsole($jsonResponse); // Log the JSON response to the console
                 return $jsonResponse;
             }
@@ -316,10 +323,6 @@ function updateSubscribeUser($member_id, $newsletter_ids) {
 }
 
 
-
-
-
-
 /**
  * Update to unsubscribe a user from a specific newsletter using PATCH.
  */
@@ -385,7 +388,7 @@ function subscribeUserToNewsletter($email, $newsletter_ids) {
         $data = [
             'members' => [
                 [
-                    'email' => $email,
+                    'email'       => $email,
                     'newsletters' => $newsletters
                 ]
             ]
@@ -423,6 +426,11 @@ function subscribeUserToNewsletter($email, $newsletter_ids) {
 }
 
 
+/**
+ * Creates a JWT token for Ghost Admin API authentication (v4) for subscription.
+ * Uses the same EARTHEN_KEY environment variable.
+ * Kept separate for backwards compatibility with existing calls.
+ */
 function createGhostJWTsubscribe() {
     // Retrieve the API key from the environment variable
     $apiKey = getenv('EARTHEN_KEY');
@@ -432,8 +440,13 @@ function createGhostJWTsubscribe() {
         exit();
     }
 
-    // Split the API Key into ID and Secret for JWT generation
-    list($id, $secret) = explode(':', $apiKey);
+    $parts = explode(':', $apiKey, 2);
+    if (count($parts) !== 2) {
+        displayError('API key format invalid.');
+        exit();
+    }
+
+    list($id, $secret) = $parts;
 
     // Prepare the header and payload for the JWT
     $header = json_encode(['typ' => 'JWT', 'alg' => 'HS256', 'kid' => $id]);
@@ -457,17 +470,30 @@ function createGhostJWTsubscribe() {
 }
 
 
-
-
-// Prepare the function to check the subscription status
+/**
+ * Legacy helper: check subscription status using v3 Admin API.
+ * Now also uses EARTHEN_KEY environment variable instead of a hard-coded key.
+ */
 function checkEarthenEmailStatus2($email) {
     // Prepare and encode the email address for use in the API URL
     $email_encoded = urlencode($email);
     $ghost_api_url = "https://earthen.io/ghost/api/v3/admin/members/?filter=email:$email_encoded";
 
-    // Split API Key into ID and Secret for JWT generation
-    $apiKey = '66db68b5cff59f045598dbc3:5c82d570631831f277b1a9b4e5840703e73a68e948812b2277a0bc11c12c973f';
-    list($id, $secret) = explode(':', $apiKey);
+    // Retrieve Admin API key from environment
+    $apiKey = getenv('EARTHEN_KEY');
+
+    if (!$apiKey) {
+        echo json_encode(['status' => 'error', 'message' => 'API key not set.']);
+        return;
+    }
+
+    $parts = explode(':', $apiKey, 2);
+    if (count($parts) !== 2) {
+        echo json_encode(['status' => 'error', 'message' => 'API key format invalid.']);
+        return;
+    }
+
+    list($id, $secret) = $parts;
 
     // Prepare the header and payload for the JWT
     $header = json_encode(['typ' => 'JWT', 'alg' => 'HS256', 'kid' => $id]);
@@ -475,7 +501,7 @@ function checkEarthenEmailStatus2($email) {
     $payload = json_encode([
         'iat' => $now,
         'exp' => $now + 300, // Token valid for 5 minutes
-        'aud' => '/v3/admin/' // Corrected audience value to match the expected pattern
+        'aud' => '/v3/admin/' // Audience for v3 admin API
     ]);
 
     // Encode Header and Payload
@@ -514,7 +540,7 @@ function checkEarthenEmailStatus2($email) {
         $response_data = json_decode($response, true);
 
         // Check if members are found
-        $registered = 0; // Default to not registered
+        $registered  = 0; // Default to not registered
         $newsletters = []; // Array to hold newsletter names
 
         if ($response_data && isset($response_data['members']) && is_array($response_data['members']) && count($response_data['members']) > 0) {
@@ -527,23 +553,31 @@ function checkEarthenEmailStatus2($email) {
                 }
             }
 
-            echo json_encode(['status' => 'success', 'registered' => $registered, 'message' => 'User is subscribed.', 'newsletters' => $newsletters]);
+            echo json_encode([
+                'status'     => 'success',
+                'registered' => $registered,
+                'message'    => 'User is subscribed.',
+                'newsletters'=> $newsletters
+            ]);
         } else {
-            echo json_encode(['status' => 'success', 'registered' => $registered, 'message' => 'User is not subscribed.']);
+            echo json_encode([
+                'status'     => 'success',
+                'registered' => $registered,
+                'message'    => 'User is not subscribed.'
+            ]);
         }
     } else {
         // Handle error
         error_log('HTTP status ' . $http_code . ': ' . $response);
-        echo json_encode(['status' => 'error', 'message' => 'API call to Earthen.io failed with HTTP code: ' . $http_code]);
+        echo json_encode([
+            'status'  => 'error',
+            'message' => 'API call to Earthen.io failed with HTTP code: ' . $http_code
+        ]);
     }
 
     // Close the cURL session
     curl_close($ch);
 }
-
-
-
-
 
 
 /**
@@ -566,8 +600,8 @@ function getMemberIdByEmail($email) {
     ));
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-    $response = curl_exec($ch);
-    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $response   = curl_exec($ch);
+    $http_code  = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
 
     if ($http_code >= 200 && $http_code < 300) {
@@ -585,9 +619,9 @@ function getMemberIdByEmail($email) {
 }
 
 function earthenUnsubscribe($email) {
-error_log("Unsubscribe process initiated for email: $email"); // At start of earthenUnsubscribe
+    error_log("Unsubscribe process initiated for email: $email"); // At start of earthenUnsubscribe
     $member_id = getMemberIdByEmail($email);
-error_log("Member ID retrieved: $member_id"); // After retrieving member ID
+    error_log("Member ID retrieved: $member_id"); // After retrieving member ID
     if (!$member_id) {
         echo json_encode(['status' => 'error', 'message' => 'User not found for given email.']);
         return;
@@ -606,10 +640,9 @@ error_log("Member ID retrieved: $member_id"); // After retrieving member ID
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
 
-    $response = curl_exec($ch);
+    $response  = curl_exec($ch);
     $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
-
 
     if ($http_code >= 200 && $http_code < 300) {
         echo json_encode(['status' => 'success', 'message' => 'User has been unsubscribed.']);
@@ -619,7 +652,6 @@ error_log("Member ID retrieved: $member_id"); // After retrieving member ID
         echo json_encode(['status' => 'error', 'message' => 'Unsubscribe failed with HTTP code: ' . $http_code]);
     }
 }
-
 
 
 // Handle incoming requests
@@ -632,9 +664,4 @@ if (isset($_POST['email'])) {
         checkEarthenEmailStatus2($email);
     }
 } else {
-
-}
-?>
-
-
-
+    // No email posted; do n
