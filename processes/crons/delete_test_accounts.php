@@ -38,10 +38,16 @@ require_once __DIR__ . '/../../config/earthcal_env.php';
 // Use the cron-safe Earthen helpers
 require_once __DIR__ . '/earthen_cron_helpers.php';
 
+$earthcal_conn = $client_conn ?? null; // Normalize EarthCal connection handle
+
 // We'll accumulate detailed log messages for this run
 $log_messages = [];
 
 try {
+    if (!$earthcal_conn instanceof mysqli || $earthcal_conn->connect_errno) {
+        throw new Exception('EarthCal DB connection is not available.');
+    }
+
     // Pull a small batch of test accounts to process (safety limited to 10 for now).
     $sql = "SELECT c.buwana_id, u.email
             FROM credentials_tb c
@@ -134,7 +140,7 @@ try {
 
                         case 'earthcal':
                             try {
-                                $cal_conn->begin_transaction();
+                                $earthcal_conn->begin_transaction();
 
                                 // Remove data across Earthcal tables keyed by buwana_id.
                                 $tables = [
@@ -146,18 +152,18 @@ try {
 
                                 foreach ($tables as $table) {
                                     $sql_delete = "DELETE FROM {$table} WHERE buwana_id = ?";
-                                    if ($stmt = $cal_conn->prepare($sql_delete)) {
+                                    if ($stmt = $earthcal_conn->prepare($sql_delete)) {
                                         $stmt->bind_param('i', $buwana_id);
                                         $stmt->execute();
                                         $stmt->close();
                                     }
                                 }
 
-                                $cal_conn->commit();
+                                $earthcal_conn->commit();
                                 $successes[] = 'Deleted Earthcal Account';
                             } catch (Exception $e) {
-                                if ($cal_conn->in_transaction) {
-                                    $cal_conn->rollback();
+                                if ($earthcal_conn->in_transaction) {
+                                    $earthcal_conn->rollback();
                                 }
                                 $failures[] = 'Failed to delete Earthcal Account: ' . $e->getMessage();
                                 $status     = 'partial';
@@ -217,8 +223,8 @@ try {
                 if (isset($gobrik_conn) && $gobrik_conn->in_transaction) {
                     $gobrik_conn->rollback();
                 }
-                if (isset($cal_conn) && $cal_conn->in_transaction) {
-                    $cal_conn->rollback();
+                if ($earthcal_conn instanceof mysqli && $earthcal_conn->in_transaction) {
+                    $earthcal_conn->rollback();
                 }
                 $failures[] = 'Error: ' . $e->getMessage();
                 $status     = 'error';
