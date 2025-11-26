@@ -66,7 +66,6 @@ function getEarthenAdminKey() {
     }
 
     // For debugging without leaking the actual key
-    error_log("Earthen key check: id length=" . strlen($id) . ", secret length={$len}");
 
     return [$id, $secret];
 }
