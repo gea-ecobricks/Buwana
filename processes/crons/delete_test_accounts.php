@@ -22,7 +22,7 @@ ini_set('error_log', $log_file);
 // --------------------------------------------------------
 // Includes
 // --------------------------------------------------------
-
+//
 // Daily maintenance cron that removes test accounts from the Buwana platform and
 // any connected applications, then unsubscribes the user from Earthen.
 // Steps:
@@ -34,8 +34,9 @@ ini_set('error_log', $log_file);
 require_once __DIR__ . '/../../earthenAuth_helper.php';
 require_once __DIR__ . '/../../gobrikconn_env.php';
 require_once __DIR__ . '/../../buwanaconn_env.php';
-require_once __DIR__ . '/../../calconn_env.php';
-require_once __DIR__ . '/../../scripts/earthen_subscribe_functions.php';
+require_once __DIR__ . '/../../config/earthcal_env.php';
+// Use the cron-safe Earthen helpers
+require_once __DIR__ . '/earthen_cron_helpers.php';
 
 // We'll accumulate detailed log messages for this run
 $log_messages = [];
@@ -69,15 +70,15 @@ try {
 
                 // Fetch connected apps linked to this Buwana account so we can
                 // clean up downstream data before removing the core account.
-                $sql_fetch_apps = "SELECT client_id FROM user_app_connections_tb WHERE buwana_id = ?";
-                $stmt_fetch_apps = $buwana_conn->prepare($sql_fetch_apps);
+                $sql_fetch_apps   = "SELECT client_id FROM user_app_connections_tb WHERE buwana_id = ?";
+                $stmt_fetch_apps  = $buwana_conn->prepare($sql_fetch_apps);
                 if (!$stmt_fetch_apps) {
                     throw new Exception('Error preparing statement for fetching connected apps: ' . $buwana_conn->error);
                 }
                 $stmt_fetch_apps->bind_param('i', $buwana_id);
                 $stmt_fetch_apps->execute();
                 $result_apps = $stmt_fetch_apps->get_result();
-                $client_ids = [];
+                $client_ids  = [];
                 while ($app_row = $result_apps->fetch_assoc()) {
                     $client_ids[] = $app_row['client_id'];
                 }
@@ -126,8 +127,8 @@ try {
                                 if ($gobrik_conn->in_transaction) {
                                     $gobrik_conn->rollback();
                                 }
-                                $failures[] = 'Failed to delete Gobrik Account';
-                                $status = 'partial';
+                                $failures[] = 'Failed to delete Gobrik Account: ' . $e->getMessage();
+                                $status     = 'partial';
                             }
                             break;
 
@@ -158,8 +159,8 @@ try {
                                 if ($cal_conn->in_transaction) {
                                     $cal_conn->rollback();
                                 }
-                                $failures[] = 'Failed to delete Earthcal Account';
-                                $status = 'partial';
+                                $failures[] = 'Failed to delete Earthcal Account: ' . $e->getMessage();
+                                $status     = 'partial';
                             }
                             break;
 
@@ -204,8 +205,8 @@ try {
                         earthenUnsubscribe($email_addr);
                         $successes[] = 'Unsubscribed from Earthen';
                     } catch (Exception $e) {
-                        $failures[] = 'Failed to unsubscribe from Earthen';
-                        $status = 'partial';
+                        $failures[] = 'Failed to unsubscribe from Earthen: ' . $e->getMessage();
+                        $status     = $status === 'success' ? 'partial' : $status;
                     }
                 }
 
@@ -220,11 +221,14 @@ try {
                     $cal_conn->rollback();
                 }
                 $failures[] = 'Error: ' . $e->getMessage();
-                $status = 'error';
+                $status     = 'error';
             }
 
             // Record per-account outcomes for the cron log.
-            $log_messages[] = '[' . date('Y-m-d H:i:s') . "] buwana_id {$buwana_id} ({$email_addr}) - {$status}; Successes: " . implode('; ', $successes) . "; Failures: " . implode('; ', $failures);
+            $log_messages[] =
+                '[' . date('Y-m-d H:i:s') . "] buwana_id {$buwana_id} ({$email_addr}) - {$status}; " .
+                'Successes: ' . implode('; ', $successes) . '; ' .
+                'Failures: ' . implode('; ', $failures);
         }
     }
 } catch (Exception $e) {

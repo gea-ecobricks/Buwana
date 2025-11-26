@@ -4,7 +4,7 @@ ob_start(); // Start output buffering to prevent unexpected output
 require_once '../earthenAuth_helper.php';
 require_once '../gobrikconn_env.php';
 require_once '../buwanaconn_env.php';
-require_once '../calconn_env.php'; // Include EarthCal database connection
+require_once '../config/earthcal_env.php'; // Include EarthCal database connection
 require_once '../scripts/earthen_subscribe_functions.php';
 
 header('Content-Type: application/json');
