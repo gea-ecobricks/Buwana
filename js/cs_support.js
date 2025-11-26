@@ -361,10 +361,6 @@ class CsSupportApp {
 
             const metaRow = document.createElement('div');
             metaRow.className = 'cs-inbox__meta';
-            const pill = document.createElement('span');
-            pill.className = 'cs-pill cs-pill--app';
-            pill.textContent = app.app_display_name;
-            metaRow.appendChild(pill);
             metaRow.appendChild(this.createMetaText(`${chats.length} conversation${chats.length === 1 ? '' : 's'}`));
 
             heading.appendChild(title);
@@ -392,14 +388,12 @@ class CsSupportApp {
             table.innerHTML = `
                 <thead>
                     <tr>
-                        <th>Chat subjects</th>
-                        <th>From</th>
+                        <th class="col-subject">Subject</th>
                         <th class="col-updated">Updated</th>
                         <th>Priority</th>
                         <th class="col-status">Status</th>
-                        <th>Upvotes</th>
                         <th class="col-readers">Readers</th>
-                        <th>Actions</th>
+                        <th class="col-actions">Actions</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -546,15 +540,13 @@ class CsSupportApp {
         table.innerHTML = `
             <thead>
                 <tr>
-                    <th>Chat subjects</th>
-                    <th>From</th>
+                    <th class="col-subject">Subject</th>
                     <th class="col-updated">Updated</th>
                     <th>App</th>
                     <th>Priority</th>
                     <th class="col-status">Status</th>
-                    <th>Upvotes</th>
                     <th class="col-readers">Readers</th>
-                    <th>Actions</th>
+                    <th class="col-actions">Actions</th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -577,15 +569,12 @@ class CsSupportApp {
             return {
                 id: chat.id,
                 title: chat.title,
-                owner: chat.owner || null,
                 app: chat.app,
                 priority: chat.priority,
                 status: chat.status,
                 category: chat.category,
                 updated_at: chat.updated_at,
                 readers: chat.readers || [],
-                upvote_count: chat.upvote_count || 0,
-                has_upvoted: chat.has_upvoted,
                 tags: chat.tags || [],
             };
         });
@@ -593,7 +582,8 @@ class CsSupportApp {
         const columns = [
             {
                 data: 'title',
-                title: 'Chat subjects',
+                title: 'Subject',
+                className: 'col-subject',
                 render: (data, type, row) => {
                     if (type === 'display') {
                         const tagText = this.formatTagText(row.tags);
@@ -605,21 +595,6 @@ class CsSupportApp {
                             </div>`;
                     }
                     return data;
-                },
-            },
-            {
-                data: 'owner',
-                title: 'From',
-                className: 'col-owner',
-                render: (owner, type) => {
-                    const name = owner && (owner.full_name || owner.first_name) ? owner.full_name || owner.first_name : '';
-                    if (type !== 'display') {
-                        return name;
-                    }
-                    if (!owner || !name) {
-                        return '—';
-                    }
-                    return `<div class="cs-owner">${this.escapeHtml(name)}</div>`;
                 },
             },
             {
@@ -688,32 +663,6 @@ class CsSupportApp {
                 },
             },
             {
-                data: 'upvote_count',
-                title: 'Upvotes',
-                className: 'col-upvotes',
-                render: (count, type, row) => {
-                    const safeCount = Number.isFinite(count) ? count : 0;
-                    if (type !== 'display') {
-                        return safeCount;
-                    }
-                    const isActive = row.has_upvoted;
-                    const pressed = isActive ? 'true' : 'false';
-                    const label = isActive ? 'Remove upvote' : 'Add upvote';
-                    const icon = isActive ? '−' : '+';
-                    const classList = ['cs-upvote-toggle'];
-                    if (isActive) {
-                        classList.push('is-upvoted');
-                    }
-                    if (safeCount === 0) {
-                        classList.push('cs-upvote-toggle--zero');
-                    }
-                    return `<button type="button" class="${classList.join(' ')}" data-chat-upvote="${row.id}" aria-pressed="${pressed}" aria-label="${label}">
-                            <span class="cs-upvote-count">${safeCount}</span>
-                            <span class="cs-upvote-icon" aria-hidden="true">${icon}</span>
-                        </button>`;
-                },
-            },
-            {
                 data: 'readers',
                 title: 'Readers',
                 className: 'col-readers',
@@ -741,14 +690,20 @@ class CsSupportApp {
             $(tableElement).DataTable().destroy();
         }
 
-        const updatedColumnIndex = 2;
+        const updatedColumnIndex = 1;
         const table = $(tableElement).DataTable({
             data,
             columns,
             order: [[updatedColumnIndex, 'desc']],
             responsive: true,
-            scrollX: true,
+            scrollX: false,
             autoWidth: false,
+            columnDefs: [
+                {
+                    targets: '_all',
+                    className: 'cs-table-wrap',
+                },
+            ],
         });
 
         this.tables.set(tableElement.id, { table, includeAppColumn });

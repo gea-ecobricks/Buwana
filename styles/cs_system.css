@@ -141,7 +141,8 @@
 .cs-chat-table {
     width: 100% !important;
     box-sizing: border-box;
-    min-width: 720px;
+    min-width: 0;
+    table-layout: fixed;
 }
 
 .dataTables_wrapper {
@@ -220,7 +221,7 @@
     border-radius: 16px;
     padding: 24px;
     margin-bottom: 28px;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+    box-shadow: none;
     overflow-x: auto;
 }
 
@@ -256,13 +257,13 @@
     flex-wrap: wrap;
     gap: 8px;
     align-items: center;
-    color: var(--text-2);
+    color: var(--subdued-text);
     font-size: 0.9rem;
     background: var(--base);
     border: 1px solid var(--outline);
     border-radius: 12px;
     padding: 6px 12px;
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+    box-shadow: none;
     max-width: 100%;
 }
 
@@ -285,8 +286,8 @@
 
 .cs-app-icon {
     display: inline-flex;
-    width: 36px;
-    height: 36px;
+    width: 30.6px;
+    height: 30.6px;
     border-radius: 10px;
     overflow: hidden;
     border: 1px solid var(--outline);
@@ -395,6 +396,24 @@
     color: var(--text-color);
 }
 
+.cs-chat-table th.col-subject,
+.cs-chat-table td.col-subject {
+    min-width: 100px;
+}
+
+.cs-chat-table th,
+.cs-chat-table td,
+.cs-table-wrap {
+    white-space: normal !important;
+    word-break: break-word;
+}
+
+.cs-chat-table-container .dataTables_scrollHeadInner,
+.cs-chat-table-container .dataTables_scrollHead table,
+.cs-chat-table-container .dataTables_scrollBody table {
+    width: 100% !important;
+}
+
 .cs-chat-title__tags {
     font-size: 0.78rem;
     color: var(--text-2);
@@ -414,6 +433,11 @@
     font-weight: 700;
     cursor: pointer;
     transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.cs-chat-table th.col-actions,
+.cs-chat-table td.col-actions {
+    min-width: 60px;
 }
 
 .cs-upvote-toggle--zero {
@@ -824,7 +848,7 @@
 
 @media (max-width: 768px) {
     .cs-dashboard {
-        padding: 0 12px 48px;
+        padding: 0 0 48px;
     }
 
     .cs-inbox {
