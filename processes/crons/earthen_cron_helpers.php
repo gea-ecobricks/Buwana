@@ -22,21 +22,46 @@ function base64UrlEncode($data) {
 }
 
 /**
- * Build a Ghost Admin JWT using EARTHEN_CRON_KEY.
+ * Parse and validate the Ghost Admin key.
+ *
+ * @return array [id, secret]
+ * @throws Exception
  */
-function createGhostJWT() {
+function getGhostKeyParts() {
     $apiKey = EARTHEN_CRON_KEY;
 
-    if (!$apiKey) {
+    if (empty($apiKey)) {
         throw new Exception('EARTHEN_CRON_KEY (Ghost Admin API key) not set in earthen_cron_helpers.php.');
     }
 
+    // Exactly one colon: "id:secret"
     $parts = explode(':', $apiKey, 2);
     if (count($parts) !== 2) {
-        throw new Exception('EARTHEN_CRON_KEY is not in the expected "{id}:{secret}" format.');
+        throw new Exception('EARTHEN_CRON_KEY must be in the format "{id}:{secret}" with a single colon.');
     }
 
     list($id, $secret) = $parts;
+
+    if (empty($id) || empty($secret)) {
+        throw new Exception('EARTHEN_CRON_KEY has an empty id or secret part. Double-check you copied the Admin API key correctly.');
+    }
+
+    // The secret must be an even-length hex string
+    if (!ctype_xdigit($secret) || (strlen($secret) % 2) !== 0) {
+        throw new Exception(
+            'EARTHEN_CRON_KEY secret part is not a valid even-length hex string. ' .
+            'Make sure you copied the **Admin API key** exactly from Ghost (no extra colons, no truncation).'
+        );
+    }
+
+    return [$id, $secret];
+}
+
+/**
+ * Build a Ghost Admin JWT using EARTHEN_CRON_KEY.
+ */
+function createGhostJWT() {
+    list($id, $secret) = getGhostKeyParts();
 
     $header = json_encode([
         'typ' => 'JWT',
@@ -93,6 +118,7 @@ function getMemberIdByEmail($email) {
     }
 
     if ($http_code < 200 || $http_code >= 300) {
+        // Log a bit of context, but not the key
         error_log("Earthen getMemberIdByEmail HTTP $http_code: $response");
         throw new Exception("Earthen API returned HTTP $http_code while looking up member.");
     }

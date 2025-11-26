@@ -35,7 +35,6 @@ require_once __DIR__ . '/../../earthenAuth_helper.php';
 require_once __DIR__ . '/../../gobrikconn_env.php';
 require_once __DIR__ . '/../../buwanaconn_env.php';
 require_once __DIR__ . '/../../config/earthcal_env.php';
-require_once __DIR__ . '/../../config/earthen_env.php';
 
 // Use the cron-safe Earthen helpers
 require_once __DIR__ . '/earthen_cron_helpers.php';
@@ -145,29 +144,26 @@ try {
 
                         case 'earthcal':
                             try {
+                                // Start a transaction on the EarthCal DB
                                 $earthcal_conn->begin_transaction();
 
-                                // Remove data across Earthcal tables keyed by buwana_id.
-                                $tables = [
-                                    'datecycles_tb',
-                                    'cal_subscriptions_tb',
-                                    'calendars_tb',
-                                    'users_tb'
-                                ];
-
-                                foreach ($tables as $table) {
-                                    $sql_delete = "DELETE FROM {$table} WHERE buwana_id = ?";
-                                    if ($stmt = $earthcal_conn->prepare($sql_delete)) {
-                                        $stmt->bind_param('i', $buwana_id);
-                                        $stmt->execute();
-                                        $stmt->close();
-                                    }
+                                // Only delete from users_tb; foreign keys with ON DELETE CASCADE
+                                // will clean up related rows in other tables.
+                                $sql_delete = "DELETE FROM users_tb WHERE buwana_id = ?";
+                                $stmt = $earthcal_conn->prepare($sql_delete);
+                                if (!$stmt) {
+                                    throw new Exception(
+                                        'Error preparing EarthCal user delete: ' . $earthcal_conn->error
+                                    );
                                 }
 
+                                $stmt->bind_param('i', $buwana_id);
+                                $stmt->execute();
+                                $stmt->close();
+
                                 $earthcal_conn->commit();
-                                $successes[] = 'Deleted Earthcal Account';
+                                $successes[] = 'Deleted Earthcal Account (users_tb cascades applied)';
                             } catch (Exception $e) {
-                                // Safe rollback without in_transaction
                                 if ($earthcal_conn instanceof mysqli) {
                                     try {
                                         $earthcal_conn->rollback();
@@ -177,6 +173,7 @@ try {
                                 $status     = 'partial';
                             }
                             break;
+
 
                         default:
                             // Unsupported apps are ignored; continue cleaning the rest.
