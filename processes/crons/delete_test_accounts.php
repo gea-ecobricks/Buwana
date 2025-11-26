@@ -130,8 +130,11 @@ try {
                                 $gobrik_conn->commit();
                                 $successes[] = 'Deleted Gobrik Account';
                             } catch (Exception $e) {
-                                if ($gobrik_conn->in_transaction) {
-                                    $gobrik_conn->rollback();
+                                // Safe rollback without in_transaction
+                                if (isset($gobrik_conn) && $gobrik_conn instanceof mysqli) {
+                                    try {
+                                        $gobrik_conn->rollback();
+                                    } catch (\Throwable $ignored) {}
                                 }
                                 $failures[] = 'Failed to delete Gobrik Account: ' . $e->getMessage();
                                 $status     = 'partial';
@@ -162,8 +165,11 @@ try {
                                 $earthcal_conn->commit();
                                 $successes[] = 'Deleted Earthcal Account';
                             } catch (Exception $e) {
-                                if ($earthcal_conn->in_transaction) {
-                                    $earthcal_conn->rollback();
+                                // Safe rollback without in_transaction
+                                if ($earthcal_conn instanceof mysqli) {
+                                    try {
+                                        $earthcal_conn->rollback();
+                                    } catch (\Throwable $ignored) {}
                                 }
                                 $failures[] = 'Failed to delete Earthcal Account: ' . $e->getMessage();
                                 $status     = 'partial';
@@ -217,15 +223,26 @@ try {
                 }
 
             } catch (Exception $e) {
-                if ($buwana_conn->in_transaction) {
-                    $buwana_conn->rollback();
+                // Rollback all DBs as safely as possible, without in_transaction
+
+                if (isset($buwana_conn) && $buwana_conn instanceof mysqli) {
+                    try {
+                        $buwana_conn->rollback();
+                    } catch (\Throwable $ignored) {}
                 }
-                if (isset($gobrik_conn) && $gobrik_conn->in_transaction) {
-                    $gobrik_conn->rollback();
+
+                if (isset($gobrik_conn) && $gobrik_conn instanceof mysqli) {
+                    try {
+                        $gobrik_conn->rollback();
+                    } catch (\Throwable $ignored) {}
                 }
-                if ($earthcal_conn instanceof mysqli && $earthcal_conn->in_transaction) {
-                    $earthcal_conn->rollback();
+
+                if ($earthcal_conn instanceof mysqli) {
+                    try {
+                        $earthcal_conn->rollback();
+                    } catch (\Throwable $ignored) {}
                 }
+
                 $failures[] = 'Error: ' . $e->getMessage();
                 $status     = 'error';
             }
