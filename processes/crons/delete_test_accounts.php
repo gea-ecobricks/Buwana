@@ -1,6 +1,28 @@
 <?php
 ob_start();
 
+// --------------------------------------------------------
+// Cron log setup
+// --------------------------------------------------------
+
+$log_file = __DIR__ . '/delete_test_accounts.log';
+
+// Log that the cron started
+file_put_contents(
+    $log_file,
+    '[' . date('Y-m-d H:i:s') . "] Cron started\n",
+    FILE_APPEND
+);
+
+// Send PHP errors into the same log file
+error_reporting(E_ALL);
+ini_set('log_errors', 1);
+ini_set('error_log', $log_file);
+
+// --------------------------------------------------------
+// Includes
+// --------------------------------------------------------
+
 // Daily maintenance cron that removes test accounts from the Buwana platform and
 // any connected applications, then unsubscribes the user from Earthen.
 // Steps:
@@ -9,18 +31,23 @@ ob_start();
 // 3. Delete the user's Buwana account and credentials.
 // 4. Unsubscribe the account's email from Earthen.
 
-require_once '../../earthenAuth_helper.php';
-require_once '../../gobrikconn_env.php';
-require_once '../../buwanaconn_env.php';
-require_once '../../calconn_env.php';
-require_once '../../scripts/earthen_subscribe_functions.php';
+require_once __DIR__ . '/../../earthenAuth_helper.php';
+require_once __DIR__ . '/../../gobrikconn_env.php';
+require_once __DIR__ . '/../../buwanaconn_env.php';
+require_once __DIR__ . '/../../calconn_env.php';
+require_once __DIR__ . '/../../scripts/earthen_subscribe_functions.php';
 
-$log_file = __DIR__ . '/delete_test_accounts.log';
+// We'll accumulate detailed log messages for this run
 $log_messages = [];
 
 try {
     // Pull a small batch of test accounts to process (safety limited to 10 for now).
-    $sql = "SELECT c.buwana_id, u.email FROM credentials_tb c JOIN users_tb u ON c.buwana_id = u.buwana_id WHERE c.credential_key LIKE '%@test.com' LIMIT 10"; // Temporary limit to 10 accounts
+    $sql = "SELECT c.buwana_id, u.email
+            FROM credentials_tb c
+            JOIN users_tb u ON c.buwana_id = u.buwana_id
+            WHERE c.credential_key LIKE '%@test.com'
+            LIMIT 10"; // Temporary limit to 10 accounts
+
     $result = $buwana_conn->query($sql);
     if (!$result) {
         throw new Exception('Error fetching test accounts: ' . $buwana_conn->error);
@@ -31,11 +58,11 @@ try {
     } else {
         // Process each test account one at a time so failures are isolated.
         while ($row = $result->fetch_assoc()) {
-            $buwana_id = (int) $row['buwana_id'];
+            $buwana_id  = (int) $row['buwana_id'];
             $email_addr = $row['email'];
-            $successes = [];
-            $failures = [];
-            $status = 'success';
+            $successes  = [];
+            $failures   = [];
+            $status     = 'success';
 
             try {
                 $buwana_conn->begin_transaction();
@@ -117,8 +144,8 @@ try {
                                 ];
 
                                 foreach ($tables as $table) {
-                                    $sql = "DELETE FROM {$table} WHERE buwana_id = ?";
-                                    if ($stmt = $cal_conn->prepare($sql)) {
+                                    $sql_delete = "DELETE FROM {$table} WHERE buwana_id = ?";
+                                    if ($stmt = $cal_conn->prepare($sql_delete)) {
                                         $stmt->bind_param('i', $buwana_id);
                                         $stmt->execute();
                                         $stmt->close();
@@ -205,9 +232,10 @@ try {
 }
 
 // Persist log entries for the current run.
-file_put_contents($log_file, implode(PHP_EOL, $log_messages) . PHP_EOL, FILE_APPEND);
+if (!empty($log_messages)) {
+    file_put_contents($log_file, implode(PHP_EOL, $log_messages) . PHP_EOL, FILE_APPEND);
+}
 
 ob_end_clean();
 echo json_encode(['status' => 'completed']);
 exit();
-?>
