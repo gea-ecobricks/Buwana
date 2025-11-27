@@ -226,14 +226,13 @@ try {
     // 2) REPAIR MISTYPED GMAIL ADDRESSES
     //    + DELETE SMS-GATEWAY / CARRIER EMAILS
     // ====================================================
-    $page              = 1;
-    $page_size         = 100;
-    $total_fixed       = 0;
-    $total_sms_deleted = 0;
-    $max_pages         = 50;  // safety cap so we don't hammer the API indefinitely
+    $start_page    = 51;
+    $end_page      = 100;   // 200 * 100 = 20,000
+    $page_size     = 100;
+    $total_fixed   = 0;
+    $max_pages     = $end_page; // optional, not strictly needed
 
-    while ($page <= $max_pages) {
-        // No filter: we scan all members page by page
+    for ($page = $start_page; $page <= $end_page; $page++) {
         $url = "https://earthen.io/ghost/api/v4/admin/members/?limit={$page_size}&page={$page}";
 
         $jwt = createGhostJWT();
@@ -252,22 +251,25 @@ try {
         curl_close($ch);
 
         if ($curl_err) {
-            cron_log("Error fetching members for gmail-fix (curl): {$curl_err}");
-            throw new Exception("Error fetching members for gmail-fix (curl)");
+            cron_log("Error fetching members for gmail/SMS pass (curl) on page {$page}: {$curl_err}");
+            throw new Exception("Error fetching members for gmail/SMS pass (curl)");
         }
 
         if ($http_code < 200 || $http_code >= 300) {
-            cron_log("Error fetching members for gmail-fix (HTTP {$http_code}): {$response}");
-            throw new Exception("Ghost API returned HTTP {$http_code} while listing members for gmail-fix.");
+            cron_log("Error fetching members for gmail/SMS pass (HTTP {$http_code}) on page {$page}: {$response}");
+            throw new Exception("Ghost API returned HTTP {$http_code} while listing members for gmail/SMS pass.");
         }
 
         $data    = json_decode($response, true);
         $members = $data['members'] ?? [];
 
         if (empty($members)) {
-            cron_log("No more members on page {$page} for gmail-fix / SMS cleanup. Pass complete.");
+            cron_log("No more members on page {$page} for gmail/SMS pass. Deep pass complete.");
             break;
         }
+
+
+
 
         cron_log("Gmail/SMS pass: scanning page {$page}, " . count($members) . " members.");
 
@@ -334,9 +336,54 @@ try {
                 }
 
                 if ($upd_http_code < 200 || $upd_http_code >= 300) {
+                    // Special case: email already exists → keep the correct one, delete the typo account
+                    if ($upd_http_code === 422 && strpos($upd_response, 'Member already exists') !== false) {
+                        cron_log("Gmail-fix: {$old_email} -> {$new_email} (id={$member_id}) conflicts with existing member. Deleting typo account.");
+
+                        try {
+                            $delete_url = "https://earthen.io/ghost/api/v4/admin/members/{$member_id}/";
+                            $jwt_del    = createGhostJWT();
+
+                            $ch2 = curl_init();
+                            curl_setopt($ch2, CURLOPT_URL, $delete_url);
+                            curl_setopt($ch2, CURLOPT_HTTPHEADER, [
+                                'Authorization: Ghost ' . $jwt_del,
+                                'Content-Type: application/json',
+                            ]);
+                            curl_setopt($ch2, CURLOPT_RETURNTRANSFER, true);
+                            curl_setopt($ch2, CURLOPT_CUSTOMREQUEST, 'DELETE');
+
+                            $del_response  = curl_exec($ch2);
+                            $del_http_code = curl_getinfo($ch2, CURLINFO_HTTP_CODE);
+                            $del_curl_err  = curl_error($ch2);
+                            curl_close($ch2);
+
+                            if ($del_curl_err) {
+                                cron_log("FAILED to delete duplicate typo member {$old_email} (id={$member_id}) – curl error: {$del_curl_err}");
+                                continue;
+                            }
+
+                            if ($del_http_code < 200 || $del_http_code >= 300) {
+                                cron_log("FAILED to delete duplicate typo member {$old_email} (id={$member_id}) – HTTP {$del_http_code}: {$del_response}");
+                                continue;
+                            }
+
+                            // Treat this as a successful “fix” since we removed the bad record
+                            $total_fixed++;
+                            cron_log("Deleted duplicate typo member: {$old_email} (id={$member_id}), existing good email={$new_email}");
+                            continue;
+
+                        } catch (Exception $e) {
+                            cron_log("Exception while deleting duplicate typo member {$old_email} (id={$member_id}): " . $e->getMessage());
+                            continue;
+                        }
+                    }
+
+                    // All other errors: just log and move on
                     cron_log("FAILED to fix gmail for {$old_email} (id={$member_id}) – HTTP {$upd_http_code}: {$upd_response}");
                     continue;
                 }
+
 
                 $total_fixed++;
                 cron_log("Fixed gmail typo: {$old_email} → {$new_email} (id={$member_id})");
