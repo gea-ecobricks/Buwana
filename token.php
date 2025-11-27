@@ -145,12 +145,18 @@ $stmt->execute();
 $stmt->close();
 
 // 👤 Fetch user info
-$stmt_user = $buwana_conn->prepare("SELECT email, first_name, open_id, earthling_emoji, continent_code, community_id FROM users_tb WHERE buwana_id = ?");
+$stmt_user = $buwana_conn->prepare("SELECT email, first_name, last_name, open_id, earthling_emoji, continent_code, community_id FROM users_tb WHERE buwana_id = ?");
 $stmt_user->bind_param('i', $user_id);
 $stmt_user->execute();
-$stmt_user->bind_result($email, $first_name, $open_id, $earthling_emoji, $continent_code, $community_id);
+$stmt_user->bind_result($email, $first_name, $last_name, $open_id, $earthling_emoji, $continent_code, $community_id);
 $stmt_user->fetch();
 $stmt_user->close();
+
+$is_learning_app = $client_id === 'lear_a30d677a7b08';
+$resolved_last_name = trim((string) ($last_name ?? ''));
+if ($is_learning_app && $resolved_last_name === '') {
+    $resolved_last_name = $earthling_emoji;
+}
 
 // 📅 Prepare token claims
 $now = time();
@@ -165,6 +171,7 @@ $id_token_payload = [
     "iat" => $now,
     "email" => $email,
     "given_name" => $first_name,
+    "last_name" => $resolved_last_name,
     "nonce" => $nonce,
     "scope" => $scope,
     "buwana_id" => $user_id,
