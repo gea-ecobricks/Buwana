@@ -158,6 +158,7 @@ try {
     $page          = 1;
     $page_size     = 50;
     $total_deleted = 0;
+    $total_zombies_deleted = 0; // NEW
 
     while (true) {
         // Ghost filter syntax for “email contains @test.com”
@@ -228,8 +229,8 @@ try {
     // ====================================================
 
     // Deep pass: scan members 5,001–20,000 (pages 51–200)
-    $start_page       = 201;
-    $end_page         = 300;   // 200 * 100 = 20,000
+    $start_page       = 301;
+    $end_page         = 400;   // 200 * 100 = 20,000
     $page_size        = 100;
     $total_fixed      = 0;
     $total_sms_deleted = 0;
@@ -282,7 +283,21 @@ try {
                 continue;
             }
 
-            // 2a) If this is an SMS-gateway email, delete it
+            // 2a) DELETE members with no newsletters ("zombies")
+            $newsletters = $member['newsletters'] ?? [];
+            if (empty($newsletters)) {
+                try {
+                    deleteGhostMemberById($member_id);
+                    $total_zombies_deleted++;
+                    cron_log("Deleted zombie member with no newsletters: {$old_email} (id={$member_id})");
+                } catch (Exception $e) {
+                    cron_log("FAILED to delete zombie member {$old_email} (id={$member_id}): " . $e->getMessage());
+                }
+                // Don't process SMS/gmail for this member anymore
+                continue;
+            }
+
+            // 2b) If this is an SMS-gateway email, delete it
             if (isSmsGatewayEmail($old_email)) {
                 try {
                     deleteGhostMemberById($member_id);
@@ -294,13 +309,16 @@ try {
                 continue; // don't try to "fix gmail" for these
             }
 
-            // 2b) Otherwise, see if there's a gmail typo to repair
+            // 2c) Otherwise, see if there's a gmail typo to repair
             $new_email = fixGmailTypos($old_email);
 
             // No change needed
             if ($new_email === $old_email) {
                 continue;
             }
+
+
+
 
             // PUT /members/{id}/ with new email
             try {
