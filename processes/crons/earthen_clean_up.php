@@ -226,11 +226,15 @@ try {
     // 2) REPAIR MISTYPED GMAIL ADDRESSES
     //    + DELETE SMS-GATEWAY / CARRIER EMAILS
     // ====================================================
-    $start_page    = 51;
-    $end_page      = 100;   // 200 * 100 = 20,000
-    $page_size     = 100;
-    $total_fixed   = 0;
-    $max_pages     = $end_page; // optional, not strictly needed
+
+    // Deep pass: scan members 5,001–20,000 (pages 51–200)
+    $start_page       = 51;
+    $end_page         = 200;   // 200 * 100 = 20,000
+    $page_size        = 100;
+    $total_fixed      = 0;
+    $total_sms_deleted = 0;
+
+    cron_log("Gmail/SMS pass: scanning pages {$start_page}–{$end_page}, {$page_size} members per page.");
 
     for ($page = $start_page; $page <= $end_page; $page++) {
         $url = "https://earthen.io/ghost/api/v4/admin/members/?limit={$page_size}&page={$page}";
@@ -268,9 +272,6 @@ try {
             break;
         }
 
-
-
-
         cron_log("Gmail/SMS pass: scanning page {$page}, " . count($members) . " members.");
 
         foreach ($members as $member) {
@@ -301,7 +302,7 @@ try {
                 continue;
             }
 
-            // PATCH/PUT /members/{id}/ with new email
+            // PUT /members/{id}/ with new email
             try {
                 $update_url = "https://earthen.io/ghost/api/v4/admin/members/{$member_id}/";
                 $jwt_upd    = createGhostJWT();
@@ -341,34 +342,7 @@ try {
                         cron_log("Gmail-fix: {$old_email} -> {$new_email} (id={$member_id}) conflicts with existing member. Deleting typo account.");
 
                         try {
-                            $delete_url = "https://earthen.io/ghost/api/v4/admin/members/{$member_id}/";
-                            $jwt_del    = createGhostJWT();
-
-                            $ch2 = curl_init();
-                            curl_setopt($ch2, CURLOPT_URL, $delete_url);
-                            curl_setopt($ch2, CURLOPT_HTTPHEADER, [
-                                'Authorization: Ghost ' . $jwt_del,
-                                'Content-Type: application/json',
-                            ]);
-                            curl_setopt($ch2, CURLOPT_RETURNTRANSFER, true);
-                            curl_setopt($ch2, CURLOPT_CUSTOMREQUEST, 'DELETE');
-
-                            $del_response  = curl_exec($ch2);
-                            $del_http_code = curl_getinfo($ch2, CURLINFO_HTTP_CODE);
-                            $del_curl_err  = curl_error($ch2);
-                            curl_close($ch2);
-
-                            if ($del_curl_err) {
-                                cron_log("FAILED to delete duplicate typo member {$old_email} (id={$member_id}) – curl error: {$del_curl_err}");
-                                continue;
-                            }
-
-                            if ($del_http_code < 200 || $del_http_code >= 300) {
-                                cron_log("FAILED to delete duplicate typo member {$old_email} (id={$member_id}) – HTTP {$del_http_code}: {$del_response}");
-                                continue;
-                            }
-
-                            // Treat this as a successful “fix” since we removed the bad record
+                            deleteGhostMemberById($member_id);
                             $total_fixed++;
                             cron_log("Deleted duplicate typo member: {$old_email} (id={$member_id}), existing good email={$new_email}");
                             continue;
@@ -384,7 +358,6 @@ try {
                     continue;
                 }
 
-
                 $total_fixed++;
                 cron_log("Fixed gmail typo: {$old_email} → {$new_email} (id={$member_id})");
 
@@ -392,8 +365,6 @@ try {
                 cron_log("Exception while fixing gmail for {$old_email} (id={$member_id}): " . $e->getMessage());
             }
         }
-
-        $page++;
     }
 
     cron_log("Gmail typo repair finished. Total fixed: {$total_fixed}");
