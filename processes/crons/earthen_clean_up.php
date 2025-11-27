@@ -228,8 +228,8 @@ try {
     // ====================================================
 
     // Deep pass: scan members 5,001–20,000 (pages 51–200)
-    $start_page       = 51;
-    $end_page         = 200;   // 200 * 100 = 20,000
+    $start_page       = 201;
+    $end_page         = 300;   // 200 * 100 = 20,000
     $page_size        = 100;
     $total_fixed      = 0;
     $total_sms_deleted = 0;
