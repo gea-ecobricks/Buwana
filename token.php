@@ -153,8 +153,8 @@ $stmt_user->fetch();
 $stmt_user->close();
 
 $is_learning_app = $client_id === 'lear_a30d677a7b08';
-$resolved_last_name = trim((string) ($last_name ?? ''));
-if ($is_learning_app && $resolved_last_name === '') {
+$resolved_last_name = $last_name;
+if ($is_learning_app && (is_null($resolved_last_name) || $resolved_last_name === '')) {
     $resolved_last_name = $earthling_emoji;
 }
 
@@ -172,7 +172,6 @@ $id_token_payload = [
     "email" => $email,
     "given_name" => $first_name,
     "last_name" => $resolved_last_name,
-    "family_name" => $resolved_last_name,
     "nonce" => $nonce,
     "scope" => $scope,
     "buwana_id" => $user_id,
