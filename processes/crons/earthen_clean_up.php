@@ -21,7 +21,9 @@ ini_set('error_log', $log_file);
 // --------------------------------------------------------
 require_once __DIR__ . '/earthen_cron_helpers.php';
 
-// Small helper to append to this cron's log
+// --------------------------------------------------------
+// Small logger helper
+// --------------------------------------------------------
 function cron_log($msg) {
     global $log_file;
     file_put_contents(
@@ -31,14 +33,134 @@ function cron_log($msg) {
     );
 }
 
+// --------------------------------------------------------
+// Helper: fix common gmail.com typos
+// --------------------------------------------------------
+/**
+ * Fix common gmail.com domain typos.
+ *
+ * Returns the original email if no safe correction is found.
+ */
+function fixGmailTypos(string $email): string {
+    $parts = explode('@', $email, 2);
+    if (count($parts) !== 2) {
+        return $email; // not a normal email format
+    }
+
+    [$local, $domain] = $parts;
+    $domainLower = strtolower(trim($domain));
+
+    // Already correct
+    if ($domainLower === 'gmail.com') {
+        return $email;
+    }
+
+    // Explicit set of common typo domains
+    $commonTypos = [
+        'gmali.com',
+        'gmial.com',
+        'gmale.com',
+        'gnail.com',
+        'gmai.com',
+        'gamil.com',
+        'gmaik.com',
+        'gmaol.com',
+        'gmail.co',
+        'gmail.con',
+        'gmail.cim',
+        'gmail.cm',
+        'gmail.comm',
+        'gmaill.com',
+        'g-mail.com',
+        'gmail.cmo',
+    ];
+
+    if (in_array($domainLower, $commonTypos, true)) {
+        return $local . '@gmail.com';
+    }
+
+    // Heuristic: "close enough" to gmail.com
+    // Use levenshtein but gate it so we don't accidentally "fix" other domains.
+    if (strpos($domainLower, 'gmai') === 0 || strpos($domainLower, 'gmail') === 0) {
+        $distance = levenshtein($domainLower, 'gmail.com');
+        if ($distance > 0 && $distance <= 2) {
+            return $local . '@gmail.com';
+        }
+    }
+
+    return $email;
+}
+
+// --------------------------------------------------------
+// Helper: detect SMS-gateway / carrier-email junk
+// --------------------------------------------------------
+/**
+ * Returns true if an email is clearly an SMS-gateway style address
+ * that we never want in the Earthen list.
+ */
+function isSmsGatewayEmail(string $email): bool {
+    $email = strtolower(trim($email));
+    if (strpos($email, '@') === false) {
+        return false;
+    }
+
+    // domain = everything after the last "@"
+    $domain = substr(strrchr($email, '@'), 1);
+
+    $blockedDomains = [
+        'fido.ca',
+        'pcs.rogers.com',
+        'mymetropcs.com',
+        'tmomail.net',
+        'vtext.com',
+        'txt.att.net',
+        'msg.telus.com',
+        'email.uscc.net',
+    ];
+
+    return in_array($domain, $blockedDomains, true);
+}
+
+// --------------------------------------------------------
+// Helper: delete Ghost member by id (Admin API)
+// --------------------------------------------------------
+function deleteGhostMemberById(string $member_id): void {
+    $ghost_api_url = "https://earthen.io/ghost/api/v4/admin/members/{$member_id}/";
+    $jwt           = createGhostJWT(); // from earthen_cron_helpers.php
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $ghost_api_url);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Authorization: Ghost ' . $jwt,
+        'Content-Type: application/json',
+    ]);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
+
+    $response  = curl_exec($ch);
+    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curl_err  = curl_error($ch);
+    curl_close($ch);
+
+    if ($curl_err) {
+        throw new Exception("Earthen delete cURL error: {$curl_err}");
+    }
+
+    if ($http_code < 200 || $http_code >= 300) {
+        throw new Exception("Earthen delete HTTP {$http_code}: {$response}");
+    }
+}
+
 try {
-    $page      = 1;
-    $page_size = 50;
+    // ====================================================
+    // 1) CLEAN UP @test.com MEMBERS
+    // ====================================================
+    $page          = 1;
+    $page_size     = 50;
     $total_deleted = 0;
 
     while (true) {
         // Ghost filter syntax for “email contains @test.com”
-        // We URL-encode the filter so the quotes don't break the URL.
         $filter = urlencode("email:~'@test.com'");
         $url    = "https://earthen.io/ghost/api/v4/admin/members/?filter={$filter}&limit={$page_size}&page={$page}";
 
@@ -58,79 +180,177 @@ try {
         curl_close($ch);
 
         if ($curl_err) {
-            cron_log("Error fetching test members (curl): {$curl_err}");
-            throw new Exception("Error fetching test members (curl)");
+            cron_log("Error fetching @test.com members (curl): {$curl_err}");
+            throw new Exception("Error fetching @test.com members (curl)");
         }
 
         if ($http_code < 200 || $http_code >= 300) {
-            cron_log("Error fetching test members (HTTP {$http_code}): {$response}");
-            throw new Exception("Ghost API returned HTTP {$http_code} while listing members.");
+            cron_log("Error fetching @test.com members (HTTP {$http_code}): {$response}");
+            throw new Exception("Ghost API returned HTTP {$http_code} while listing @test.com members.");
         }
 
-        $data = json_decode($response, true);
+        $data    = json_decode($response, true);
         $members = $data['members'] ?? [];
 
-        // No more members with @test.com – we are done.
         if (empty($members)) {
-            cron_log("No more @test.com members found on page {$page}. Cleanup complete.");
+            cron_log("No more @test.com members found on page {$page}. @test.com cleanup complete.");
             break;
         }
 
         cron_log("Page {$page}: found " . count($members) . " @test.com members.");
 
-        // Loop through this batch and delete each member
         foreach ($members as $member) {
             $member_id = $member['id']    ?? null;
             $email     = $member['email'] ?? '(no-email)';
 
             if (!$member_id) {
-                cron_log("Skipping member with missing id (email={$email}).");
+                cron_log("Skipping @test.com member with missing id (email={$email}).");
                 continue;
             }
 
             try {
-                // DELETE /members/{id}/
-                $delete_url = "https://earthen.io/ghost/api/v4/admin/members/{$member_id}/";
-                $jwt_del    = createGhostJWT();
-
-                $ch = curl_init();
-                curl_setopt($ch, CURLOPT_URL, $delete_url);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                    'Authorization: Ghost ' . $jwt_del,
-                    'Content-Type: application/json',
-                ]);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
-
-                $del_response  = curl_exec($ch);
-                $del_http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-                $del_curl_err  = curl_error($ch);
-                curl_close($ch);
-
-                if ($del_curl_err) {
-                    cron_log("FAILED to delete {$email} (id={$member_id}) – curl error: {$del_curl_err}");
-                    continue;
-                }
-
-                if ($del_http_code < 200 || $del_http_code >= 300) {
-                    cron_log("FAILED to delete {$email} (id={$member_id}) – HTTP {$del_http_code}: {$del_response}");
-                    continue;
-                }
-
+                deleteGhostMemberById($member_id);
                 $total_deleted++;
-                cron_log("Deleted Earthen member {$email} (id={$member_id})");
-
+                cron_log("Deleted Earthen member @test.com {$email} (id={$member_id})");
             } catch (Exception $e) {
-                cron_log("Exception while deleting {$email} (id={$member_id}): " . $e->getMessage());
+                cron_log("Exception while deleting @test.com {$email} (id={$member_id}): " . $e->getMessage());
             }
         }
 
-        // Move to the next page. Depending on Ghost’s behaviour, newly deleted
-        // members may shift pages, but for test cleanup this is fine.
         $page++;
     }
 
-    cron_log("Earthen cleanup cron finished. Total deleted: {$total_deleted}");
+    cron_log("Earthen @test.com cleanup finished. Total deleted: {$total_deleted}");
+
+    // ====================================================
+    // 2) REPAIR MISTYPED GMAIL ADDRESSES
+    //    + DELETE SMS-GATEWAY / CARRIER EMAILS
+    // ====================================================
+    $page              = 1;
+    $page_size         = 100;
+    $total_fixed       = 0;
+    $total_sms_deleted = 0;
+    $max_pages         = 50;  // safety cap so we don't hammer the API indefinitely
+
+    while ($page <= $max_pages) {
+        // No filter: we scan all members page by page
+        $url = "https://earthen.io/ghost/api/v4/admin/members/?limit={$page_size}&page={$page}";
+
+        $jwt = createGhostJWT();
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Authorization: Ghost ' . $jwt,
+            'Content-Type: application/json',
+        ]);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        $response  = curl_exec($ch);
+        $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curl_err  = curl_error($ch);
+        curl_close($ch);
+
+        if ($curl_err) {
+            cron_log("Error fetching members for gmail-fix (curl): {$curl_err}");
+            throw new Exception("Error fetching members for gmail-fix (curl)");
+        }
+
+        if ($http_code < 200 || $http_code >= 300) {
+            cron_log("Error fetching members for gmail-fix (HTTP {$http_code}): {$response}");
+            throw new Exception("Ghost API returned HTTP {$http_code} while listing members for gmail-fix.");
+        }
+
+        $data    = json_decode($response, true);
+        $members = $data['members'] ?? [];
+
+        if (empty($members)) {
+            cron_log("No more members on page {$page} for gmail-fix / SMS cleanup. Pass complete.");
+            break;
+        }
+
+        cron_log("Gmail/SMS pass: scanning page {$page}, " . count($members) . " members.");
+
+        foreach ($members as $member) {
+            $member_id = $member['id']    ?? null;
+            $old_email = $member['email'] ?? null;
+
+            if (!$member_id || !$old_email) {
+                continue;
+            }
+
+            // 2a) If this is an SMS-gateway email, delete it
+            if (isSmsGatewayEmail($old_email)) {
+                try {
+                    deleteGhostMemberById($member_id);
+                    $total_sms_deleted++;
+                    cron_log("Deleted SMS-gateway member {$old_email} (id={$member_id})");
+                } catch (Exception $e) {
+                    cron_log("FAILED to delete SMS-gateway member {$old_email} (id={$member_id}): " . $e->getMessage());
+                }
+                continue; // don't try to "fix gmail" for these
+            }
+
+            // 2b) Otherwise, see if there's a gmail typo to repair
+            $new_email = fixGmailTypos($old_email);
+
+            // No change needed
+            if ($new_email === $old_email) {
+                continue;
+            }
+
+            // PATCH/PUT /members/{id}/ with new email
+            try {
+                $update_url = "https://earthen.io/ghost/api/v4/admin/members/{$member_id}/";
+                $jwt_upd    = createGhostJWT();
+
+                $payload = json_encode([
+                    'members' => [
+                        [
+                            'id'    => $member_id,
+                            'email' => $new_email,
+                        ]
+                    ]
+                ]);
+
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, $update_url);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                    'Authorization: Ghost ' . $jwt_upd,
+                    'Content-Type: application/json',
+                ]);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+
+                $upd_response  = curl_exec($ch);
+                $upd_http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                $upd_curl_err  = curl_error($ch);
+                curl_close($ch);
+
+                if ($upd_curl_err) {
+                    cron_log("FAILED to fix gmail for {$old_email} (id={$member_id}) – curl error: {$upd_curl_err}");
+                    continue;
+                }
+
+                if ($upd_http_code < 200 || $upd_http_code >= 300) {
+                    cron_log("FAILED to fix gmail for {$old_email} (id={$member_id}) – HTTP {$upd_http_code}: {$upd_response}");
+                    continue;
+                }
+
+                $total_fixed++;
+                cron_log("Fixed gmail typo: {$old_email} → {$new_email} (id={$member_id})");
+
+            } catch (Exception $e) {
+                cron_log("Exception while fixing gmail for {$old_email} (id={$member_id}): " . $e->getMessage());
+            }
+        }
+
+        $page++;
+    }
+
+    cron_log("Gmail typo repair finished. Total fixed: {$total_fixed}");
+    cron_log("SMS-gateway cleanup finished. Total deleted: {$total_sms_deleted}");
 
 } catch (Exception $e) {
     cron_log("Cron error: " . $e->getMessage());
