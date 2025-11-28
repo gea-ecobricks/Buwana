@@ -116,6 +116,8 @@ function isSmsGatewayEmail(string $email): bool {
         'txt.att.net',
         'msg.telus.com',
         'email.uscc.net',
+        'bellmobility.ca',
+        'txt.bellmobility.ca',
     ];
 
     return in_array($domain, $blockedDomains, true);
@@ -229,8 +231,8 @@ try {
     // ====================================================
 
     // Deep pass: scan members 5,001–20,000 (pages 51–200)
-    $start_page       = 310;
-    $end_page         = 510;   // 200 * 100 = 20,000
+    $start_page       = 1;
+    $end_page         = 200;   // 200 * 100 = 20,000
     $page_size        = 100;
     $total_fixed      = 0;
     $total_sms_deleted = 0;
