@@ -199,6 +199,8 @@ try {
     echo json_encode(["error" => "jwt_generation_failed"]);
     exit;
 }
+auth_log("ID token payload: " . json_encode($id_token_payload));
+auth_log("Generated ID token: $id_token");
 
 $access_token_payload = [
     "iss" => "https://buwana.ecobricks.org",
@@ -218,6 +220,8 @@ try {
     echo json_encode(["error" => "access_token_generation_failed"]);
     exit;
 }
+auth_log("Access token payload: " . json_encode($access_token_payload));
+auth_log("Generated access token: $access_token");
 
 // 🧽 Clean output & respond
 ob_clean();
