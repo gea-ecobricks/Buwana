@@ -12,10 +12,14 @@ $authLogFile = dirname(__DIR__) . '/logs/auth.log';
 
 function auth_log($message) {
     global $authLogFile;
+    $log_message = '[' . date('Y-m-d H:i:s') . "] TOKEN: " . $message;
     if (!file_exists(dirname($authLogFile))) {
         mkdir(dirname($authLogFile), 0777, true);
     }
-    error_log('[' . date('Y-m-d H:i:s') . "] TOKEN: " . $message . PHP_EOL, 3, $authLogFile);
+    // Write to the dedicated auth log file
+    error_log($log_message . PHP_EOL, 3, $authLogFile);
+    // Also write to PHP's default error log so operators can inspect everything in one place
+    error_log($log_message);
 }
 
 // Normalize redirect URIs to ensure parameter order doesn't affect matching
