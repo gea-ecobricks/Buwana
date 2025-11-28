@@ -180,6 +180,17 @@ $id_token_payload = [
     "buwana:location.continent" => $continent_code,
 ];
 
+if ($is_learning_app) {
+    $id_token_payload["address"] = array_filter([
+        "locality" => $resolved_location,
+        "country" => $resolved_country,
+    ]);
+
+    if ($resolved_timezone !== '') {
+        $id_token_payload["zoneinfo"] = $resolved_timezone;
+    }
+}
+
 try {
     $id_token = JWT::encode($id_token_payload, $jwt_private_key, 'RS256', $client_id);
 } catch (Exception $e) {
