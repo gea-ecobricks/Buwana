@@ -149,15 +149,23 @@ $stmt->execute();
 $stmt->close();
 
 // 👤 Fetch user info
-$stmt_user = $buwana_conn->prepare("SELECT email, first_name, last_name, open_id, earthling_emoji, continent_code, community_id FROM users_tb WHERE buwana_id = ?");
+$stmt_user = $buwana_conn->prepare(
+    "SELECT u.email, u.first_name, u.last_name, u.open_id, u.earthling_emoji, u.continent_code, u.community_id, u.location_full, u.time_zone, c.country_name
+    FROM users_tb u
+    LEFT JOIN countries_tb c ON u.country_id = c.country_id
+    WHERE u.buwana_id = ?"
+);
 $stmt_user->bind_param('i', $user_id);
 $stmt_user->execute();
-$stmt_user->bind_result($email, $first_name, $last_name, $open_id, $earthling_emoji, $continent_code, $community_id);
+$stmt_user->bind_result($email, $first_name, $last_name, $open_id, $earthling_emoji, $continent_code, $community_id, $location_full, $time_zone, $country_name);
 $stmt_user->fetch();
 $stmt_user->close();
 
 $is_learning_app = $client_id === 'lear_a30d677a7b08';
 $resolved_last_name = $last_name;
+$resolved_location = trim($location_full ?? '');
+$resolved_country = trim($country_name ?? '');
+$resolved_timezone = trim($time_zone ?? '');
 if ($is_learning_app && (is_null($resolved_last_name) || $resolved_last_name === '')) {
     $resolved_last_name = $earthling_emoji;
 }
@@ -176,6 +184,7 @@ $id_token_payload = [
     "email" => $email,
     "given_name" => $first_name,
     "last_name" => $resolved_last_name,
+    "family_name" => $resolved_last_name,
     "nonce" => $nonce,
     "scope" => $scope,
     "buwana_id" => $user_id,
