@@ -12,10 +12,14 @@ $authLogFile = dirname(__DIR__) . '/logs/auth.log';
 
 function auth_log($message) {
     global $authLogFile;
+    $log_message = '[' . date('Y-m-d H:i:s') . "] TOKEN: " . $message;
     if (!file_exists(dirname($authLogFile))) {
         mkdir(dirname($authLogFile), 0777, true);
     }
-    error_log('[' . date('Y-m-d H:i:s') . "] TOKEN: " . $message . PHP_EOL, 3, $authLogFile);
+    // Write to the dedicated auth log file
+    error_log($log_message . PHP_EOL, 3, $authLogFile);
+    // Also write to PHP's default error log so operators can inspect everything in one place
+    error_log($log_message);
 }
 
 // Normalize redirect URIs to ensure parameter order doesn't affect matching
@@ -145,12 +149,23 @@ $stmt->execute();
 $stmt->close();
 
 // 👤 Fetch user info
-$stmt_user = $buwana_conn->prepare("SELECT email, first_name, open_id, earthling_emoji, continent_code, community_id FROM users_tb WHERE buwana_id = ?");
+$stmt_user = $buwana_conn->prepare("SELECT u.email, u.first_name, u.last_name, u.open_id, u.earthling_emoji, u.continent_code, u.community_id, u.location_full, u.time_zone, c.country_name FROM users_tb u LEFT JOIN countries_tb c ON u.country_id = c.country_id WHERE u.buwana_id = ?");
 $stmt_user->bind_param('i', $user_id);
 $stmt_user->execute();
-$stmt_user->bind_result($email, $first_name, $open_id, $earthling_emoji, $continent_code, $community_id);
+$email = $first_name = $last_name = $open_id = $earthling_emoji = $continent_code = $community_id = $location_full = $time_zone = $country_name = null;
+$stmt_user->bind_result($email, $first_name, $last_name, $open_id, $earthling_emoji, $continent_code, $community_id, $location_full, $time_zone, $country_name);
 $stmt_user->fetch();
 $stmt_user->close();
+
+// Ensure resolved values are always defined even if the user lookup returns nulls
+$is_learning_app = $client_id === 'lear_a30d677a7b08';
+$resolved_last_name = trim((string) ($last_name ?? ''));
+if ($is_learning_app && $resolved_last_name === '') {
+    $resolved_last_name = $earthling_emoji;
+}
+$resolved_location = trim((string) ($location_full ?? ''));
+$resolved_country = trim((string) ($country_name ?? ''));
+$resolved_timezone = trim((string) ($time_zone ?? ''));
 
 // 📅 Prepare token claims
 $now = time();
@@ -165,6 +180,8 @@ $id_token_payload = [
     "iat" => $now,
     "email" => $email,
     "given_name" => $first_name,
+    "last_name" => $resolved_last_name,
+    "family_name" => $resolved_last_name,
     "nonce" => $nonce,
     "scope" => $scope,
     "buwana_id" => $user_id,
@@ -172,6 +189,17 @@ $id_token_payload = [
     "buwana:community" => "Planet Earth",
     "buwana:location.continent" => $continent_code,
 ];
+
+if ($is_learning_app) {
+    $id_token_payload["address"] = array_filter([
+        "locality" => $resolved_location,
+        "country" => $resolved_country,
+    ]);
+
+    if ($resolved_timezone !== '') {
+        $id_token_payload["zoneinfo"] = $resolved_timezone;
+    }
+}
 
 try {
     $id_token = JWT::encode($id_token_payload, $jwt_private_key, 'RS256', $client_id);
@@ -181,6 +209,8 @@ try {
     echo json_encode(["error" => "jwt_generation_failed"]);
     exit;
 }
+auth_log("ID token payload: " . json_encode($id_token_payload));
+auth_log("Generated ID token: $id_token");
 
 $access_token_payload = [
     "iss" => "https://buwana.ecobricks.org",
@@ -200,6 +230,8 @@ try {
     echo json_encode(["error" => "access_token_generation_failed"]);
     exit;
 }
+auth_log("Access token payload: " . json_encode($access_token_payload));
+auth_log("Generated access token: $access_token");
 
 // 🧽 Clean output & respond
 ob_clean();
