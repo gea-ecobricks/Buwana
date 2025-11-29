@@ -166,8 +166,47 @@ $resolved_last_name = $last_name;
 $resolved_location = trim($location_full ?? '');
 $resolved_country = trim($country_name ?? '');
 $resolved_timezone = trim($time_zone ?? '');
+$resolved_emoji = trim($earthling_emoji ?? '');
+
+auth_log(
+    "User lookup results for user_id=$user_id: " . json_encode([
+        'email' => $email,
+        'first_name' => $first_name,
+        'last_name' => $last_name,
+        'earthling_emoji' => $earthling_emoji,
+        'continent_code' => $continent_code,
+        'community_id' => $community_id,
+        'location_full' => $location_full,
+        'time_zone' => $time_zone,
+        'country_name' => $country_name,
+    ])
+);
+
+// Fallback values when profile data is missing
+$default_location = 'Bantul, Jogja';
+$default_country = 'Indonesia';
+$default_timezone = 'Jakarta UTC+7';
+$default_emoji = '🌏';
+
+if ($resolved_location === '') {
+    $resolved_location = $default_location;
+}
+if ($resolved_country === '') {
+    $resolved_country = $default_country;
+}
+if ($resolved_timezone === '') {
+    $resolved_timezone = $default_timezone;
+}
+if ($resolved_emoji === '') {
+    $resolved_emoji = $default_emoji;
+}
+
+// Ensure emoji fallback is used where we later substitute last_name
+if ($resolved_last_name === '') {
+    $resolved_last_name = $resolved_emoji;
+}
 if ($is_learning_app && (is_null($resolved_last_name) || $resolved_last_name === '')) {
-    $resolved_last_name = $earthling_emoji;
+    $resolved_last_name = $resolved_emoji;
 }
 
 // 📅 Prepare token claims
@@ -188,7 +227,7 @@ $id_token_payload = [
     "nonce" => $nonce,
     "scope" => $scope,
     "buwana_id" => $user_id,
-    "buwana:earthlingEmoji" => $earthling_emoji,
+    "buwana:earthlingEmoji" => $resolved_emoji,
     "buwana:community" => "Planet Earth",
     "buwana:location.continent" => $continent_code,
 ];
