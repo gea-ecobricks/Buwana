@@ -14,7 +14,7 @@ TEXT TRANSLATION SNIPPETS FOR GOBRIK.com
 const fr_Page_Translations = {
     "001-signup-heading": "Créez votre compte",
     "002-signup-subtext": "Rejoignez-nous sur GoBrik avec un compte Buwana — une alternative open source, pour la Terre, aux connexions d'entreprise.",
-    "003-firstname": "Quel est votre prénom ?",
+    "003-firstname": "Comment vous appelez-vous ?",
     "004-name-placeholder": '<input type="text" id="first_name" name="first_name" aria-label="Votre prénom" title="Obligatoire. Max 255 caractères." required placeholder="Votre nom...">',
     "000-name-field-too-long-error": "Le nom est trop long. Maximum 255 caractères.",
     "005b-name-error": "L'entrée contient des caractères non valides. Veuillez éviter les guillemets, les barres obliques et les signes supérieur à.",

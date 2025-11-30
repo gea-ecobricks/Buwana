@@ -6,28 +6,40 @@ $success = false;
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     // ✅ Sanitize input
-    $first_name = ucfirst(strtolower(trim($_POST['first_name'] ?? '')));
+    $raw_name = trim($_POST['first_name'] ?? '');
     $credential = trim($_POST['credential'] ?? '');
 
-    if (empty($first_name) || empty($credential)) {
+    if (empty($raw_name) || empty($credential)) {
         error_log("Missing first_name or credential type.");
         header("Location: signup-1.php?error=missing_fields");
         exit();
     }
 
-    $full_name = $first_name;
+    $name_parts = preg_split('/\s+/', $raw_name);
+    $first_name_raw = array_shift($name_parts);
+    $remaining_name = implode(' ', $name_parts);
+
+    $first_name = mb_convert_case(mb_strtolower($first_name_raw, 'UTF-8'), MB_CASE_TITLE, 'UTF-8');
+    $last_name = '';
+
+    if (!empty($remaining_name)) {
+        $last_name = mb_convert_case(mb_strtolower($remaining_name, 'UTF-8'), MB_CASE_TITLE, 'UTF-8');
+    }
+
+    $full_name = trim($first_name . ' ' . $last_name);
+
     $created_at = $last_login = date("Y-m-d H:i:s");
     $account_status = 'name set only';
     $role = 'ecobricker';
     $notes = "Step 1 complete: Buwana beta testing";
 
     // ➤ Insert into users_tb
-    $sql_user = "INSERT INTO users_tb (first_name, full_name, created_at, last_login, account_status, role, notes)
-                 VALUES (?, ?, ?, ?, ?, ?, ?)";
+    $sql_user = "INSERT INTO users_tb (first_name, last_name, full_name, created_at, last_login, account_status, role, notes)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt_user = $buwana_conn->prepare($sql_user);
 
     if ($stmt_user) {
-        $stmt_user->bind_param("sssssss", $first_name, $full_name, $created_at, $last_login, $account_status, $role, $notes);
+        $stmt_user->bind_param("ssssssss", $first_name, $last_name, $full_name, $created_at, $last_login, $account_status, $role, $notes);
 
         if ($stmt_user->execute()) {
             $buwana_id = $buwana_conn->insert_id;
