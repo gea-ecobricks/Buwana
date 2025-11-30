@@ -8,7 +8,7 @@ require_once 'buwanaconn_env.php';
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
-$authLogFile = __DIR__ . '/error_log';
+$authLogFile = __DIR__ . '/auth_log';
 
 function auth_log($message) {
     global $authLogFile;
