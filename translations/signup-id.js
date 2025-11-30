@@ -14,7 +14,7 @@ TEXT TRANSLATION SNIPPETS FOR GOBRIK.com
 const id_Page_Translations = {
     "001-signup-heading": "Buat Akun Anda",
     "002-signup-subtext": "Bergabunglah dengan kami di GoBrik dengan akun Buwana—alternatif open source untuk Bumi dibandingkan dengan login korporat.",
-    "003-firstname": "Apa nama depan Anda?",
+    "003-firstname": "Apa nama Anda?",
     "004-name-placeholder": '<input type="text" id="first_name" name="first_name" aria-label="Nama depan Anda" title="Wajib diisi. Maksimal 255 karakter." required placeholder="Nama Anda....">',
     "000-name-field-too-long-error": "Nama terlalu panjang. Maksimal 255 karakter.",
     "005b-name-error": "Entri mengandung karakter tidak valid. Hindari tanda kutip, garis miring, dan tanda lebih besar.",
