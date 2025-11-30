@@ -104,7 +104,7 @@ https://github.com/gea-ecobricks/buwana/-->
                         maxlength="255"
                         required
                         placeholder=" " />
-                 <label for="first_name" data-lang-id="003-firstname">What's your first name?</label>
+                 <label for="first_name" data-lang-id="003-firstname">What's your name?</label>
                  <!-- ERRORS -->
                  <div id="maker-error-required" class="form-field-error" data-lang-id="000-field-required-error">This field is required.</div>
                  <div id="maker-error-long" class="form-field-error" data-lang-id="000-name-field-too-long-error">The name is too long. Max 255 characters.</div>
