@@ -210,7 +210,7 @@ echo '</script>';
             <input type="hidden" name="response_type" value="id_token">
             <input type="hidden" name="scope" value="openid email profile">
 
-            <div class="form-item" style="border-radius: 10px 10px 0px 0px;">
+            <div class="form-item" style="border-radius: 10px 10px 0px 0px;margin-bottom:1px;">
                 <!--<p style="text-align:center;">Login with your Buwana account credentials.</p>-->
                 <div id="credential-input-field" class="input-wrapper" style="position: relative;">
                     <input type="text" id="credential_key" name="credential_key" required placeholder="Your e-mail..." value="<?= htmlspecialchars($credential_key) ?>">
@@ -225,7 +225,7 @@ echo '</script>';
                 <div id="no-buwana-email" data-lang-id="001-cant-find" class="form-field-error" style="display:none;margin-top: 0px;margin-bottom:-15px;">🤔 We can't find this credential in the database.</div>
             </div>
 
-            <div class="form-item" id="password-form" style="height:111px;margin-top: -8px;border-radius: 0px 0px 10px 10px;">
+            <div class="form-item" id="password-form" style="height:111px;margin-top: 0px;border-radius: 0px 0px 10px 10px;padding-bottom:5px;">
                 <div class="password-wrapper" style="position: relative;">
                     <div data-lang-id="005-password-field-placeholder">
                         <input type="password" id="password" name="password" placeholder="Your password..." required>
