@@ -11,8 +11,9 @@ $version = '0.22';
 $page = 'feedback';
 $lastModified = date("Y-m-d\\TH:i:s\\Z", filemtime(__FILE__));
 
-$buwana_id = isset($_GET['buwana']) ? intval($_GET['buwana']) : null;
-$client_id = $_GET['app'] ?? ($_GET['client_id'] ?? null);
+// Prefer authenticated session context instead of URL parameters.
+$buwana_id = $_SESSION['buwana_id'] ?? null;
+$client_id = $_SESSION['client_id'] ?? ($_GET['app'] ?? ($_GET['client_id'] ?? null));
 
 if (!$buwana_id || !$client_id) {
     die('Missing buwana ID or client ID.');
