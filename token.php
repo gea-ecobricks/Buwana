@@ -68,6 +68,9 @@ $allowedOrigins = [
     "https://openbooks.ecobricks.org",
     "https://hopeturtles.org",
     "https://files.mandala.team",
+        // EarthCal desktop / local dev:
+        "http://127.0.0.1:3000",
+        "http://localhost:3000",
 ];
 
 if (isset($_SERVER['HTTP_ORIGIN']) && in_array($_SERVER['HTTP_ORIGIN'], $allowedOrigins)) {
