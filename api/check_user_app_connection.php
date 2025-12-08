@@ -8,6 +8,7 @@ $allowed_origins = [
     'https://gobrik.com',
     'https://ecobricks.org',
     'https://learning.ecobricks.org',
+    'http://127.0.0.1:3000',
     'https://openbooks.ecobricks.org'
 ];
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';

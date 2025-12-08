@@ -69,7 +69,7 @@ $allowedOrigins = [
     "https://hopeturtles.org",
     "https://files.mandala.team",
     // EarthCal desktop / local dev:
-    "http://127.0.0.1:3000",
+    "http://127.0.0.1:3000",http://127.0.0.1:3000
     "http://localhost:3000",
 ];
 
