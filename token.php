@@ -57,9 +57,11 @@ auth_log("Token request received");
  * ================================
  * SECTION 2: CORS & HTTP METHOD VALIDATION
  * This section allows trusted origins and ensures only POST requests are accepted.
+ * We also log the incoming Origin so we can debug Snap / localhost flows.
  * ================================
  */
 
+// Allowed front-end origins that may call /token
 $allowedOrigins = [
     "https://earthcal.app",
     "https://gobrik.com",
@@ -69,21 +71,64 @@ $allowedOrigins = [
     "https://hopeturtles.org",
     "https://files.mandala.team",
     // EarthCal desktop / local dev:
-    "http://127.0.0.1:3000",http://127.0.0.1:3000
+    "http://127.0.0.1:3000",
     "http://localhost:3000",
 ];
 
-if (isset($_SERVER['HTTP_ORIGIN']) && in_array($_SERVER['HTTP_ORIGIN'], $allowedOrigins)) {
-    header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
-    header("Access-Control-Allow-Headers: Content-Type");
-    header("Access-Control-Allow-Methods: POST");
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+auth_log("Incoming Origin header: " . ($origin ?: 'NONE'));
+
+if ($origin && in_array($origin, $allowedOrigins, true)) {
+    header("Access-Control-Allow-Origin: {$origin}");
+    header("Access-Control-Allow-Credentials: true");
+    auth_log("CORS: Origin allowed: {$origin}");
+} else {
+    // Not fatal for now, but useful to know if we’re missing a value
+    auth_log("CORS: Origin NOT allowed: " . ($origin ?: 'NONE'));
 }
 
+// Always send these CORS-related headers
+header("Vary: Origin");
+header("Access-Control-Allow-Headers: Content-Type");
+header("Access-Control-Allow-Methods: POST, OPTIONS");
+
+// Handle preflight OPTIONS cleanly and exit early
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    auth_log("CORS preflight (OPTIONS) handled");
+    http_response_code(204);
+    exit;
+}
+
+// After CORS handling, enforce POST for actual token requests
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    auth_log("Rejected non-POST method: " . $_SERVER['REQUEST_METHOD']);
     http_response_code(405);
     echo json_encode(["error" => "method_not_allowed"]);
     exit;
 }
+
+/**
+ * ================================
+ * SECTION 3: INPUT GATHERING & NORMALIZATION
+ * This section collects POST parameters and normalizes the redirect URI.
+ * ================================
+ */
+
+$grant_type    = $_POST['grant_type']    ?? '';
+$code          = $_POST['code']          ?? '';
+$redirect_uri  = $_POST['redirect_uri']  ?? '';
+$client_id     = $_POST['client_id']     ?? '';
+$client_secret = $_POST['client_secret'] ?? '';
+$code_verifier = $_POST['code_verifier'] ?? '';
+
+$redirect_uri = normalize_redirect_uri($redirect_uri);
+
+if ($grant_type !== 'authorization_code' || !$code || !$redirect_uri || !$client_id) {
+    http_response_code(400);
+    echo json_encode(["error" => "invalid_request"]);
+    exit;
+}
+
 
 /**
  * ================================
