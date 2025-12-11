@@ -563,7 +563,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 zh: { main: "您已登出。", sub: "准备好后，$first_name，请再次使用您的帐户凭据登录。" }
             },
             firsttime: {
-                en: { main: "Your Buwana Account is Created! 🎉", sub: "And your Earthen subscriptions are confirmed. Now $first_name, please login again with your new account credentials." },
+                en: { main: "Your Buwana Account is Created! 🎉", sub: "Now $first_name, please login to $client_app_name with your new Buwana credentials." },
                 fr: { main: "Votre compte Buwana est créé ! 🎉", sub: "Maintenant $first_name, connectez-vous avec vos nouvelles identifiants." },
                 es: { main: "¡Tu cuenta Buwana está creada! 🎉", sub: "Y tus suscripciones Earthen están confirmadas. Ahora $first_name, inicia sesión de nuevo con tus nuevas credenciales." },
                 id: { main: "Akun Buwana Anda telah dibuat! 🎉", sub: "Dan langganan Earthen Anda telah dikonfirmasi. Sekarang $first_name, silakan masuk lagi dengan kredensial akun baru Anda." },
@@ -597,9 +597,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const main = selected.main
             .replace('$app_display_name', appDisplayName)
+            .replace('$client_app_name', appDisplayName)
             .replace('$first_name', firstName);
         const sub = selected.sub
             .replace('$app_display_name', appDisplayName)
+            .replace('$client_app_name', appDisplayName)
             .replace('$first_name', firstName);
 
         return { main, sub };
