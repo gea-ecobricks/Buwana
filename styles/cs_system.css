@@ -397,8 +397,12 @@
 }
 
 .cs-chat-table th.col-subject,
+.cs-chat-table th.col-subject,
 .cs-chat-table td.col-subject {
     min-width: 100px;
+    max-width: 177px;
+    width: auto;
+    text-align: left;
 }
 
 .cs-chat-table th,
@@ -435,9 +439,49 @@
     transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
+.cs-chat-table th.col-app,
+.cs-chat-table td.col-app,
+.cs-chat-table th.col-priority,
+.cs-chat-table td.col-priority,
+.cs-chat-table th.col-status,
+.cs-chat-table td.col-status,
+.cs-chat-table th.col-readers,
+.cs-chat-table td.col-readers,
 .cs-chat-table th.col-actions,
 .cs-chat-table td.col-actions {
-    min-width: 60px;
+    text-align: center;
+}
+
+.cs-chat-table th.col-app,
+.cs-chat-table td.col-app {
+    width: 40px;
+}
+
+.cs-chat-table th.col-priority,
+.cs-chat-table td.col-priority {
+    width: 50px;
+}
+
+.cs-chat-table th.col-status,
+.cs-chat-table td.col-status {
+    width: 75px;
+}
+
+.cs-chat-table th.col-readers,
+.cs-chat-table td.col-readers {
+    width: 50px;
+}
+
+.cs-chat-table th.col-actions,
+.cs-chat-table td.col-actions {
+    width: 50px;
+    min-width: 50px;
+}
+
+.cs-chat-table th.col-updated,
+.cs-chat-table td.col-updated {
+    width: 60px;
+    text-align: left;
 }
 
 .cs-upvote-toggle--zero {

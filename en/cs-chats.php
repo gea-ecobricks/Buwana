@@ -8,9 +8,11 @@ require_once __DIR__ . '/../buwanaconn_env.php';
 
 $langInput = $_GET['lang'] ?? 'en';
 $lang = strtolower(preg_replace('/[^a-z]/i', '', $langInput) ?: 'en');
-$version = '0.22';
+$version = '0.23';
 $page = 'cs-chats';
 $lastModified = date("Y-m-d\\TH:i:s\\Z", filemtime(__FILE__));
+$headerFile = __DIR__ . '/../header-2026.php';
+$footerFile = __DIR__ . '/../footer-2026.php';
 
 $buwana_id = isset($_GET['buwana']) ? intval($_GET['buwana']) : null;
 $client_id = $_GET['app'] ?? ($_GET['client_id'] ?? null);
@@ -124,11 +126,11 @@ if (!$isAdminUser) {
     </div>
 </div>
 
-</div>  <!-- close main div that was opened in the header-2025-->
+</div>  <!-- close main div that was opened in the header-2026-->
 
 <datalist id="cs-category-list"></datalist>
 
-<?php require_once __DIR__ . '/../footer-2025.php'; ?>
+<?php require_once $footerFile; ?>
 
 <?php require_once __DIR__ . '/../scripts/app_modals.php';?>
 
