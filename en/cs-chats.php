@@ -100,27 +100,35 @@ if (!$isAdminUser) {
             </div>
 
             <div class="cs-dashboard">
-                <div class="cs-dashboard__header">
-                    <div class="cs-dashboard__intro">
-                        <div id="status-message">Admin Chat Support</div>
-                        <p id="sub-status-message">View and manage support requests from all Buwana users across all Buwana apps</p>
-                    </div>
-                    <div id="cs-active-app-icons" class="cs-dashboard__icons" aria-live="polite" aria-label="Apps with open chats"></div>
-                </div>
+                <div class="page-panels page-panels--split">
+                    <section class="page-panel page-panel--welcome">
+                        <div class="cs-dashboard__header">
+                            <div class="cs-dashboard__intro">
+                                <div id="status-message">Admin Chat Support</div>
+                                <p id="sub-status-message">View and manage support requests from all Buwana users across all Buwana apps</p>
+                            </div>
+                            <div id="cs-active-app-icons" class="cs-dashboard__icons" aria-live="polite" aria-label="Apps with open chats"></div>
+                        </div>
+                    </section>
 
-                <div id="cs-loading" class="cs-loading">
-                    <span>Loading support chats…</span>
-                </div>
+                    <div class="page-panel-stack">
+                        <div id="cs-loading" class="cs-loading">
+                            <span>Loading support chats…</span>
+                        </div>
 
-                <section id="cs-admin-section" class="cs-panel hidden">
-                    <div class="cs-panel__body">
-                        <div id="cs-admin-global"></div>
-                        <div id="cs-admin-personal"></div>
+                        <section id="cs-admin-section" class="cs-panel hidden page-panel page-panel--inboxes">
+                            <div class="cs-panel__body">
+                                <div class="cs-inbox-grid">
+                                    <div id="cs-admin-global" class="cs-panel-block"></div>
+                                    <div id="cs-admin-personal" class="cs-panel-block"></div>
+                                </div>
+                            </div>
+                            <div class="cs-panel__actions page-panel__actions">
+                                <button type="button" class="cs-button cs-button--secondary cs-refresh-btn">🔄 Refresh</button>
+                            </div>
+                        </section>
                     </div>
-                    <div class="cs-panel__actions">
-                        <button type="button" class="cs-button cs-button--secondary cs-refresh-btn">🔄 Refresh</button>
-                    </div>
-                </section>
+                </div>
             </div>
         </div>
     </div>

@@ -110,6 +110,7 @@ $sql = "SELECT a.app_display_name,
 <link rel="stylesheet" type="text/css" href="../styles/mode-slider.css?v=4">
 
 <link rel="stylesheet" type="text/css" href="../styles/main.css?v=6<?php echo ($version); ;?>">
+<link rel="stylesheet" type="text/css" href="../styles/styles-2026.css?v=<?php echo ($version); ;?>">
 
 <!--Default Light Styles to load first-->
 <link rel="preload" href="../styles/mode-light.css?v=1<?php echo ($version); ;?>" as="style" onload="this.rel='stylesheet'">
