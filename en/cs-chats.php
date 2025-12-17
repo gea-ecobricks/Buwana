@@ -8,7 +8,7 @@ require_once __DIR__ . '/../buwanaconn_env.php';
 
 $langInput = $_GET['lang'] ?? 'en';
 $lang = strtolower(preg_replace('/[^a-z]/i', '', $langInput) ?: 'en');
-$version = '0.22';
+$version = '0.23';
 $page = 'cs-chats';
 $lastModified = date("Y-m-d\\TH:i:s\\Z", filemtime(__FILE__));
 $headerFile = __DIR__ . '/../header-2026.php';
