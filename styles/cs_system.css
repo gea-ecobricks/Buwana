@@ -459,23 +459,23 @@
 
 .cs-chat-table th.col-priority,
 .cs-chat-table td.col-priority {
-    width: 50px;
+    width: 75px;
 }
 
 .cs-chat-table th.col-status,
 .cs-chat-table td.col-status {
-    width: 75px;
+    width: 85px;
 }
 
 .cs-chat-table th.col-readers,
 .cs-chat-table td.col-readers {
-    width: 50px;
+    width: 75px;
 }
 
 .cs-chat-table th.col-actions,
 .cs-chat-table td.col-actions {
-    width: 50px;
-    min-width: 50px;
+    width: 75px;
+    min-width: 75px;
 }
 
 .cs-chat-table th.col-updated,

@@ -1,0 +1,91 @@
+/*
+ * Generic 2026 site styles
+ * Shared layout helpers for dashboard-style page panels
+ */
+
+.page-panels {
+    width: min(1200px, 100%);
+    margin: 32px auto 64px;
+    display: grid;
+    gap: 24px;
+    align-items: flex-start;
+    padding: 0 12px;
+    box-sizing: border-box;
+}
+
+.page-panels--split {
+    grid-template-columns: minmax(260px, 1fr) minmax(520px, 2fr);
+}
+
+.page-panel {
+    background: var(--lighter);
+    border: 1px solid var(--outline);
+    border-radius: 18px;
+    padding: 24px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+}
+
+.page-panel--welcome {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.page-panel-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.page-panel__title {
+    margin: 0 0 12px;
+    color: var(--text-color);
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+.page-panel__body {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.page-panel__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.page-panel .cs-dashboard__header {
+    align-items: flex-start;
+    text-align: left;
+}
+
+.page-panel .cs-dashboard__intro {
+    text-align: left;
+}
+
+.page-panel #cs-active-app-icons {
+    justify-content: flex-start;
+}
+
+.cs-inbox-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+@media (max-width: 960px) {
+    .page-panels {
+        margin-top: 12px;
+    }
+
+    .page-panels--split {
+        grid-template-columns: 1fr;
+    }
+
+    .page-panel__actions {
+        justify-content: center;
+    }
+}
