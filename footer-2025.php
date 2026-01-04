@@ -80,7 +80,25 @@
         }
 
         if (toggle) {
-            toggle.mode = initialMode;
+            // Ensure the toggle reflects the detected mode even if the custom
+            // element hasn't been upgraded yet.
+            toggle.setAttribute('mode', initialMode);
+
+            if (typeof customElements !== 'undefined') {
+                if (customElements.get('dark-mode-toggle')) {
+                    toggle.mode = initialMode;
+                } else if (typeof customElements.whenDefined === 'function') {
+                    customElements.whenDefined('dark-mode-toggle')
+                        .then(() => {
+                            toggle.mode = initialMode;
+                        })
+                        .catch(() => {
+                            // In environments without custom element support we
+                            // already set the attribute above so the CSS still
+                            // follows the preferred scheme.
+                        });
+                }
+            }
         }
         document.documentElement.setAttribute('data-theme', initialMode);
 
