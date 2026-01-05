@@ -106,50 +106,69 @@ if (!$isAdminUser) {
     document.body.classList.add('page-cs-chats');
 </script>
 
-<div class="page-panel-group">
+<div class="dashboard-wrapper">
+    <div id="dashboard-v2-grid">
+        <div class="dashboard-column">
+            <section class="dashboard-v2-panel page-panel page-panel--welcome">
+                <div class="panel-pill admin-pill">Admin</div>
+                <div class="cs-dashboard__header">
+                    <div class="cs-dashboard__intro" style="text-align:left;">
+                        <div id="status-message">Admin Chat Support</div>
+                        <p id="sub-status-message">View and manage support requests from all Buwana users across all Buwana apps</p>
+                    </div>
+                    <div class="cs-dashboard__actions cs-dashboard__actions--right">
+                        <button type="button" id="cs-new-chat-btn" class="cs-button">💬 New Chat</button>
+                        <button type="button" class="cs-button cs-button--secondary cs-refresh-btn">🔄 Refresh</button>
+                    </div>
+                    <div id="cs-active-app-icons" class="cs-dashboard__icons" aria-live="polite" aria-label="Apps with open chats"></div>
+                </div>
+            </section>
 
+            <section class="dashboard-v2-panel">
+                <div class="page-panel-stack">
+                    <div id="cs-loading" class="cs-loading">
+                        <span>Loading support chats…</span>
+                    </div>
+                    <div id="cs-app-inboxes" class="cs-panel-stack"></div>
+                </div>
+            </section>
+        </div>
 
-            <div class="cs-dashboard">
-                <div class="page-panels page-panels--split">
-                    <section class="page-panel page-panel--welcome">
-                        <div class="cs-dashboard__header">
-                            <div class="cs-dashboard__intro">
-                                <div id="status-message">Admin Chat Support</div>
-                                <p id="sub-status-message">View and manage support requests from all Buwana users across all Buwana apps</p>
-                            </div>
-                            <div id="cs-active-app-icons" class="cs-dashboard__icons" aria-live="polite" aria-label="Apps with open chats"></div>
+        <div class="dashboard-column">
+            <section class="dashboard-v2-panel">
+                <div class="panel-pill latest-pill">Live</div>
+                <header class="page-panel page-panel--welcome" style="margin-bottom:18px;">
+                    <div class="cs-dashboard__intro" style="text-align:left;">
+                        <div class="cs-dashboard__title">Team inboxes</div>
+                        <p class="cs-dashboard__subtitle">Track global and personal queues across apps.</p>
+                    </div>
+                </header>
+
+                <div class="page-panel-stack">
+                    <section id="cs-admin-global-section" class="cs-panel hidden page-panel page-panel--inboxes cs-admin-panel" data-cs-admin-panel="global">
+                        <div class="cs-panel__body">
+                            <div id="cs-admin-global" class="cs-panel-block"></div>
+                        </div>
+                        <div class="cs-panel__actions page-panel__actions">
+                            <button type="button" class="cs-button cs-button--secondary cs-refresh-btn">🔄 Refresh</button>
                         </div>
                     </section>
 
-                    <div class="page-panel-stack">
-                        <div id="cs-loading" class="cs-loading">
-                            <span>Loading support chats…</span>
+                    <section id="cs-admin-personal-section" class="cs-panel hidden page-panel page-panel--inboxes cs-admin-panel" data-cs-admin-panel="personal">
+                        <div class="cs-panel__body">
+                            <div id="cs-admin-personal" class="cs-panel-block"></div>
                         </div>
-
-                        <section id="cs-admin-global-section" class="cs-panel hidden page-panel page-panel--inboxes cs-admin-panel" data-cs-admin-panel="global">
-                            <div class="cs-panel__body">
-                                <div id="cs-admin-global" class="cs-panel-block"></div>
-                            </div>
-                            <div class="cs-panel__actions page-panel__actions">
-                                <button type="button" class="cs-button cs-button--secondary cs-refresh-btn">🔄 Refresh</button>
-                            </div>
-                        </section>
-
-                        <section id="cs-admin-personal-section" class="cs-panel hidden page-panel page-panel--inboxes cs-admin-panel" data-cs-admin-panel="personal">
-                            <div class="cs-panel__body">
-                                <div id="cs-admin-personal" class="cs-panel-block"></div>
-                            </div>
-                            <div class="cs-panel__actions page-panel__actions">
-                                <button type="button" class="cs-button cs-button--secondary cs-refresh-btn">🔄 Refresh</button>
-                            </div>
-                        </section>
-                    </div>
+                        <div class="cs-panel__actions page-panel__actions">
+                            <button type="button" class="cs-button cs-button--secondary cs-refresh-btn">🔄 Refresh</button>
+                        </div>
+                    </section>
                 </div>
-            </div>
-
+            </section>
+        </div>
+    </div>
 </div>
 
-</div>  <!-- close main div that was opened in the header-2026-->
+</div>  <!-- close main div that was opened in the header-2026 -->
 
 <datalist id="cs-category-list"></datalist>
 
