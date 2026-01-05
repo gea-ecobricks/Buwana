@@ -8,7 +8,7 @@ require_once __DIR__ . '/../buwanaconn_env.php';
 
 $langInput = $_GET['lang'] ?? 'en';
 $lang = strtolower(preg_replace('/[^a-z]/i', '', $langInput) ?: 'en');
-$version = '0.33';
+$version = '0.43';
 $page = 'cs-chats';
 $lastModified = date("Y-m-d\\TH:i:s\\Z", filemtime(__FILE__));
 $headerFile = __DIR__ . '/../header-2026.php';
@@ -113,7 +113,7 @@ if (!$isAdminUser) {
 
                 <div class="cs-dashboard__header">
                     <div class="cs-dashboard__intro" style="text-align:left;">
-                        <div id="status-message"><h1>Admin Chat Support</h1></div>
+                        <div id="status-message">Admin Chat Support</div>
                         <p id="sub-status-message">View and manage support requests from all Buwana users across all Buwana apps</p>
                     </div>
                     <div class="cs-dashboard__actions cs-dashboard__actions--right">
