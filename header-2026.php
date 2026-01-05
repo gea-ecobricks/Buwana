@@ -153,16 +153,26 @@ $sql = "SELECT a.app_display_name,
 
 @font-face {
   font-family: "Mulish";
-  src: url("../fonts/Mulish-Light.ttf");
+  src: url("../fonts/Mulish-Light.ttf") format("truetype");
   font-display: swap;
   font-weight: 300;
+  font-style: normal;
  }
 
  @font-face {
   font-family: "Mulish";
-  src: url("../fonts/Mulish-Regular.ttf");
+  src: url("../fonts/Mulish-Regular.ttf") format("truetype");
+  font-display: swap;
+  font-weight: 400;
+  font-style: normal;
+ }
+
+ @font-face {
+  font-family: "Mulish";
+  src: url("../fonts/Mulish-Medium.ttf") format("truetype");
   font-display: swap;
   font-weight: 500;
+  font-style: normal;
  }
 
  @font-face {

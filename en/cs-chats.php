@@ -14,11 +14,27 @@ $lastModified = date("Y-m-d\\TH:i:s\\Z", filemtime(__FILE__));
 $headerFile = __DIR__ . '/../header-2026.php';
 $footerFile = __DIR__ . '/../footer-2026.php';
 
-$buwana_id = isset($_GET['buwana']) ? intval($_GET['buwana']) : null;
-$client_id = $_GET['app'] ?? ($_GET['client_id'] ?? null);
+$session_buwana_id = $_SESSION['buwana_id'] ?? null;
+$session_client_id = $_SESSION['client_id'] ?? null;
+$requested_buwana_id = isset($_GET['buwana']) ? intval($_GET['buwana']) : null;
+$requested_client_id = $_GET['app'] ?? ($_GET['client_id'] ?? null);
+
+if ($requested_buwana_id && $session_buwana_id && $requested_buwana_id !== $session_buwana_id) {
+    http_response_code(403);
+    die('Mismatched session for requested user.');
+}
+
+if ($requested_client_id && $session_client_id && $requested_client_id !== $session_client_id) {
+    http_response_code(403);
+    die('Mismatched session for requested app.');
+}
+
+$buwana_id = $session_buwana_id;
+$client_id = $session_client_id ?? $requested_client_id;
 
 if (!$buwana_id || !$client_id) {
-    die('Missing buwana ID or client ID.');
+    http_response_code(401);
+    die('Authentication required to access chat dashboard.');
 }
 
 $sql_connection = "SELECT id FROM user_app_connections_tb WHERE buwana_id = ? AND client_id = ?";
@@ -113,12 +129,18 @@ if (!$isAdminUser) {
                             <span>Loading support chats…</span>
                         </div>
 
-                        <section id="cs-admin-section" class="cs-panel hidden page-panel page-panel--inboxes">
+                        <section id="cs-admin-global-section" class="cs-panel hidden page-panel page-panel--inboxes cs-admin-panel" data-cs-admin-panel="global">
                             <div class="cs-panel__body">
-                                <div class="cs-inbox-grid">
-                                    <div id="cs-admin-global" class="cs-panel-block"></div>
-                                    <div id="cs-admin-personal" class="cs-panel-block"></div>
-                                </div>
+                                <div id="cs-admin-global" class="cs-panel-block"></div>
+                            </div>
+                            <div class="cs-panel__actions page-panel__actions">
+                                <button type="button" class="cs-button cs-button--secondary cs-refresh-btn">🔄 Refresh</button>
+                            </div>
+                        </section>
+
+                        <section id="cs-admin-personal-section" class="cs-panel hidden page-panel page-panel--inboxes cs-admin-panel" data-cs-admin-panel="personal">
+                            <div class="cs-panel__body">
+                                <div id="cs-admin-personal" class="cs-panel-block"></div>
                             </div>
                             <div class="cs-panel__actions page-panel__actions">
                                 <button type="button" class="cs-button cs-button--secondary cs-refresh-btn">🔄 Refresh</button>
