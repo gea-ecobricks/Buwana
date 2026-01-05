@@ -1,0 +1,532 @@
+body {
+    background: var(--dashboard-page-background, #f5f5f5);
+    font-family: 'Mulish', 'Helvetica Neue', Arial, sans-serif;
+}
+
+:root {
+    --dashboard-panel-gap: 20px;
+    --pill-default-bg: #f5f7fb;
+    --pill-default-text: #1d2d44;
+    --pill-trainer-bg: #fff2e0;
+    --pill-trainer-text: #c05621;
+    --pill-validator-bg: #ffeaf3;
+    --pill-validator-text: #b83280;
+    --pill-admin-bg: #ffe5e5;
+    --pill-admin-text: #b3261e;
+    --pill-latest-bg: #fff;
+    --pill-latest-text: #0d1b2a;
+}
+
+
+.dashboard-wrapper {
+    width: 100%;
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+#dashboard-v2-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: var(--dashboard-panel-gap);
+    align-items: start;
+    padding: 32px 0 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.dashboard-column {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dashboard-panel-gap);
+}
+
+.dashboard-v2-panel {
+    background: var(--dashboard-panel-background, #fff);
+    border: 1px solid var(--dashboard-panel-border, #d0d7de);
+    border-radius: 16px;
+    box-shadow: var(--dashboard-panel-shadow, 0 2px 8px rgba(0, 0, 0, 0.08));
+    padding: 20px;
+    position: relative;
+    /*min-height: 120px;*/
+}
+
+#welcome-greeting-panel #greeting {
+    color: var(--h1);
+    text-align: right;
+}
+
+.panel-pill {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: var(--pill-default-bg);
+    color: var(--pill-default-text);
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 0.8em;
+    font-weight: 700;
+    letter-spacing: 0.35px;
+    z-index: 3;
+    border: 1px solid transparent;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.panel-pill.trainer-pill {
+    background: var(--pill-trainer-bg);
+    color: var(--pill-trainer-text);
+}
+
+.panel-pill.validator-pill {
+    background: var(--pill-validator-bg);
+    color: var(--pill-validator-text);
+}
+
+.panel-pill.admin-pill {
+    background: var(--pill-admin-bg);
+    color: var(--pill-admin-text);
+}
+
+.panel-pill.latest-pill {
+    background: var(--pill-latest-bg);
+    color: var(--pill-latest-text);
+    border-color: var(--dashboard-panel-border, #d0d7de);
+}
+
+.panel-pill.warning-pill {
+    background: #ffb74d;
+    color: #4e2600;
+    border-color: #f57c00;
+}
+
+.dashboard-v2-panel h2,
+.dashboard-v2-panel h3,
+.dashboard-v2-panel h4 {
+    margin-top: 0;
+    color: var(--text-color, #0d1b2a);
+}
+
+.dashboard-v2-panel .panel-title {
+    margin-top: 24px;
+}
+
+.dashboard-v2-panel p {
+    margin-top: 0;
+    color: var(--text-color, #43505b);
+}
+
+.dashboard-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid #d0d7de;
+    background: #0d6efd;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 2px 4px rgba(13, 110, 253, 0.2);
+    cursor: pointer;
+}
+
+.button.secondary {
+    background: #fff;
+    color: #0d6efd;
+}
+
+.button.ghost {
+    background: transparent;
+    color: #0d6efd;
+    box-shadow: none;
+}
+
+.button.ghost:hover,
+.button.ghost:focus-visible {
+    background: rgba(13, 110, 253, 0.06);
+}
+
+.button:hover {
+    background: #0b5ed7;
+    box-shadow: 0 4px 10px rgba(13, 110, 253, 0.25);
+}
+
+.button.secondary:hover {
+    background: #e9f2ff;
+}
+
+#latest-ecobricks-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 0;
+}
+
+#ecobrick-slider {
+    flex: 1 1 auto;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--dashboard-panel-border, #d0d7de);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.08);
+    aspect-ratio: 4 / 3;
+}
+
+#ecobrick-slider .slide {
+    display: none;
+    height: 100%;
+}
+
+#ecobrick-slider .slide.active {
+    display: block;
+}
+
+#ecobrick-slider img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.ecobrick-grid {
+    display: grid;
+    gap: 5px;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.ecobrick-grid-item {
+    border-radius: 7px;
+    overflow: hidden;
+    border: 1px solid var(--dashboard-panel-border, #d0d7de);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.06);
+    aspect-ratio: 1 / 1;
+    cursor: pointer;
+}
+
+.ecobrick-grid-item img {
+    border-radius: 7px;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.ecobrick-grid-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.ecobrick-grid-action-row {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+.ecobrick-grid-action-row .page-button {
+    width: 100%;
+}
+
+.previous-ecobricks {
+    flex: 1;
+}
+
+.load-next-ecobricks {
+    flex: 1;
+}
+
+.load-next-ecobricks.dual-width {
+    flex: 2;
+}
+
+.ecobrick-grid-note {
+    color: var(--text-color, #0b2435);
+    opacity: 0.8;
+}
+
+.ecobrick-empty-message {
+    text-align: center;
+    margin: 12px 0 0;
+    color: #5f6b7a;
+}
+
+#welcome-greeting-panel {
+    --notice-height: 0px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 12px;
+    padding-top: calc(26px + var(--notice-height));
+}
+
+#registered-notice-panel {
+    padding: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+.top-container-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 25px 25px 16px 10px;
+    margin: 0;
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: 14px;
+    background: var(--notice-bg);
+    color: #ffffff;
+    font-weight: 600;
+    position: relative;
+}
+
+.notice-panel .top-container-notice {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.support-chats-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.support-chat-form {
+    display: none;
+    margin-top: 12px;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.support-chat-form label {
+    font-weight: 700;
+    font-size: 0.95em;
+    color: var(--text-color, #0d1b2a);
+}
+
+.support-chat-form input,
+.support-chat-form select,
+.support-chat-form textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--dashboard-panel-border, #d0d7de);
+    border-radius: 10px;
+    font-family: 'Mulish', 'Helvetica Neue', Arial, sans-serif;
+    box-sizing: border-box;
+}
+
+.support-chat-form textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.support-chat-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.support-chat-actions .page-button {
+    width: 100%;
+    max-width: none;
+}
+
+.notice-icon {
+    flex-shrink: 0;
+    font-size: 1.1em;
+}
+
+.notice-text a {
+    font-weight: 800;
+    color: #ffffff;
+    text-decoration: underline;
+}
+
+.notice-close {
+    position: absolute;
+    right: 12px;
+    top: 12px;
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: inherit;
+}
+
+#welcome-greeting-panel #greeting {
+    margin: 40px 0 15px 0;
+}
+
+.dashboard-status-pill {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    background: rgba(34, 197, 94, 0.16);
+    color: #16a34a;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    font-size: 0.8em;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    z-index: 35;
+    border: 1px solid #16a34a;
+}
+
+.dash-notice-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+
+#my-ecobricks-panel,
+#registrations-panel {
+    display: flex;
+    flex-direction: column;
+}
+
+#my-ecobricks-panel table,
+#registrations-panel table,
+#my-trainings-panel table {
+    margin-top: 12px;
+}
+
+#registrations-panel table.dataTable th:first-child,
+#registrations-panel table.dataTable td:first-child {
+    white-space: normal;
+    min-width: 0;
+    word-break: break-word;
+}
+
+.page-button {
+    font-family: 'Mulish', 'Helvetica Neue', Arial, sans-serif;
+}
+
+.earthen-mailer-layout {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 25px;
+    align-items: stretch;
+}
+
+.earthen-mailer-actions {
+    flex: 1 1 260px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+}
+
+.earthen-mailer-actions .page-button {
+    width: 100%;
+    text-align: center;
+}
+
+.earthen-mailer-chart {
+    flex: 1 1 260px;
+    max-width: 420px;
+    width: 100%;
+}
+
+.earthen-mailer-chart-inner {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    max-height: 320px;
+    margin: 0 auto;
+}
+
+.earthen-mailer-chart canvas {
+    position: absolute;
+    inset: 0;
+}
+
+@media (max-width: 768px) {
+    #dashboard-v2-grid {
+        grid-template-columns: 1fr;
+        padding: 5px;
+        margin-top: 12px;
+    }
+
+    .dashboard-wrapper {
+        max-width: none;
+        padding: 0;
+        width: 100vw;
+    }
+
+    .dashboard-column {
+        gap: 16px;
+    }
+
+    #latest-ecobricks-panel,
+    #welcome-greeting-panel,
+    #my-ecobricks-panel,
+    #registrations-panel {
+        min-height: 0;
+        /*width: 100%;*/
+    }
+
+    .dashboard-actions {
+        justify-content: flex-start;
+    }
+
+    .ecobrick-mobile-slider {
+        display: none;
+    }
+
+    .ecobrick-grid {
+        grid-template-columns: repeat(3, minmax(90px, 1fr));
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1200px) {
+    #dashboard-v2-grid {
+        grid-template-columns: 1fr 1.15fr;
+        padding: 28px 0 0;
+    }
+
+    .dashboard-wrapper {
+        max-width: 1160px;
+        padding: 0 16px;
+    }
+
+    .ecobrick-mobile-slider {
+        display: none;
+    }
+
+    .ecobrick-grid {
+        grid-template-columns: repeat(3, minmax(120px, 1fr));
+    }
+}
+
+@media (min-width: 1201px) {
+    #dashboard-v2-grid {
+        grid-template-columns: 1fr 1.35fr;
+        padding-right: 4px;
+    }
+
+    .dashboard-wrapper {
+        padding: 0 20px;
+    }
+
+    .ecobrick-mobile-slider {
+        display: none;
+    }
+
+    .ecobrick-grid {
+        grid-template-columns: repeat(3, minmax(140px, 1fr));
+    }
+}
