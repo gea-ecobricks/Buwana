@@ -9,6 +9,6 @@ if (file_exists($metaPath)) {
 <link rel="stylesheet" type="text/css" href="../styles/cs_system.css?v=<?php echo ($version); ?>">
 
 <?php
-$headerFile = $headerFile ?? dirname(__DIR__) . '/header-2025.php';
+$headerFile = $headerFile ?? dirname(__DIR__) . '/header-2026.php';
 require_once $headerFile;
 ?>
