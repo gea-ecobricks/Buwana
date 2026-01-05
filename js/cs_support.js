@@ -497,12 +497,12 @@ class CsSupportApp {
         }
 
         if (hasGlobal && this.adminGlobalEl) {
-            const table = this.buildAdminTable('cs-admin-global-table', 'All App Support Chats', this.adminGlobalEl);
+            const table = this.buildAdminTable('cs-admin-global-table', this.adminGlobalEl);
             this.buildDataTable(table, adminData.global, { includeAppColumn: true });
         }
 
         if (hasPersonal && this.adminPersonalEl) {
-            const table = this.buildAdminTable('cs-admin-personal-table', 'Your Assigned Support Chats', this.adminPersonalEl);
+            const table = this.buildAdminTable('cs-admin-personal-table', this.adminPersonalEl);
             this.buildDataTable(table, adminData.personal, { includeAppColumn: true });
         }
     }
@@ -532,19 +532,9 @@ class CsSupportApp {
         panelEl.classList.toggle('hidden', !shouldShow);
     }
 
-    buildAdminTable(tableId, title, container) {
+    buildAdminTable(tableId, container) {
         const wrapper = document.createElement('section');
-        wrapper.className = 'cs-inbox';
-        const header = document.createElement('div');
-        header.className = 'cs-inbox__header';
-        const heading = document.createElement('div');
-        heading.className = 'cs-inbox__heading';
-        const hTitle = document.createElement('div');
-        hTitle.className = 'cs-inbox__title';
-        hTitle.textContent = title;
-        heading.appendChild(hTitle);
-        header.appendChild(heading);
-        wrapper.appendChild(header);
+        wrapper.className = 'cs-inbox cs-inbox--table-only';
 
         const table = document.createElement('table');
         table.className = 'display cs-chat-table';

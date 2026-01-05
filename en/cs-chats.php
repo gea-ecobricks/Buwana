@@ -126,7 +126,7 @@ if (!$isAdminUser) {
 
             <section id="all-chats" class="dashboard-v2-panel">
                 <div class="panel-pill admin-pill">Admin</div>
-                <header class="page-panel page-panel--welcome" style="margin-bottom:18px;">
+                <header class="page-panel--welcome" style="margin-bottom:18px;">
                     <div class="cs-dashboard__intro" style="text-align:left;">
                         <div class="cs-dashboard__title">All App Support Chats</div>
                         <p class="cs-dashboard__subtitle">Track global queues across every connected app.</p>
@@ -137,7 +137,7 @@ if (!$isAdminUser) {
                     <div id="cs-loading" class="cs-loading">
                         <span>Loading support chats…</span>
                     </div>
-                    <section id="cs-admin-global-section" class="cs-panel hidden page-panel page-panel--inboxes cs-admin-panel" data-cs-admin-panel="global">
+                    <section id="cs-admin-global-section" class="cs-panel hidden cs-admin-panel" data-cs-admin-panel="global">
                         <div class="cs-panel__body">
                             <div id="cs-admin-global" class="cs-panel-block"></div>
                         </div>
@@ -150,7 +150,7 @@ if (!$isAdminUser) {
 
             <section id="your-chats" class="dashboard-v2-panel">
                 <div class="panel-pill latest-pill">Your Chats</div>
-                <header class="page-panel page-panel--welcome" style="margin-bottom:18px;">
+                <header class="page-panel--welcome" style="margin-bottom:18px;">
                     <div class="cs-dashboard__intro" style="text-align:left;">
                         <div class="cs-dashboard__title">Your Assigned Support Chats</div>
                         <p class="cs-dashboard__subtitle">Keep up with the conversations assigned to you.</p>
@@ -158,7 +158,7 @@ if (!$isAdminUser) {
                 </header>
 
                 <div class="page-panel-stack">
-                    <section id="cs-admin-personal-section" class="cs-panel hidden page-panel page-panel--inboxes cs-admin-panel" data-cs-admin-panel="personal">
+                    <section id="cs-admin-personal-section" class="cs-panel hidden cs-admin-panel" data-cs-admin-panel="personal">
                         <div class="cs-panel__body">
                             <div id="cs-admin-personal" class="cs-panel-block"></div>
                         </div>
