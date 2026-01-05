@@ -245,6 +245,13 @@
     overflow-x: auto;
 }
 
+.cs-inbox--table-only {
+    background: transparent;
+    border-radius: 0;
+    padding: 0;
+    margin-bottom: 0;
+}
+
 .cs-admin-panel {
     width: 100%;
 }
