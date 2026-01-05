@@ -14,11 +14,27 @@ $page = 'feedback';
 $lastModified = date("Y-m-d\\TH:i:s\\Z", filemtime(__FILE__));
 
 // Prefer authenticated session context instead of URL parameters.
-$buwana_id = $_SESSION['buwana_id'] ?? null;
-$client_id = $_SESSION['client_id'] ?? ($_GET['app'] ?? ($_GET['client_id'] ?? null));
+$session_buwana_id = $_SESSION['buwana_id'] ?? null;
+$session_client_id = $_SESSION['client_id'] ?? null;
+$requested_buwana_id = isset($_GET['buwana']) ? intval($_GET['buwana']) : null;
+$requested_client_id = $_GET['app'] ?? ($_GET['client_id'] ?? null);
+
+if ($requested_buwana_id && $session_buwana_id && $requested_buwana_id !== $session_buwana_id) {
+    http_response_code(403);
+    die('Mismatched session for requested user.');
+}
+
+if ($requested_client_id && $session_client_id && $requested_client_id !== $session_client_id) {
+    http_response_code(403);
+    die('Mismatched session for requested app.');
+}
+
+$buwana_id = $session_buwana_id;
+$client_id = $session_client_id ?? $requested_client_id;
 
 if (!$buwana_id || !$client_id) {
-    die('Missing buwana ID or client ID.');
+    http_response_code(401);
+    die('Authentication required to submit feedback.');
 }
 
 $sql_connection = "SELECT id FROM user_app_connections_tb WHERE buwana_id = ? AND client_id = ?";
