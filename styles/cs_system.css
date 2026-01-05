@@ -18,6 +18,13 @@
     box-sizing: border-box;
 }
 
+.page-cs-chats .cs-dashboard {
+    max-width: none;
+    margin: 32px 0 64px;
+    padding-left: 0;
+    padding-right: 0;
+}
+
 .hidden {
     display: none !important;
 }
@@ -480,7 +487,8 @@
 
 .cs-chat-table th.col-updated,
 .cs-chat-table td.col-updated {
-    width: 60px;
+    width: 67px;
+    min-width: 67px;
     text-align: left;
 }
 
