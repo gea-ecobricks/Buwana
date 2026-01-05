@@ -124,7 +124,7 @@ if (!$isAdminUser) {
                 </div>
             </section>
 
-            <section class="dashboard-v2-panel">
+            <section id="all-chats" class="dashboard-v2-panel">
                 <div class="panel-pill admin-pill">Admin</div>
                 <header class="page-panel page-panel--welcome" style="margin-bottom:18px;">
                     <div class="cs-dashboard__intro" style="text-align:left;">
@@ -148,8 +148,8 @@ if (!$isAdminUser) {
                 </div>
             </section>
 
-            <section class="dashboard-v2-panel">
-                <div class="panel-pill latest-pill">Live</div>
+            <section id="your-chats" class="dashboard-v2-panel">
+                <div class="panel-pill latest-pill">Your Chats</div>
                 <header class="page-panel page-panel--welcome" style="margin-bottom:18px;">
                     <div class="cs-dashboard__intro" style="text-align:left;">
                         <div class="cs-dashboard__title">Your Assigned Support Chats</div>
