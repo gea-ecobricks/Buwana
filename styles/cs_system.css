@@ -423,7 +423,7 @@
 .cs-chat-table th.col-subject,
 .cs-chat-table th.col-subject,
 .cs-chat-table td.col-subject {
-    min-width: 100px;
+    min-width: 122px;
     max-width: 177px;
     width: auto;
     text-align: left;
