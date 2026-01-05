@@ -388,12 +388,12 @@ class CsSupportApp {
             table.innerHTML = `
                 <thead>
                     <tr>
-                        <th class="col-subject">Subject</th>
-                        <th class="col-updated">Updated</th>
-                        <th>Priority</th>
-                        <th class="col-status">Status</th>
-                        <th class="col-readers">Readers</th>
-                        <th class="col-actions">Actions</th>
+                    <th class="col-subject">Subject</th>
+                    <th class="col-updated">Updated</th>
+                    <th class="col-priority">Priority</th>
+                    <th class="col-status">Status</th>
+                    <th class="col-readers">Readers</th>
+                    <th class="col-actions">Actions</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -542,8 +542,8 @@ class CsSupportApp {
                 <tr>
                     <th class="col-subject">Subject</th>
                     <th class="col-updated">Updated</th>
-                    <th>App</th>
-                    <th>Priority</th>
+                    <th class="col-app">App</th>
+                    <th class="col-priority">Priority</th>
                     <th class="col-status">Status</th>
                     <th class="col-readers">Readers</th>
                     <th class="col-actions">Actions</th>

@@ -7,7 +7,9 @@ if (!file_exists('../buwanaconn_env.php')) {
 require_once '../buwanaconn_env.php';
 
 $lang = basename(dirname($_SERVER['SCRIPT_NAME']));
-$version = '0.22';
+$version = '0.23';
+$headerFile = __DIR__ . '/../header-2026.php';
+$footerFile = __DIR__ . '/../footer-2026.php';
 $page = 'feedback';
 $lastModified = date("Y-m-d\\TH:i:s\\Z", filemtime(__FILE__));
 
@@ -162,11 +164,11 @@ function displayValue($value): string
     </div>
 </div>
 
-</div>  <!-- close main div that was opened in the header-2025-->
+</div>  <!-- close main div that was opened in the header-2026-->
 
 <datalist id="cs-category-list"></datalist>
 
-<?php require_once("../footer-2025.php"); ?>
+<?php require_once $footerFile; ?>
 
 <?php require_once("../scripts/app_modals.php");?>
 

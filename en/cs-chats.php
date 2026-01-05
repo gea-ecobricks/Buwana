@@ -8,9 +8,11 @@ require_once __DIR__ . '/../buwanaconn_env.php';
 
 $langInput = $_GET['lang'] ?? 'en';
 $lang = strtolower(preg_replace('/[^a-z]/i', '', $langInput) ?: 'en');
-$version = '0.3';
+$version = '0.23';
 $page = 'cs-chats';
 $lastModified = date("Y-m-d\\TH:i:s\\Z", filemtime(__FILE__));
+$headerFile = __DIR__ . '/../header-2026.php';
+$footerFile = __DIR__ . '/../footer-2026.php';
 
 $buwana_id = isset($_GET['buwana']) ? intval($_GET['buwana']) : null;
 $client_id = $_GET['app'] ?? ($_GET['client_id'] ?? null);
@@ -89,38 +91,54 @@ if (!$isAdminUser) {
 <?php require_once __DIR__ . '/../includes/feedback-inc.php'; ?>
 
 <div class="page-panel-group">
-
-            <div class="cs-dashboard">
-                <div class="cs-dashboard__header">
-                    <div class="cs-dashboard__intro">
-                        <div id="status-message">Admin Chat Support</div>
-                        <p id="sub-status-message">View and manage support requests from all Buwana users across all Buwana apps</p>
-                    </div>
-                    <div id="cs-active-app-icons" class="cs-dashboard__icons" aria-live="polite" aria-label="Apps with open chats"></div>
-                </div>
-
-                <div id="cs-loading" class="cs-loading">
-                    <span>Loading support chats…</span>
-                </div>
-
-                <section id="cs-admin-section" class="cs-panel hidden">
-                    <div class="cs-panel__body">
-                        <div id="cs-admin-global"></div>
-                        <div id="cs-admin-personal"></div>
-                    </div>
-                    <div class="cs-panel__actions">
-                        <button type="button" class="cs-button cs-button--secondary cs-refresh-btn">🔄 Refresh</button>
-                    </div>
-                </section>
+    <div id="form-submission-box" style="height:fit-content;">
+        <div class="form-container" style="padding-top:120px">
+            <div id="top-page-image"
+                 class="top-page-image"
+                 data-light-img="../svgs/bug-report-day.svg"
+                 data-dark-img="../svgs/bug-report-night.svg">
             </div>
 
+            <div class="cs-dashboard">
+                <div class="page-panels page-panels--split">
+                    <section class="page-panel page-panel--welcome">
+                        <div class="cs-dashboard__header">
+                            <div class="cs-dashboard__intro">
+                                <div id="status-message">Admin Chat Support</div>
+                                <p id="sub-status-message">View and manage support requests from all Buwana users across all Buwana apps</p>
+                            </div>
+                            <div id="cs-active-app-icons" class="cs-dashboard__icons" aria-live="polite" aria-label="Apps with open chats"></div>
+                        </div>
+                    </section>
+
+                    <div class="page-panel-stack">
+                        <div id="cs-loading" class="cs-loading">
+                            <span>Loading support chats…</span>
+                        </div>
+
+                        <section id="cs-admin-section" class="cs-panel hidden page-panel page-panel--inboxes">
+                            <div class="cs-panel__body">
+                                <div class="cs-inbox-grid">
+                                    <div id="cs-admin-global" class="cs-panel-block"></div>
+                                    <div id="cs-admin-personal" class="cs-panel-block"></div>
+                                </div>
+                            </div>
+                            <div class="cs-panel__actions page-panel__actions">
+                                <button type="button" class="cs-button cs-button--secondary cs-refresh-btn">🔄 Refresh</button>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-</div>  <!-- close main div that was opened in the header-2025-->
+</div>  <!-- close main div that was opened in the header-2026-->
 
 <datalist id="cs-category-list"></datalist>
 
-<?php require_once __DIR__ . '/../footer-2025.php'; ?>
+<?php require_once $footerFile; ?>
 
 <?php require_once __DIR__ . '/../scripts/app_modals.php';?>
 
