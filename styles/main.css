@@ -587,7 +587,7 @@ display:none;
 
 .menu-page-item {
   font-family: 'Mulish';
-  font-size: 1.4em;
+  font-size: 1.1em;
   color: var(--text-color);
   border-bottom: 1px solid var(--divider-line);
   cursor: pointer;
