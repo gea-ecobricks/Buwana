@@ -23,7 +23,7 @@ const zh_Translations = {
     "1000-terms-of-use": "使用条款",
     "1000-privacy-policy": "Buwana 隐私政策",
     "1000-about-buwana": "关于 Buwana",
-    "1000-authentication-by": "身份验证由",
+    "1000-authentication-by": "身份验证由Buwana提供",
     "1000-login": "登录",
 
     //2000 FOOTER

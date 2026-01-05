@@ -23,7 +23,7 @@ const es_Translations = {
     "1000-terms-of-use": "Términos de uso",
     "1000-privacy-policy": "Política de privacidad de Buwana",
     "1000-about-buwana": "Acerca de Buwana",
-    "1000-authentication-by": "Autenticación por",
+    "1000-authentication-by": "Autenticación por Buwana",
     "1000-login": "Iniciar sesión",
 
     //2000 FOOTER

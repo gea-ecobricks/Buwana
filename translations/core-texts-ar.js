@@ -23,7 +23,7 @@ const ar_Translations = {
     "1000-terms-of-use": "شروط الاستخدام",
     "1000-privacy-policy": "سياسة الخصوصية لـ Buwana",
     "1000-about-buwana": "حول Buwana",
-    "1000-authentication-by": "المصادقة بواسطة",
+    "1000-authentication-by": "المصادقة بواسطة بوانا",
     "1000-login": "تسجيل الدخول",
 
     //2000 FOOTER
