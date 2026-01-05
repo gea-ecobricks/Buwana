@@ -153,16 +153,26 @@ $sql = "SELECT a.app_display_name,
 
 @font-face {
   font-family: "Mulish";
-  src: url("../fonts/Mulish-Light.ttf");
+  src: url("../fonts/Mulish-Light.ttf") format("truetype");
   font-display: swap;
   font-weight: 300;
+  font-style: normal;
  }
 
  @font-face {
   font-family: "Mulish";
-  src: url("../fonts/Mulish-Regular.ttf");
+  src: url("../fonts/Mulish-Regular.ttf") format("truetype");
+  font-display: swap;
+  font-weight: 400;
+  font-style: normal;
+ }
+
+ @font-face {
+  font-family: "Mulish";
+  src: url("../fonts/Mulish-Medium.ttf") format("truetype");
   font-display: swap;
   font-weight: 500;
+  font-style: normal;
  }
 
  @font-face {
@@ -244,25 +254,10 @@ display: none;
     display: flex;
 }
 
- .buwana-word-mark {
- background: url('../svgs/b-logo.svg') center no-repeat;
-   background-size: contain;
-  height: 30px;
-  width: 200px;
-  margin: auto;
-  margin-top: 5px;
-
-  }
-
-
 @media screen and (max-width: 700px) {
 .the-app-logo {
 max-height: 200px;
 }
-
- .buwana-word-mark {
-  max-height: 22px;
-  }
 }
 
 
@@ -481,10 +476,9 @@ max-height: 200px;
     <span class="status-circle" style="background-color: fuchsia;" title="About the app"></span>
     </div>
 
-<h4 class="app-slogan" style="margin-top:30px"><?= htmlspecialchars($app_info['app_slogan']) ?></h4>
+<div class="app-slogan" style="margin-top:30px; font-size:1.1em; font-family: 'Mulish', sans-serif;"><?= htmlspecialchars($app_info['app_slogan']) ?></div>
 
-<p style="margin:auto;margin-bottom: 5px;font-size: smaller; text-align: center;" data-lang-id="1000-authentication-by" >Authentication by</p>
-<div class="buwana-word-mark" alt="Buwana Logo" title="Authentication by Buwana" onclick="navigateTo('index.php')" style="cursor:pointer;"></div>
+<div style="margin:auto;margin-bottom: 5px;font-size: smaller; text-align: center; font-family: 'Arvo', serif;" data-lang-id="1000-authentication-by">Authentication by Buwana</div>
 
 <p class="app-slogan-links" style="margin:0 auto 12px; text-align:center; font-family: 'Mulish', sans-serif; font-size:0.85rem;">
     <a href="javascript:void(0);" onclick="openAboutBuwana(); return false;">Buwana</a>

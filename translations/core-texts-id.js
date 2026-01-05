@@ -23,7 +23,7 @@ const id_Translations = {
     "1000-terms-of-use": "Terms",
     "1000-privacy-policy": "Privasi Buwana",
     "1000-about-buwana": "Tentang Buwana",
-    "1000-authentication-by": "Otentikasi oleh",
+    "1000-authentication-by": "Otentikasi oleh Buwana",
     "1000-login": "Masuk",
 
     //2000 FOOTER

@@ -4,9 +4,11 @@ class CsSupportApp {
         this.apiBase = config.apiBase.replace(/\/$/, '');
         this.appInboxesEl = document.getElementById('cs-app-inboxes');
         this.activeAppIconsEl = document.getElementById('cs-active-app-icons');
-        this.adminSectionEl = document.getElementById('cs-admin-section');
+        this.adminGlobalSectionEl = document.getElementById('cs-admin-global-section');
+        this.adminPersonalSectionEl = document.getElementById('cs-admin-personal-section');
         this.adminPersonalEl = document.getElementById('cs-admin-personal');
         this.adminGlobalEl = document.getElementById('cs-admin-global');
+        this.adminSections = [this.adminGlobalSectionEl, this.adminPersonalSectionEl].filter(Boolean);
         this.newChatButton = document.getElementById('cs-new-chat-btn');
         this.refreshButtons = Array.from(document.querySelectorAll('.cs-refresh-btn'));
         const legacyRefresh = document.getElementById('cs-refresh-btn');
@@ -134,9 +136,9 @@ class CsSupportApp {
             this.appInboxesEl.addEventListener('click', (event) => this.handleTableClick(event));
         }
 
-        if (this.adminSectionEl) {
-            this.adminSectionEl.addEventListener('click', (event) => this.handleTableClick(event));
-        }
+        this.adminSections.forEach((section) => {
+            section.addEventListener('click', (event) => this.handleTableClick(event));
+        });
 
     }
 
@@ -296,18 +298,7 @@ class CsSupportApp {
             this.renderAppInboxes(filteredInboxes);
             this.renderActiveAppIcons(filteredInboxes, data.admin || {});
 
-            if (this.adminSectionEl && this.config.isAdmin && data.admin) {
-                const hasAdminData = (Array.isArray(data.admin.global) && data.admin.global.length) ||
-                    (Array.isArray(data.admin.personal) && data.admin.personal.length);
-                if (hasAdminData) {
-                    this.renderAdminInboxes(data.admin);
-                    this.adminSectionEl.classList.remove('hidden');
-                } else {
-                    this.adminSectionEl.classList.add('hidden');
-                }
-            } else if (this.adminSectionEl) {
-                this.adminSectionEl.classList.add('hidden');
-            }
+            this.handleAdminPanels(data.admin);
 
             this.updateNewChatOptions();
         } catch (error) {
@@ -487,10 +478,6 @@ class CsSupportApp {
     }
 
     renderAdminInboxes(adminData) {
-        if (!this.adminSectionEl) {
-            return;
-        }
-
         if (this.adminPersonalEl) {
             this.adminPersonalEl.innerHTML = '';
         }
@@ -518,6 +505,31 @@ class CsSupportApp {
             const table = this.buildAdminTable('cs-admin-personal-table', 'Your Assigned Support Chats', this.adminPersonalEl);
             this.buildDataTable(table, adminData.personal, { includeAppColumn: true });
         }
+    }
+
+    handleAdminPanels(adminData = {}) {
+        const hasGlobal = Array.isArray(adminData.global) && adminData.global.length;
+        const hasPersonal = Array.isArray(adminData.personal) && adminData.personal.length;
+
+        if (!this.config.isAdmin) {
+            this.toggleAdminPanel(this.adminGlobalSectionEl, false);
+            this.toggleAdminPanel(this.adminPersonalSectionEl, false);
+            return;
+        }
+
+        if (hasGlobal || hasPersonal) {
+            this.renderAdminInboxes(adminData);
+        }
+
+        this.toggleAdminPanel(this.adminGlobalSectionEl, hasGlobal);
+        this.toggleAdminPanel(this.adminPersonalSectionEl, hasPersonal);
+    }
+
+    toggleAdminPanel(panelEl, shouldShow) {
+        if (!panelEl) {
+            return;
+        }
+        panelEl.classList.toggle('hidden', !shouldShow);
     }
 
     buildAdminTable(tableId, title, container) {
