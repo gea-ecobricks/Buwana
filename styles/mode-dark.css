@@ -66,6 +66,25 @@
 
     --form-field-background: rgba(255, 254, 254, 0.08);
 
+
+    --dashboard-page-background: linear-gradient(to top, #21232f 0%, #21232f calc(100% - 500px), #181921 100%);
+
+    --dashboard-panel-background: #252b3a; /*#1f2533*/
+    --dashboard-panel-border: #475572;;
+    --dashboard-panel-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+
+    --pill-default-bg: #2b3141;
+    --pill-default-text: #dbe1f8;
+    --pill-trainer-bg: #3c2f21;
+    --pill-trainer-text: #f5c48b;
+    --pill-validator-bg: #3b2a3c;
+    --pill-validator-text: #f0a6d8;
+    --pill-admin-bg: #3a2626;
+    --pill-admin-text: #f6b1b1;
+    --pill-latest-bg: #262d3d;
+    --pill-latest-text: #e4e8f6;
+
+
 /* BOOKNOTES */
 
 --slider: #18181a;
