@@ -17,6 +17,18 @@
     grid-template-columns: minmax(260px, 1fr) minmax(520px, 2fr);
 }
 
+.page-cs-chats .page-panels {
+    width: 100%;
+    max-width: none;
+    margin: 32px 0 64px;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.page-cs-chats .page-panels--split {
+    grid-template-columns: 1fr;
+}
+
 .page-panel {
     background: var(--lighter);
     border: 1px solid var(--outline);

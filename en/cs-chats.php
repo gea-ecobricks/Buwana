@@ -89,6 +89,9 @@ if (!$isAdminUser) {
 <head>
 <meta charset="UTF-8">
 <?php require_once __DIR__ . '/../includes/feedback-inc.php'; ?>
+<script>
+    document.body.classList.add('page-cs-chats');
+</script>
 
 <div class="page-panel-group">
 
