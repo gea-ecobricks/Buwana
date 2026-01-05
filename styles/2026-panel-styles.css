@@ -36,6 +36,10 @@ body {
     box-sizing: border-box;
 }
 
+.page-cs-chats #dashboard-v2-grid {
+    grid-template-columns: 1fr;
+}
+
 .dashboard-column {
     display: flex;
     flex-direction: column;

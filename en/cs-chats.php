@@ -125,26 +125,18 @@ if (!$isAdminUser) {
             </section>
 
             <section class="dashboard-v2-panel">
-                <div class="page-panel-stack">
-                    <div id="cs-loading" class="cs-loading">
-                        <span>Loading support chats…</span>
-                    </div>
-                    <div id="cs-app-inboxes" class="cs-panel-stack"></div>
-                </div>
-            </section>
-        </div>
-
-        <div class="dashboard-column">
-            <section class="dashboard-v2-panel">
                 <div class="panel-pill latest-pill">Live</div>
                 <header class="page-panel page-panel--welcome" style="margin-bottom:18px;">
                     <div class="cs-dashboard__intro" style="text-align:left;">
-                        <div class="cs-dashboard__title">Team inboxes</div>
-                        <p class="cs-dashboard__subtitle">Track global and personal queues across apps.</p>
+                        <div class="cs-dashboard__title">All App Support Chats</div>
+                        <p class="cs-dashboard__subtitle">Track global queues across every connected app.</p>
                     </div>
                 </header>
 
                 <div class="page-panel-stack">
+                    <div id="cs-loading" class="cs-loading">
+                        <span>Loading support chats…</span>
+                    </div>
                     <section id="cs-admin-global-section" class="cs-panel hidden page-panel page-panel--inboxes cs-admin-panel" data-cs-admin-panel="global">
                         <div class="cs-panel__body">
                             <div id="cs-admin-global" class="cs-panel-block"></div>
@@ -153,7 +145,19 @@ if (!$isAdminUser) {
                             <button type="button" class="cs-button cs-button--secondary cs-refresh-btn">🔄 Refresh</button>
                         </div>
                     </section>
+                </div>
+            </section>
 
+            <section class="dashboard-v2-panel">
+                <div class="panel-pill latest-pill">Live</div>
+                <header class="page-panel page-panel--welcome" style="margin-bottom:18px;">
+                    <div class="cs-dashboard__intro" style="text-align:left;">
+                        <div class="cs-dashboard__title">Your Assigned Support Chats</div>
+                        <p class="cs-dashboard__subtitle">Keep up with the conversations assigned to you.</p>
+                    </div>
+                </header>
+
+                <div class="page-panel-stack">
                     <section id="cs-admin-personal-section" class="cs-panel hidden page-panel page-panel--inboxes cs-admin-panel" data-cs-admin-panel="personal">
                         <div class="cs-panel__body">
                             <div id="cs-admin-personal" class="cs-panel-block"></div>
