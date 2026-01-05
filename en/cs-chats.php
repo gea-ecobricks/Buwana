@@ -8,7 +8,7 @@ require_once __DIR__ . '/../buwanaconn_env.php';
 
 $langInput = $_GET['lang'] ?? 'en';
 $lang = strtolower(preg_replace('/[^a-z]/i', '', $langInput) ?: 'en');
-$version = '0.23';
+$version = '0.33';
 $page = 'cs-chats';
 $lastModified = date("Y-m-d\\TH:i:s\\Z", filemtime(__FILE__));
 $headerFile = __DIR__ . '/../header-2026.php';
@@ -91,13 +91,7 @@ if (!$isAdminUser) {
 <?php require_once __DIR__ . '/../includes/feedback-inc.php'; ?>
 
 <div class="page-panel-group">
-    <div id="form-submission-box" style="height:fit-content;">
-        <div class="form-container" style="padding-top:120px">
-            <div id="top-page-image"
-                 class="top-page-image"
-                 data-light-img="../svgs/bug-report-day.svg"
-                 data-dark-img="../svgs/bug-report-night.svg">
-            </div>
+
 
             <div class="cs-dashboard">
                 <div class="page-panels page-panels--split">
@@ -130,8 +124,7 @@ if (!$isAdminUser) {
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
+
 </div>
 
 </div>  <!-- close main div that was opened in the header-2026-->
