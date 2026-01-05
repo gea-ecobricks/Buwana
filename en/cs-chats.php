@@ -110,10 +110,10 @@ if (!$isAdminUser) {
     <div id="dashboard-v2-grid">
         <div class="dashboard-column">
             <section class="dashboard-v2-panel page-panel page-panel--welcome">
-                <div class="panel-pill admin-pill">Admin</div>
+
                 <div class="cs-dashboard__header">
                     <div class="cs-dashboard__intro" style="text-align:left;">
-                        <div id="status-message">Admin Chat Support</div>
+                        <div id="status-message"><h1>Admin Chat Support</h1></div>
                         <p id="sub-status-message">View and manage support requests from all Buwana users across all Buwana apps</p>
                     </div>
                     <div class="cs-dashboard__actions cs-dashboard__actions--right">
@@ -125,7 +125,7 @@ if (!$isAdminUser) {
             </section>
 
             <section class="dashboard-v2-panel">
-                <div class="panel-pill latest-pill">Live</div>
+                <div class="panel-pill admin-pill">Admin</div>
                 <header class="page-panel page-panel--welcome" style="margin-bottom:18px;">
                     <div class="cs-dashboard__intro" style="text-align:left;">
                         <div class="cs-dashboard__title">All App Support Chats</div>
