@@ -9,18 +9,14 @@ require_once '../fetch_app_info.php';
 // Page setup
 $lang = basename(dirname($_SERVER['SCRIPT_NAME']));
 $page = 'app-connect';
-$version = '0.7772';
+$version = '0.7773';
+
 $lastModified = date("Y-m-d\TH:i:s\Z", filemtime(__FILE__));
 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 
-// Page setup
-$lang = basename(dirname($_SERVER['SCRIPT_NAME']));
-$page = 'app-connect';
-$version = '0.7772';
-$lastModified = date("Y-m-d\TH:i:s\Z", filemtime(__FILE__));
 
 // --- Validate inputs
 $buwana_id = $_GET['id'] ?? null;
