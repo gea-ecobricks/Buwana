@@ -6,6 +6,10 @@ session_start();
 require_once '../buwanaconn_env.php';
 require_once '../fetch_app_info.php';
 
+$log_file = __DIR__ . '/../logs/signup-3-email.log';
+ini_set('log_errors', 1);
+ini_set('error_log', $log_file);
+
 function build_login_url($base, array $params) {
     $delimiter = (strpos($base, '?') !== false) ? '&' : '?';
     return $base . $delimiter . http_build_query($params);
@@ -60,6 +64,7 @@ $credential_type = '';
 $generated_code = '';
 $code_sent_flag = false;
 $code_sent = false; // Track whether an email has been sent in this request
+$email_delivery_failed = false;
 
 // 🔐 Generate activation code
 function generateCode() {
@@ -87,6 +92,7 @@ function sendVerificationCode($first_name, $credential_key, $code, $lang) {
                 'text' => $text_body
             ]
         ]);
+        error_log("Mailgun response status: " . $response->getStatusCode() . " for {$credential_key}");
         return $response->getStatusCode() === 200;
     } catch (RequestException $e) {
         error_log("Mailgun error: " . $e->getMessage());
@@ -117,6 +123,7 @@ function backUpSMTPsender($first_name, $credential_key, $code) {
         $mail->AltBody = "Hello $first_name! Your activation code is: $code. Enter this code on the verification page.";
 
         $mail->send();
+        error_log("SMTP fallback sent successfully to {$credential_key}");
         return true;
     } catch (\Throwable $e) {
         error_log("PHPMailer error: " . $e->getMessage());
@@ -149,6 +156,23 @@ $update_stmt->bind_param("si", $generated_code, $buwana_id);
 $update_stmt->execute();
 $update_stmt->close();
 
+// ✅ Allow skipping verification if delivery fails
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['skip_verification'])) {
+    $note_message = " Step 3: Email verification skipped (delivery failed) on " . date('Y-m-d H:i:s') . ".";
+    $update_note_sql = "UPDATE users_tb SET notes = CONCAT(IFNULL(notes, ''), ?) WHERE buwana_id = ?";
+    $update_note_stmt = $buwana_conn->prepare($update_note_sql);
+    if ($update_note_stmt) {
+        $update_note_stmt->bind_param("si", $note_message, $buwana_id);
+        $update_note_stmt->execute();
+        $update_note_stmt->close();
+    } else {
+        error_log("DB error updating users_tb.notes for skip: " . $buwana_conn->error);
+    }
+
+    header("Location: signup-4.php?id={$buwana_id}&email_unverified=1");
+    exit();
+}
+
 // 📩 PART 6: Send verification code
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['send_email']) || isset($_POST['resend_email']))) {
 
@@ -162,6 +186,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['send_email']) || iss
         if ($code_sent) {
             $code_sent_flag = true;
         } else {
+            $email_delivery_failed = true;
             echo '<script>alert("Verification email failed to send using both methods. Please try again later or contact support.");</script>';
         }
     } elseif ($credential_type === 'phone') {
@@ -258,6 +283,17 @@ https://github.com/gea-ecobricks/buwana/-->
 </div>
 
 </div>
+
+<?php if ($email_delivery_failed): ?>
+    <div style="text-align:center;margin-top:20px;">
+        <p style="color:#b45309;">⚠️ We couldn't deliver your verification email. You can continue signup, but your email will remain unverified.</p>
+        <form method="post" action="">
+            <button type="submit" name="skip_verification" class="kick-ass-submit" style="background:#f59e0b;">
+                Continue without verification ➡
+            </button>
+        </form>
+    </div>
+<?php endif; ?>
         </div>
         <?php if (!empty($buwana_id)) : ?>
         <div id="browser-back-link" style="font-size: medium; text-align: center; margin: auto; align-self: center; padding-top: 40px; padding-bottom: 40px; margin-top: 0px; ">
