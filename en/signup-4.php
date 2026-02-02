@@ -41,6 +41,7 @@ $location_watershed = '';
 $latitude = '';
 $longitude = '';
 $emoji_icon = null; // Added variable
+$email_confirm_dt = null;
 
 $sql = "SELECT first_name, location_full, location_watershed, location_lat, location_long, earthling_emoji FROM users_tb WHERE buwana_id = ?";
 $stmt = $buwana_conn->prepare($sql);
@@ -50,6 +51,16 @@ if ($stmt) {
     $stmt->bind_result($first_name, $location_full, $location_watershed, $latitude, $longitude, $earthling_emoji);
     $stmt->fetch();
     $stmt->close();
+}
+
+// 🧠 PART 1b: Fetch email confirmation status
+$stmt_email_confirm = $buwana_conn->prepare("SELECT email_confirm_dt FROM credentials_tb WHERE buwana_id = ?");
+if ($stmt_email_confirm) {
+    $stmt_email_confirm->bind_param('i', $buwana_id);
+    $stmt_email_confirm->execute();
+    $stmt_email_confirm->bind_result($email_confirm_dt);
+    $stmt_email_confirm->fetch();
+    $stmt_email_confirm->close();
 }
 
 // ✅ Check if signup is already completed
@@ -152,7 +163,11 @@ https://github.com/gea-ecobricks/buwana/-->
             </div>
 
             <div style="text-align:center;width:100%;margin:auto;">
-                <p style="color:green;" data-lang-id="001-email-confirmed">✔ Your email is confirmed!</p>
+                <?php if (!empty($email_confirm_dt) && empty($_GET['email_unverified'])): ?>
+                    <p style="color:green;" data-lang-id="001-email-confirmed">✔ Your email is confirmed!</p>
+                <?php else: ?>
+                    <p style="color:#b45309;">⚠️ Email not confirmed yet. You can finish signup, but please verify later.</p>
+                <?php endif; ?>
                 <div id="status-message" style="font-family: 'Arvo';margin-top:15px;"><span data-lang-id="002-now"> Now</span> <?php echo htmlspecialchars($first_name); ?><span data-lang-id="003-now-localize-you"> let's get you localized.</div>
                 <div id="sub-status-message" data-lang-id="004-lets-determine-bioregion" style="font-size:1.3em;padding-top:10px;padding-bottom:10px;">
                     Let's determine your bioregion and local community.
