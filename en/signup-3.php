@@ -17,6 +17,10 @@ use GuzzleHttp\Exception\RequestException;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
+// Toggle primary email sender (Mailgun) on/off
+define('USE_PRIMARY_EMAIL_SENDER', false);
+
+
 // Page setup
 $lang = basename(dirname($_SERVER['SCRIPT_NAME']));
 $page = 'signup-3';
@@ -153,8 +157,18 @@ $update_stmt->close();
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['send_email']) || isset($_POST['resend_email']))) {
 
     if ($credential_type === 'e-mail' || $credential_type === 'email') {
-        $code_sent = sendVerificationCode($first_name, $credential_key, $generated_code, $lang);
 
+        $code_sent = false;
+
+        // Primary method (Mailgun) — temporarily disabled
+        if (defined('USE_PRIMARY_EMAIL_SENDER') && USE_PRIMARY_EMAIL_SENDER === true) {
+            $code_sent = sendVerificationCode($first_name, $credential_key, $generated_code, $lang);
+        } else {
+            // Optional: log so you remember what's happening
+            error_log("Primary email sender disabled; using backup SMTP sender.");
+        }
+
+        // Backup method (SMTP)
         if (!$code_sent) {
             $code_sent = backUpSMTPsender($first_name, $credential_key, $generated_code);
         }
@@ -162,14 +176,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['send_email']) || iss
         if ($code_sent) {
             $code_sent_flag = true;
         } else {
-            echo '<script>alert("Verification email failed to send using both methods. Please try again later or contact support.");</script>';
+            echo '<script>alert("Verification email failed to send. Please try again later or contact support.");</script>';
         }
+
     } elseif ($credential_type === 'phone') {
         echo '<script>alert("📱 SMS verification is under construction. Please use an email address for now.");</script>';
     } else {
         echo '<script>alert("Unsupported credential type.");</script>';
     }
 }
+
 
 
 // Echo the HTML structure
