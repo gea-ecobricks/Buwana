@@ -99,37 +99,69 @@ function sendVerificationCode($first_name, $credential_key, $code, $lang, $timeo
         return false;
     }
 }
-
-// 📭 SMTP Fallback
+// 📭 SMTP Fallback (mail.ecobricks.org)
 function backUpSMTPsender($first_name, $credential_key, $code) {
+
     $mail = new PHPMailer(true);
 
     try {
-        $mail->isSMTP();
-        $mail->Host = getenv('SMTP_HOST');
-        $mail->SMTPAuth = true;
-        $mail->Username = getenv('SMTP_USERNAME');
-        $mail->Password = getenv('SMTP_PASSWORD');
-        $mail->Port = getenv('SMTP_PORT');
-        $mail->SMTPSecure = false;
-        $mail->SMTPAutoTLS = false;
+        $host = getenv('SMTP_HOST');
+        $port = (int)getenv('SMTP_PORT');
+        $user = getenv('SMTP_USERNAME');
+        $pass = getenv('SMTP_PASSWORD');
+        $secure = strtolower((string)getenv('SMTP_SECURE'));
 
-        $mail->setFrom('buwana@ecobricks.org', 'Buwana Backup Mailer');
+        error_log("SMTP init | host={$host} | port={$port} | user={$user} | secure={$secure}");
+
+        $mail->isSMTP();
+        $mail->Host = $host;
+        $mail->SMTPAuth = true;
+        $mail->Username = $user;
+        $mail->Password = $pass;
+        $mail->Port = $port;
+
+        // Proper TLS handling
+        if ($secure === 'ssl') {
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;   // port 465
+        } elseif ($secure === 'tls') {
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS; // port 587
+        } else {
+            $mail->SMTPSecure = false;
+        }
+
+        $mail->SMTPAutoTLS = true;
+
+        // Debug to your logfile
+        $mail->SMTPDebug = 2;
+        $mail->Debugoutput = function($str) {
+            error_log("SMTP DEBUG: $str");
+        };
+
+        $mail->setFrom($user, 'Buwana Backup Mailer');
         $mail->addAddress($credential_key, $first_name);
 
         $mail->isHTML(true);
         $mail->Subject = 'Your Buwana Verification Code';
-        $mail->Body = "Hello $first_name!<br><br>Your activation code is: <b>$code</b><br><br>Enter this code on the verification page.<br><br>The Buwana Team";
-        $mail->AltBody = "Hello $first_name! Your activation code is: $code. Enter this code on the verification page.";
+        $mail->Body =
+            "Hello $first_name!<br><br>
+             Your activation code is: <b>$code</b><br><br>
+             Enter this code on the verification page.<br><br>
+             The Buwana Team";
+
+        $mail->AltBody =
+            "Hello $first_name! Your activation code is: $code.";
 
         $mail->send();
-        error_log("SMTP fallback sent successfully to {$credential_key}");
+
+        error_log("SMTP SUCCESS | to={$credential_key}");
         return true;
+
     } catch (\Throwable $e) {
-        error_log("PHPMailer error: " . $e->getMessage());
+        error_log("SMTP FAILURE | " . $e->getMessage());
         return false;
     }
 }
+
 
 // 🧠 PART 4: Get user info from Buwana DB
 $sql = "SELECT u.first_name, c.credential_key, c.credential_type
