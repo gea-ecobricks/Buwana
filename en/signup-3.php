@@ -118,8 +118,7 @@ function backUpSMTPsender($first_name, $credential_key, $code) {
         $mail->SMTPAuth = true;
         $mail->Username = $user;
         $pass = (string) getenv('SMTP_PASSWORD');
-        error_log("SMTP password sanity | len=" . strlen($pass) . " | has_leading_space=" . (strlen($pass) && $pass[0] === ' ' ? 'yes' : 'no') . " | has_trailing_space=" . (strlen($pass) && substr($pass, -1) === ' ' ? 'yes' : 'no'));
-
+        error_log("SMTP passssword sanity | len=" . strlen($pass) . " | has_leading_space=" . (strlen($pass) && $pass[0] === ' ' ? 'yes' : 'no') . " | has_trailing_space=" . (strlen($pass) && substr($pass, -1) === ' ' ? 'yes' : 'no'));
         $mail->Password = $pass;
         $mail->Port = $port;
 
