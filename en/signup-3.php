@@ -72,7 +72,7 @@ function generateCode() {
 }
 
 // 📬 Mailgun Sender
-function sendVerificationCode($first_name, $email, $code, $lang, $timeout = 1)
+function sendVerificationCode($first_name, $credential_key, $code, $lang, $timeout = 1) {
     $client = new Client(['base_uri' => 'https://api.eu.mailgun.net/v3/']);
     $mailgunApiKey = getenv('MAILGUN_API_KEY');
     $mailgunDomain = 'mail.gobrik.com';
@@ -172,101 +172,74 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['skip_verification']))
     header("Location: signup-4.php?id={$buwana_id}&email_unverified=1");
     exit();
 }
-// 📩 PART 6: Send verification code
+// ============================================================
+// 📩 PART 6: Send verification code (Mailgun primary + SMTP fallback)
+//   - Uses USE_PRIMARY_EMAIL_SENDER flag
+//   - Mailgun hard timeout: 1s (connect + total)
+//   - Detailed logging at each step
+// ============================================================
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['send_email']) || isset($_POST['resend_email']))) {
+
+    error_log("PART 6 start | POST detected | action=" . (isset($_POST['resend_email']) ? 'resend_email' : 'send_email'));
+    error_log("Credential check | type={$credential_type} | key={$credential_key} | lang={$lang} | buwana_id={$buwana_id}");
 
     if ($credential_type === 'e-mail' || $credential_type === 'email') {
 
-        email_log("=== Email send sequence started for $credential_key ===");
-
         $code_sent = false;
 
-        // -----------------------------------
-        // PRIMARY METHOD (Mailgun)
-        // -----------------------------------
+        // ----------------------------
+        // A) Primary sender (Mailgun)
+        // ----------------------------
         if (defined('USE_PRIMARY_EMAIL_SENDER') && USE_PRIMARY_EMAIL_SENDER === true) {
+            error_log("Primary sender enabled | attempting Mailgun | timeout=1s | to={$credential_key}");
 
-            email_log("Attempting primary Mailgun sender");
+            $t0 = microtime(true);
 
-            $start = microtime(true);
+            // pass timeout explicitly (your function signature already supports $timeout)
+            $code_sent = sendVerificationCode($first_name, $credential_key, $generated_code, $lang, 1);
 
-            try {
-                set_time_limit(2);
-
-                $code_sent = sendVerificationCode(
-                    $first_name,
-                    $credential_key,
-                    $generated_code,
-                    $lang,
-                    1
-                );
-
-            } catch (\Throwable $e) {
-                email_log("Mailgun exception: " . $e->getMessage());
-                $code_sent = false;
-            }
-
-            $elapsed = microtime(true) - $start;
-
-            if ($elapsed > 1.0) {
-                email_log("Mailgun exceeded 1s timeout ({$elapsed}s)");
-                $code_sent = false;
-            }
-
-            if ($code_sent) {
-                email_log("Mailgun SUCCESS");
-            } else {
-                email_log("Mailgun FAILED");
-            }
+            $elapsed_ms = (int) round((microtime(true) - $t0) * 1000);
+            error_log("Mailgun attempt complete | success=" . ($code_sent ? 'true' : 'false') . " | elapsed_ms={$elapsed_ms} | to={$credential_key}");
 
         } else {
-            email_log("Skipping primary Mailgun sender (disabled)");
+            error_log("Primary sender disabled by flag | skipping Mailgun | to={$credential_key}");
         }
 
-        // -----------------------------------
-        // BACKUP METHOD (SMTP)
-        // -----------------------------------
+        // ----------------------------
+        // B) Fallback sender (SMTP)
+        // ----------------------------
         if (!$code_sent) {
+            error_log("Fallback triggered | attempting SMTP | to={$credential_key}");
 
-            email_log("Attempting SMTP backup sender");
+            $t1 = microtime(true);
+            $code_sent = backUpSMTPsender($first_name, $credential_key, $generated_code);
+            $elapsed_ms = (int) round((microtime(true) - $t1) * 1000);
 
-            $code_sent = backUpSMTPsender(
-                $first_name,
-                $credential_key,
-                $generated_code
-            );
-
-            if ($code_sent) {
-                email_log("SMTP SUCCESS");
-            } else {
-                email_log("SMTP FAILED");
-            }
+            error_log("SMTP attempt complete | success=" . ($code_sent ? 'true' : 'false') . " | elapsed_ms={$elapsed_ms} | to={$credential_key}");
+        } else {
+            error_log("Fallback not needed | Mailgun succeeded | to={$credential_key}");
         }
 
-        // -----------------------------------
-        // RESULT
-        // -----------------------------------
+        // ----------------------------
+        // C) Final state
+        // ----------------------------
         if ($code_sent) {
             $code_sent_flag = true;
-            email_log("FINAL RESULT: SUCCESS");
+            error_log("PART 6 result | code_sent_flag=true | to={$credential_key}");
         } else {
             $email_delivery_failed = true;
-            email_log("FINAL RESULT: FAILURE");
+            error_log("PART 6 result | delivery FAILED (Mailgun+SMTP) | to={$credential_key}");
             echo '<script>alert("Verification email failed to send. Please try again later or contact support.");</script>';
         }
 
-        email_log("=== Email send sequence ended ===");
-
     } elseif ($credential_type === 'phone') {
-
-        email_log("Phone credential attempted — not supported");
+        error_log("PART 6 blocked | phone signup attempted | buwana_id={$buwana_id}");
         echo '<script>alert("📱 SMS verification is under construction. Please use an email address for now.");</script>';
 
     } else {
-
-        email_log("Unsupported credential type: $credential_type");
+        error_log("PART 6 blocked | unsupported credential_type={$credential_type} | buwana_id={$buwana_id}");
         echo '<script>alert("Unsupported credential type.");</script>';
-
     }
 }
 
