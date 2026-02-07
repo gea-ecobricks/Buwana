@@ -72,7 +72,7 @@ function generateCode() {
 }
 
 // 📬 Mailgun Sender
-function sendVerificationCode($first_name, $credential_key, $code, $lang) {
+function sendVerificationCode($first_name, $email, $code, $lang, $timeout = 1)
     $client = new Client(['base_uri' => 'https://api.eu.mailgun.net/v3/']);
     $mailgunApiKey = getenv('MAILGUN_API_KEY');
     $mailgunDomain = 'mail.gobrik.com';
@@ -177,17 +177,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['send_email']) || iss
 
     if ($credential_type === 'e-mail' || $credential_type === 'email') {
 
+        email_log("=== Email send sequence started for $credential_key ===");
+
         $code_sent = false;
 
         // -----------------------------------
-        // PRIMARY METHOD (Mailgun) — optional
+        // PRIMARY METHOD (Mailgun)
         // -----------------------------------
         if (defined('USE_PRIMARY_EMAIL_SENDER') && USE_PRIMARY_EMAIL_SENDER === true) {
+
+            email_log("Attempting primary Mailgun sender");
 
             $start = microtime(true);
 
             try {
-                // Enforce 1s max wall-time
                 set_time_limit(2);
 
                 $code_sent = sendVerificationCode(
@@ -195,34 +198,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['send_email']) || iss
                     $credential_key,
                     $generated_code,
                     $lang,
-                    1 // timeout seconds
+                    1
                 );
 
             } catch (\Throwable $e) {
-                error_log("Primary email sender exception: " . $e->getMessage());
+                email_log("Mailgun exception: " . $e->getMessage());
                 $code_sent = false;
             }
 
             $elapsed = microtime(true) - $start;
 
-            // Hard cutoff safety
             if ($elapsed > 1.0) {
-                error_log("Primary email sender exceeded 1s timeout");
+                email_log("Mailgun exceeded 1s timeout ({$elapsed}s)");
                 $code_sent = false;
             }
+
+            if ($code_sent) {
+                email_log("Mailgun SUCCESS");
+            } else {
+                email_log("Mailgun FAILED");
+            }
+
         } else {
-            error_log("Primary email sender disabled — using SMTP fallback");
+            email_log("Skipping primary Mailgun sender (disabled)");
         }
 
         // -----------------------------------
         // BACKUP METHOD (SMTP)
         // -----------------------------------
         if (!$code_sent) {
+
+            email_log("Attempting SMTP backup sender");
+
             $code_sent = backUpSMTPsender(
                 $first_name,
                 $credential_key,
                 $generated_code
             );
+
+            if ($code_sent) {
+                email_log("SMTP SUCCESS");
+            } else {
+                email_log("SMTP FAILED");
+            }
         }
 
         // -----------------------------------
@@ -230,21 +248,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['send_email']) || iss
         // -----------------------------------
         if ($code_sent) {
             $code_sent_flag = true;
+            email_log("FINAL RESULT: SUCCESS");
         } else {
             $email_delivery_failed = true;
+            email_log("FINAL RESULT: FAILURE");
             echo '<script>alert("Verification email failed to send. Please try again later or contact support.");</script>';
         }
 
+        email_log("=== Email send sequence ended ===");
+
     } elseif ($credential_type === 'phone') {
 
+        email_log("Phone credential attempted — not supported");
         echo '<script>alert("📱 SMS verification is under construction. Please use an email address for now.");</script>';
 
     } else {
 
+        email_log("Unsupported credential type: $credential_type");
         echo '<script>alert("Unsupported credential type.");</script>';
 
     }
 }
+
 
 
 
