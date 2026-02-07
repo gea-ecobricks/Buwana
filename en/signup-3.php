@@ -172,29 +172,80 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['skip_verification']))
     header("Location: signup-4.php?id={$buwana_id}&email_unverified=1");
     exit();
 }
-
 // 📩 PART 6: Send verification code
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['send_email']) || isset($_POST['resend_email']))) {
 
     if ($credential_type === 'e-mail' || $credential_type === 'email') {
-        $code_sent = sendVerificationCode($first_name, $credential_key, $generated_code, $lang);
 
-        if (!$code_sent) {
-            $code_sent = backUpSMTPsender($first_name, $credential_key, $generated_code);
+        $code_sent = false;
+
+        // -----------------------------------
+        // PRIMARY METHOD (Mailgun) — optional
+        // -----------------------------------
+        if (defined('USE_PRIMARY_EMAIL_SENDER') && USE_PRIMARY_EMAIL_SENDER === true) {
+
+            $start = microtime(true);
+
+            try {
+                // Enforce 1s max wall-time
+                set_time_limit(2);
+
+                $code_sent = sendVerificationCode(
+                    $first_name,
+                    $credential_key,
+                    $generated_code,
+                    $lang,
+                    1 // timeout seconds
+                );
+
+            } catch (\Throwable $e) {
+                error_log("Primary email sender exception: " . $e->getMessage());
+                $code_sent = false;
+            }
+
+            $elapsed = microtime(true) - $start;
+
+            // Hard cutoff safety
+            if ($elapsed > 1.0) {
+                error_log("Primary email sender exceeded 1s timeout");
+                $code_sent = false;
+            }
+        } else {
+            error_log("Primary email sender disabled — using SMTP fallback");
         }
 
+        // -----------------------------------
+        // BACKUP METHOD (SMTP)
+        // -----------------------------------
+        if (!$code_sent) {
+            $code_sent = backUpSMTPsender(
+                $first_name,
+                $credential_key,
+                $generated_code
+            );
+        }
+
+        // -----------------------------------
+        // RESULT
+        // -----------------------------------
         if ($code_sent) {
             $code_sent_flag = true;
         } else {
             $email_delivery_failed = true;
-            echo '<script>alert("Verification email failed to send using both methods. Please try again later or contact support.");</script>';
+            echo '<script>alert("Verification email failed to send. Please try again later or contact support.");</script>';
         }
+
     } elseif ($credential_type === 'phone') {
+
         echo '<script>alert("📱 SMS verification is under construction. Please use an email address for now.");</script>';
+
     } else {
+
         echo '<script>alert("Unsupported credential type.");</script>';
+
     }
 }
+
 
 
 // Echo the HTML structure
