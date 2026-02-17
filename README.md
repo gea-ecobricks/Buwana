@@ -12,41 +12,9 @@ Our vision is that Buwana accounts will empower regenerative apps through their 
 
 Buwana accounts are stored and managed in a database separate from our main GoBrik.com and Ecobricks.org services.  
 
-#### Where does the term 'Buwana' come from?
-
-The word "bhuwana" (also spelled "buwana" or "bhuana") in Indonesian and other regional languages such as Balinese and Javanese also means "world" or "universe." Like "bumi," "bhuwana" has its roots in Sanskrit. The Sanskrit word "bhūvana" (भुवन) means "world," "earth," or "universe."
-
-The connection between "bumi" and "bhuwana" lies in their shared Sanskrit origin and their similar meanings related to the concept of the world or earth. While "bumi" directly derives from "bhūmi," meaning earth or ground, "bhuwana" comes from "bhūvana," which refers to the world or universe in a broader sense. Both terms reflect the deep influence of Sanskrit on the Indonesian language and its regional variants.
-
-## Installing Dependencies
-
-This project uses Composer for PHP package management. After cloning the repository, run:
-
-```
-composer install
-```
-
-This command creates the `vendor/` directory with all required libraries.
-
-## Running Tests
-
-PHPUnit is used for unit testing. After installing dependencies with Composer, run:
-
-```
-vendor/bin/phpunit
-```
-
-The configuration file `phpunit.xml` is provided in the repository.
-
-## Helper Functions
-
-`check_user_app_connection()` verifies that a logged-in user has an active
-connection to the requesting application. If no connection record exists the
-function now redirects using an absolute path (`/$lang/app-connect.php`) so that
-the redirect works even when called from nested scripts.
 
 
-# The Buwana Authentication Protocol
+# The Protocol
 
 Buwana is an open authentication and credential system designed for regenerative platforms.
 
