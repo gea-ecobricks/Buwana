@@ -44,3 +44,144 @@ The configuration file `phpunit.xml` is provided in the repository.
 connection to the requesting application. If no connection record exists the
 function now redirects using an absolute path (`/$lang/app-connect.php`) so that
 the redirect works even when called from nested scripts.
+
+
+# The Buwana Authentication Protocol
+
+Buwana is an open authentication and credential system designed for regenerative platforms.
+
+The Buwana system emerged from years of building and operating social action platforms while maintaining regenerative principles. After reluctantly relying on corporate authentication services, it became clear that we needed our own account infrastructure—one that is not dependent on for-profit platforms and that aligns with ecological and social values.
+
+Rather than choosing a fast, closed-source corporate solution, Buwana provides an open, value-aligned authentication protocol that can serve both our own ecosystem and other resonant organizations.
+
+Much like Google, Apple, or Facebook login systems, Buwana accounts provide secure identity and access across multiple applications—while prioritizing privacy, interoperability, and ecological ethics.
+
+Buwana enables account access to:
+
+- GoBrik  
+- Ecobricks.org  
+- Open Books  
+- Brikcoin wallets  
+- Plastic and impact accounting  
+- EarthCycle and community tools  
+
+Our long-term vision is for Buwana to serve as a credential management system for regenerative apps worldwide.
+
+---
+
+## Shared Regenerative Identity
+
+Buwana accounts are designed to empower regenerative applications through shared data resonance.
+
+Each account holds core scopes such as:
+
+- Community affiliation  
+- Bioregional context  
+- EarthCycle timing  
+
+These scopes are transferable between apps. For example, a GoBrik user can log ecobricks for their community while simultaneously scheduling cyclical events for that same community on EarthCal.
+
+Because Buwana is stewarded by the Global Ecobrick Alliance, a not-for-profit Earth Enterprise, it can prioritize resonance, privacy, and security over monetization or surveillance.
+
+Buwana accounts are stored and managed in a database separate from GoBrik and Ecobricks.org services.
+
+---
+
+## Architecture Overview
+
+Buwana is designed as a centralized identity provider (IdP) with a separated authentication database and API layer.
+
+Core architectural components:
+
+- Identity Database — Stores user credentials, hashed passwords, and core identity metadata.
+- OAuth-like Token System — Issues signed tokens for authenticated sessions.
+- App Connection Layer — Manages authorized connections between user accounts and client applications.
+- Scope Management Engine — Controls which data scopes an application may access.
+- API Gateway — Validates tokens and enforces permissions before granting access.
+
+Security principles:
+
+- Passwords are hashed and salted.
+- Authentication database is isolated from application databases.
+- Applications never directly access credential storage.
+- Tokens are short-lived and verifiable.
+- Access is explicitly scoped per application.
+
+This separation ensures that even if one application is compromised, credential integrity remains protected.
+
+---
+
+## Scopes & Permissions
+
+Buwana uses a scoped permission model to grant applications access only to the minimum data required.
+
+Example scopes:
+
+- `profile.basic` — Access to display name and public profile data.
+- `community.read` — View community affiliation.
+- `community.write` — Modify community data (restricted).
+- `ecobricks.log` — Submit ecobrick log entries.
+- `earthcycle.read` — Access cyclical calendar data.
+- `wallet.read` — View Brikcoin balance.
+- `wallet.write` — Submit wallet transactions (restricted).
+
+Scopes are:
+
+- Explicitly requested by applications.
+- Explicitly granted by users.
+- Stored in connection records.
+- Enforced at the API layer.
+
+This model ensures interoperability without surrendering privacy or control.
+
+---
+
+## Project Stewardship
+
+The Buwana Authentication Protocol is developed, maintained, and governed by the Global Ecobrick Alliance.
+
+The Alliance is a not-for-profit Earth Enterprise operating under regenerative principles, dedicated to supporting the global plastic transition movement through open technologies, education, and ecological infrastructure.
+
+Buwana is part of the Alliance’s broader ecosystem alongside GoBrik and Ecobricks.org, providing the shared identity layer that connects regenerative tools, communities, and data.
+
+---
+
+## Where does the term “Buwana” come from?
+
+The word *bhuwana* (also spelled *buwana* or *bhuana*) in Indonesian and related languages such as Balinese and Javanese means “world” or “universe.”
+
+It derives from the Sanskrit *bhūvana* (भुवन), meaning “world,” “earth,” or “universe.”
+
+This is closely related to *bumi* (from Sanskrit *bhūmi*, meaning ground or earth). Both terms reflect the deep influence of Sanskrit on Indonesian language and culture and express a holistic understanding of planetary existence.
+
+---
+
+## Installing Dependencies
+
+This project uses Composer for PHP package management. After cloning the repository, run:
+
+```
+composer install
+```
+
+This command creates the `vendor/` directory with all required libraries.
+
+---
+
+## Running Tests
+
+PHPUnit is used for unit testing. After installing dependencies with Composer, run:
+
+```
+vendor/bin/phpunit
+```
+
+The configuration file `phpunit.xml` is provided in the repository.
+
+---
+
+## Helper Functions
+
+`check_user_app_connection()` verifies that a logged-in user has an active connection to the requesting application.
+
+If no connection record exists, the function redirects using an absolute path (`/$lang/app-connect.php`) so that redirects work correctly even when called from nested scripts.
