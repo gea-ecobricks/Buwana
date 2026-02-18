@@ -63,16 +63,21 @@ if ($app_results && $app_results->num_rows > 0) {
 <div id="form-submission-box" class="landing-page-form">
 
   <div class="form-container">
-      <div id="top-page-image" class="buwana-lead-banner"
+    <div id="content-slider">
+      <div class="slides-wrapper">
+        <div id="slider-content-1" class="slide">
+            <div id="top-page-image" class="buwana-lead-banner"
                   style=""
                   data-light-img="../webps/top-buwana-landing-banner.webp"
                   data-dark-img="../webps/top-buwana-landing-banner.webp">
-             </div>
-<h2  data-lang-id="001-about-buwana" style="text-align:center;">
-      Buwana is an open-source login system for regenerative web applications developed by the Global Ecobrick Alliance.
-    </h2>
-    <p data-lang-id="002-buwana-desc" style="text-align:center;">The Buwana protocol provides the a user authentication alternative for apps that want to escape corporate logins for an ecoystem of resonant, green for-Earth enterprises. The Buwana protocol has only just launched as of June 2025.  Here's the apps that are using it so far...</p>
-    <div class="app-grid">
+            </div>
+            <h2 data-lang-id="001-about-buwana" style="text-align:center;">
+              Buwana is an open-source login system for regenerative web applications developed by the Global Ecobrick Alliance.
+            </h2>
+            <p data-lang-id="002-buwana-desc" style="text-align:center;">The Buwana protocol provides the a user authentication alternative for apps that want to escape corporate logins for an ecoystem of resonant, green for-Earth enterprises. The Buwana protocol has only just launched as of June 2025.  Here's the apps that are using it so far...</p>
+        </div>
+        <div id="slider-content-3" class="slide">
+          <div class="app-grid">
         <?php foreach ($apps as $app):
             $client_id  = urlencode($app['client_id']);
             $login_link = $app['app_login_url'];
@@ -103,18 +108,18 @@ if ($app_results && $app_results->num_rows > 0) {
              <a href="#" class="about-link" onclick="showAppDescription(event); return false;" data-lang-id="000-about">ℹ️ About</a>
             </div>
           </div>
-        <?php endforeach; ?>
-    </div>
-
-<div style="text-align:center; max-width:600px; margin:auto; margin-bottom:25px;">
-
-
-    <p data-lang-id="003-open-source">The Buwana code-base and documention Wiki is on Github</p>
-    <a href="https://github.com/gea-ecobricks/Buwana/tree/main" data-lang-id="004-view-repo">View Repository ↗</a>
- </div>
-
+          <?php endforeach; ?>
+          </div>
+        </div>
+        <div id="slider-content-4" class="slide">
+          <div style="text-align:center; max-width:600px; margin:auto; margin-bottom:25px;">
+            <p data-lang-id="003-open-source">The Buwana code-base and documention Wiki is on Github</p>
+            <a href="https://github.com/gea-ecobricks/Buwana/tree/main" data-lang-id="004-view-repo">View Repository ↗</a>
+          </div>
+        </div>
+      </div> <!-- end slides-wrapper -->
+    </div> <!-- end content-slider -->
   </div>
-</div>
 </div>
 
 <?php require_once("../footer-2025.php"); ?>
@@ -129,6 +134,37 @@ if ($app_results && $app_results->num_rows > 0) {
         }
       });
     });
+
+    const slider = document.getElementById('content-slider');
+    const wrapper = slider.querySelector('.slides-wrapper');
+    const slides = slider.querySelectorAll('.slide');
+    let index = 0;
+    let interval;
+
+    const goTo = (i) => {
+      index = (i + slides.length) % slides.length;
+      wrapper.style.transform = `translateX(-${index * 100}%)`;
+    };
+
+    const next = () => goTo(index + 1);
+
+    const start = () => { interval = setInterval(next, 5000); };
+    const stop = () => { clearInterval(interval); };
+
+    slides.forEach(slide => {
+      slide.addEventListener('mouseenter', stop);
+      slide.addEventListener('mouseleave', start);
+      slide.addEventListener('click', (e) => {
+        if (!e.target.closest('.simple-button')) {
+          stop();
+          next();
+          start();
+        }
+      });
+    });
+
+    goTo(0);
+    start();
   });
 </script>
 
