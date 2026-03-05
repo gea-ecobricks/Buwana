@@ -68,6 +68,8 @@ $allowedOrigins = [
     "https://ecobricks.org",
     "https://learning.ecobricks.org",
     "https://openbooks.ecobricks.org",
+    "https://air2.earthen.io",
+    "https://air.earthen.io",
     "https://hopeturtles.org",
     "https://files.mandala.team",
     // EarthCal desktop / local dev:
