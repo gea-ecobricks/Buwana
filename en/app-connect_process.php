@@ -124,64 +124,70 @@ $stmt->close();
 
 
 
-
 // ---------------------------------------------------------
-// SPECIAL AIRBUDDY HANDLING (use API instead of direct DB)
+// GENERIC CLIENT SYNC (API webhook) if configured
 // ---------------------------------------------------------
-if ($client_id === 'airb_ca090536efc8') {
+$sync_url = null;
+$sync_secret = null;
 
-    $api_url = "https://air2.earthen.io/api/buwana/sync-user";
+try {
+    if (tableExists($buwana_conn, 'apps_tb') && columnExists($buwana_conn, 'apps_tb', 'sync_url')) {
+        $stmt_sync = $buwana_conn->prepare("SELECT sync_url, sync_secret FROM apps_tb WHERE client_id = ? LIMIT 1");
+        $stmt_sync->bind_param('s', $client_id);
+        $stmt_sync->execute();
+        $stmt_sync->bind_result($sync_url, $sync_secret);
+        $stmt_sync->fetch();
+        $stmt_sync->close();
+    }
+} catch (Exception $e) {
+    error_log("sync_url lookup error: " . $e->getMessage());
+}
 
+if (!empty($sync_url)) {
     $payload = [
         'buwana_sub' => $userData['open_id'] ?? null,
+        'buwana_id' => $buwana_id,
         'email' => $userData['email'] ?? '',
         'username' => $userData['username'] ?? '',
         'first_name' => $userData['first_name'] ?? '',
         'last_name' => $userData['last_name'] ?? '',
-        'full_name' => $userData['full_name'] ?? ''
+        'full_name' => $userData['full_name'] ?? '',
+        'role' => 'user'
     ];
 
-    $ch = curl_init($api_url);
+    $ch = curl_init($sync_url);
+    $headers = ["Content-Type: application/json"];
+    if (!empty($sync_secret)) {
+        $headers[] = "X-Buwana-Secret: " . $sync_secret;
+    }
 
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_POST => true,
-        CURLOPT_HTTPHEADER => [
-            "Content-Type: application/json",
-            "X-Buwana-Secret: " . BUWANA_SYNC_SECRET
-        ],
+        CURLOPT_HTTPHEADER => $headers,
         CURLOPT_POSTFIELDS => json_encode($payload),
         CURLOPT_TIMEOUT => 10
     ]);
 
-    $api_response = curl_exec($ch);
-    $api_http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-    if (curl_errno($ch)) {
-        error_log("AirBuddy sync curl error: " . curl_error($ch));
-    }
-
+    $resp = curl_exec($ch);
+    $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $err = curl_error($ch);
     curl_close($ch);
 
-    if ($api_http_code !== 200) {
-        error_log("AirBuddy sync failed: HTTP {$api_http_code} response={$api_response}");
+    if ($err) {
+        error_log("client sync curl error: " . $err);
+    }
+    if ($code !== 200) {
+        error_log("client sync failed: client_id={$client_id} http={$code} resp={$resp}");
+        // optional: show friendly error page if you want to hard-fail here
+        // die("❌ Could not sync account to app. Please try again.");
     }
 
-    // simulate success so the rest of the flow continues
-    $response = ['success' => true];
-}
-else {
-
-    // Normal legacy client DB creation
-    $response = createUserInClientApp(
-        $buwana_id,
-        $userData,
-        $app_name,
-        $client_conn,
-        $buwana_conn,
-        $client_id
-    );
-
+    // treat as success and continue; the app will upsert or ignore duplicates
+    $response = ['success' => true, 'error' => null];
+} else {
+    // fallback legacy behavior (direct DB insert)
+    $response = createUserInClientApp($buwana_id, $userData, $app_name, $client_conn, $buwana_conn, $client_id);
 }
 
 
