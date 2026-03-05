@@ -121,6 +121,70 @@ if (!$userData = $result->fetch_assoc()) {
 }
 $stmt->close();
 
+
+
+
+
+// ---------------------------------------------------------
+// SPECIAL AIRBUDDY HANDLING (use API instead of direct DB)
+// ---------------------------------------------------------
+if ($client_id === 'airb_ca090536efc8') {
+
+    $api_url = "https://air2.earthen.io/api/buwana/sync-user";
+
+    $payload = [
+        'buwana_sub' => $userData['open_id'] ?? null,
+        'email' => $userData['email'] ?? '',
+        'username' => $userData['username'] ?? '',
+        'first_name' => $userData['first_name'] ?? '',
+        'last_name' => $userData['last_name'] ?? '',
+        'full_name' => $userData['full_name'] ?? ''
+    ];
+
+    $ch = curl_init($api_url);
+
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_POST => true,
+        CURLOPT_HTTPHEADER => [
+            "Content-Type: application/json",
+            "X-Buwana-Secret: " . BUWANA_SYNC_SECRET
+        ],
+        CURLOPT_POSTFIELDS => json_encode($payload),
+        CURLOPT_TIMEOUT => 10
+    ]);
+
+    $api_response = curl_exec($ch);
+    $api_http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+    if (curl_errno($ch)) {
+        error_log("AirBuddy sync curl error: " . curl_error($ch));
+    }
+
+    curl_close($ch);
+
+    if ($api_http_code !== 200) {
+        error_log("AirBuddy sync failed: HTTP {$api_http_code} response={$api_response}");
+    }
+
+    // simulate success so the rest of the flow continues
+    $response = ['success' => true];
+}
+else {
+
+    // Normal legacy client DB creation
+    $response = createUserInClientApp(
+        $buwana_id,
+        $userData,
+        $app_name,
+        $client_conn,
+        $buwana_conn,
+        $client_id
+    );
+
+}
+
+
 // ✅ Step 1: Try to create the user in the client app
 $response = createUserInClientApp($buwana_id, $userData, $app_name, $client_conn, $buwana_conn, $client_id);
 
