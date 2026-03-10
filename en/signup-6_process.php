@@ -247,6 +247,37 @@ if (!empty($sync_url)) {
 
 // --- STEP 8: Handle provisioning result ---
 if ($response && !empty($response['success'])) {
+
+    // ---------------------------------------------------------
+    // Record the app connection in Buwana for all apps/users
+    // ---------------------------------------------------------
+    $check_sql = "SELECT 1 FROM user_app_connections_tb WHERE buwana_id = ? AND client_id = ? LIMIT 1";
+    $check_stmt = $buwana_conn->prepare($check_sql);
+    $check_stmt->bind_param('is', $buwana_id, $client_id);
+    $check_stmt->execute();
+    $check_stmt->store_result();
+
+    if ($check_stmt->num_rows === 0) {
+        $check_stmt->close();
+
+        $status = 'registered';
+        $connected_at = date('Y-m-d H:i:s');
+
+        $insert_sql = "
+            INSERT INTO user_app_connections_tb (buwana_id, client_id, status, connected_at)
+            VALUES (?, ?, ?, ?)
+        ";
+        $insert_stmt = $buwana_conn->prepare($insert_sql);
+        $insert_stmt->bind_param('isss', $buwana_id, $client_id, $status, $connected_at);
+        $insert_stmt->execute();
+        $insert_stmt->close();
+
+        error_log("✅ App connection recorded for buwana_id={$buwana_id}, client_id={$client_id}");
+    } else {
+        $check_stmt->close();
+        error_log("ℹ️ App connection already exists for buwana_id={$buwana_id}, client_id={$client_id}");
+    }
+
     header("Location: signup-7.php?id=" . urlencode($buwana_id));
     exit;
 } else {

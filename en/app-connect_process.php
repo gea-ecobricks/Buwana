@@ -27,7 +27,7 @@ $app_name = $app_info['app_name'] ?? 'default_app';
 $app_dashboard_url = $app_info['app_dashboard_url'] ?? '/';
 
 // ---------------------------------------------------------
-// SPECIAL: Moodle handling (unchanged)
+// SPECIAL: Moodle handling
 // ---------------------------------------------------------
 if ($client_id === 'lear_a30d677a7b08') {
     $check_sql = "SELECT 1 FROM user_app_connections_tb WHERE buwana_id = ? AND client_id = ? LIMIT 1";
@@ -36,24 +36,40 @@ if ($client_id === 'lear_a30d677a7b08') {
     $check_stmt->execute();
     $check_stmt->store_result();
 
+    $connected_at = date('Y-m-d H:i:s');
+
     if ($check_stmt->num_rows === 0) {
         $check_stmt->close();
+
         $status = 'registered';
-        $connected_at = date('Y-m-d H:i:s');
         $insert_sql = "INSERT INTO user_app_connections_tb (buwana_id, client_id, status, connected_at) VALUES (?, ?, ?, ?)";
         $insert_stmt = $buwana_conn->prepare($insert_sql);
         $insert_stmt->bind_param('isss', $buwana_id, $client_id, $status, $connected_at);
         $insert_stmt->execute();
         $insert_stmt->close();
+
         $is_first_time_connection = true;
     } else {
         $check_stmt->close();
     }
 
+    if (function_exists('updateAppConnectionStatus')) {
+        updateAppConnectionStatus($buwana_conn, $buwana_id, $client_id, 'registered', $connected_at);
+    }
+
+    if (function_exists('updateBuwanaUserNotes')) {
+        updateBuwanaUserNotes($buwana_conn, $buwana_id, $app_name, $connected_at);
+    }
+
     $moodle_login_url = "https://learning.ecobricks.org/login/index.php";
     $redirect_url = "{$moodle_login_url}?auth=oidc";
-    if (!empty($redirect)) $redirect_url .= '&redirect=' . urlencode($redirect);
-    if ($is_first_time_connection) $redirect_url .= '&status=firsttime';
+    if (!empty($redirect)) {
+        $redirect_url .= '&redirect=' . urlencode($redirect);
+    }
+    if ($is_first_time_connection) {
+        $redirect_url .= '&status=firsttime';
+    }
+
     header("Location: {$redirect_url}");
     exit;
 }
@@ -94,7 +110,7 @@ if (!$userData) {
 }
 
 // ---------------------------------------------------------
-// 1) NEW: Generic Client Sync (API webhook) if configured
+// 1) API-first: Generic Client Sync (webhook) if configured
 //    - NO client DB connection needed
 // ---------------------------------------------------------
 $sync_url = null;
@@ -102,7 +118,6 @@ $sync_secret = null;
 
 try {
     if (tableExists($buwana_conn, 'apps_tb') && columnExists($buwana_conn, 'apps_tb', 'sync_url')) {
-        // sync_secret column optional; if missing, header is omitted
         if (columnExists($buwana_conn, 'apps_tb', 'sync_secret')) {
             $stmt_sync = $buwana_conn->prepare("SELECT sync_url, sync_secret FROM apps_tb WHERE client_id = ? LIMIT 1");
         } else {
@@ -163,10 +178,9 @@ if (!empty($sync_url)) {
             $response = ['success' => false, 'error' => 'sync_curl_error'];
         } elseif ($httpCode < 200 || $httpCode >= 300) {
             error_log("client sync failed client_id={$client_id} http={$httpCode} resp={$respBody}");
-            // You choose: soft-fail or hard-fail.
-            // For now: FAIL (so user sees it, and you know immediately).
             $response = ['success' => false, 'error' => 'sync_http_' . $httpCode];
         } else {
+            error_log("✅ Client sync success via API for client_id={$client_id}");
             $response = ['success' => true, 'error' => null];
         }
     }
@@ -208,6 +222,8 @@ if (!$response || empty($response['success'])) {
 // ---------------------------------------------------------
 // Record the app connection in Buwana
 // ---------------------------------------------------------
+$connected_at = date('Y-m-d H:i:s');
+
 $check_sql = "SELECT 1 FROM user_app_connections_tb WHERE buwana_id = ? AND client_id = ? LIMIT 1";
 $check_stmt = $buwana_conn->prepare($check_sql);
 $check_stmt->bind_param('is', $buwana_id, $client_id);
@@ -218,19 +234,32 @@ if ($check_stmt->num_rows === 0) {
     $check_stmt->close();
 
     $status = 'registered';
-    $connected_at = date('Y-m-d H:i:s');
     $insert_sql = "INSERT INTO user_app_connections_tb (buwana_id, client_id, status, connected_at) VALUES (?, ?, ?, ?)";
     $insert_stmt = $buwana_conn->prepare($insert_sql);
     $insert_stmt->bind_param('isss', $buwana_id, $client_id, $status, $connected_at);
     $insert_stmt->execute();
     $insert_stmt->close();
+
     $is_first_time_connection = true;
+    error_log("✅ App connection recorded for buwana_id={$buwana_id}, client_id={$client_id}");
 } else {
     $check_stmt->close();
+    error_log("ℹ️ App connection already exists for buwana_id={$buwana_id}, client_id={$client_id}");
 }
 
 // ---------------------------------------------------------
-// Generate JWT (unchanged)
+// Optional parity updates for Buwana-side notes/status
+// ---------------------------------------------------------
+if (function_exists('updateAppConnectionStatus')) {
+    updateAppConnectionStatus($buwana_conn, $buwana_id, $client_id, 'registered', $connected_at);
+}
+
+if (function_exists('updateBuwanaUserNotes')) {
+    updateBuwanaUserNotes($buwana_conn, $buwana_id, $app_name, $connected_at);
+}
+
+// ---------------------------------------------------------
+// Generate JWT
 // ---------------------------------------------------------
 $private_key = '';
 
@@ -259,9 +288,11 @@ try {
 $jwt_token = '';
 if (!empty($private_key)) {
     $open_id = $userData['open_id'] ?? null;
+
     if ($open_id) {
         $now = time();
         $exp = $now + 5400; // 90 minute expiry
+
         $payload = [
             'iss' => 'https://buwana.ecobricks.org',
             'sub' => $open_id,
@@ -272,6 +303,7 @@ if (!empty($private_key)) {
             'email' => $userData['email'] ?? '',
             'given_name' => $userData['first_name'] ?? ''
         ];
+
         try {
             $jwt_token = JWT::encode($payload, $private_key, 'RS256', $client_id);
         } catch (Exception $e) {
@@ -286,12 +318,18 @@ if (!empty($private_key)) {
 
 $redirect_url = $app_dashboard_url;
 $params = [];
-if (!empty($jwt_token)) $params['jwt'] = $jwt_token;
-if (!empty($redirect)) $params['redirect'] = $redirect;
+
+if (!empty($jwt_token)) {
+    $params['jwt'] = $jwt_token;
+}
+if (!empty($redirect)) {
+    $params['redirect'] = $redirect;
+}
 
 if (!empty($params)) {
     $redirect_url .= (strpos($redirect_url, '?') === false ? '?' : '&') . http_build_query($params);
 }
+
 if ($is_first_time_connection) {
     $redirect_url .= (strpos($redirect_url, '?') === false ? '?' : '&') . 'status=firsttime';
 }
