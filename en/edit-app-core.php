@@ -133,15 +133,16 @@ if (!$app) {
         align-items: center;
         text-decoration: none;
         color: var(--text-color);
-        padding: 5px 12px 5px 4px;
+        padding: 5px 24px 5px 4px;
         margin-right: 8px;
         flex-shrink: 0;
+        min-height: 36px;
       }
       .back-arrow::before {
         content: '';
         display: inline-block;
-        width: 9px;
-        height: 9px;
+        width: 18px;
+        height: 36px;
         border-left: 2px solid currentColor;
         border-bottom: 2px solid currentColor;
         transform: rotate(45deg);
@@ -176,13 +177,14 @@ if (!$app) {
         white-space: nowrap;
         width: 1%;
         padding-right: 16px;
+        color: var(--text-color);
       }
       .scopes-table .scope-desc {
         color: var(--text-color);
       }
       .scopes-table .scope-caption {
-        font-size: 0.9em;
-        color: grey;
+        font-size: 1.2em;
+        color: var(--subdued-text);
         margin: 2px 0 4px;
       }
       .scopes-table .scope-fields {
@@ -282,7 +284,7 @@ if (!$app) {
 
           <div class="scope-info">
               <label for="scopes" style="padding:7px;"><h5>JWT Key Pair</h5></label>
-            <span>The JWT key pair consists of a private key, used by  Buwana  to sign each user login with a secret signature, and a corresponding public key, which any app in the ecosystem can use to verify the JWT’s authenticity by checking the signature against the public registry. Like a magic diamond ring that proves a user's identity, this mystical pairing ensures that only the true Buwana gem master can craft valid tokens, while all village gates can recognize and honor them. 💫🔐💍</span>
+            <span style="color:var(--text-color);">The JWT key pair consists of a private key, used by  Buwana  to sign each user login with a secret signature, and a corresponding public key, which any app in the ecosystem can use to verify the JWT’s authenticity by checking the signature against the public registry. Like a magic diamond ring that proves a user’s identity, this mystical pairing ensures that only the true Buwana gem master can craft valid tokens, while all village gates can recognize and honor them. 💫🔐💍</span>
           </div>
 
           <?php if(empty($jwt_public_key) && empty($jwt_private_key)): ?>
@@ -400,7 +402,7 @@ if (!$app) {
 
           </tbody>
         </table>
-        <p class="form-caption" style="margin-top:8px;" data-lang-id="011c-scopes">Select the Buwana data scopes your app requires</p>
+        <p class="form-caption" style="margin-top:8px;" data-lang-id="011c-scopes">Select the Buwana data scopes your app requires. <a href="https://github.com/gea-ecobricks/Buwana/wiki/Scopes" target="_blank" rel="noopener">See the Buwana Github wiki for a full break down of our user scopes</a>.</p>
         <div id="scopes-error-required" class="form-field-error" style="display:none;">At least one scope is required.</div>
       </div>
       <div class="form-item float-label-group" style="border-radius:10px 10px 5px 5px;padding-bottom: 10px;">

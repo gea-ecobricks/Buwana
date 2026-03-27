@@ -1,6 +1,6 @@
 # Buwana Scope System
 
-Buwana uses a namespaced, tiered scope system to control which user data is shared with client apps via the JWT ID token. Scopes are registered per-app in `apps_tb.scopes` and validated at the `/authorize` endpoint before a login flow begins. Only fields with non-empty values are included in the final token — empty or null fields are silently omitted.
+Buwana has just introduced an upgrade to its JWT system.  It now uses a namespaced, tiered scope system to control which user data is shared with client apps (like GoBrik, Earthcal and others) via the JWT ID token. Scopes are registered per-app in `apps_tb.scopes` and validated at the `/authorize` endpoint before a login flow begins. Only fields with non-empty values are included in the final token — empty or null fields are silently omitted.
 
 ---
 
