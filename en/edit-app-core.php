@@ -128,40 +128,72 @@ if (!$app) {
       .top-wrapper {
         background: var(--darker-lighter);
       }
-      .scopes-list {
-        display: flex;
-        flex-direction: column;
-      }
-      .scope-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 7px 0;
-         border-bottom: 1px solid var(--subdued-text);
-
-      }
-      .button-info {
-        display: flex;
-        flex-direction: column;
-      }
-      .button-column {
+      .back-arrow {
         display: flex;
         align-items: center;
-        gap: 10px;
-        margin-left: auto;
+        text-decoration: none;
+        color: var(--text-color);
+        padding: 5px 12px 5px 4px;
+        margin-right: 8px;
+        flex-shrink: 0;
       }
-      .scope-info {
+      .back-arrow::before {
+        content: '';
+        display: inline-block;
+        width: 9px;
+        height: 9px;
+        border-left: 2px solid currentColor;
+        border-bottom: 2px solid currentColor;
+        transform: rotate(45deg);
+        margin-right: 7px;
+      }
+      .back-arrow:hover { opacity: 0.6; }
+      #status-box {
         display: flex;
         flex-direction: column;
-        color: var(--text-color)
+        justify-content: center;
       }
-      .scope-caption {
+      #app-active-status,
+      #app-signup-status {
         font-size: 0.9em;
         color: grey;
       }
-      .scope-subscopes {
-        font-size: 0.85em;
+      .scopes-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 6px;
+      }
+      .scopes-table td {
+        padding: 12px 10px;
+        vertical-align: middle;
+        border-bottom: 1px solid var(--subdued-text);
+      }
+      .scopes-table tr:last-child td {
+        border-bottom: none;
+      }
+      .scopes-table .scope-name {
+        font-weight: bold;
+        white-space: nowrap;
+        width: 1%;
+        padding-right: 16px;
+      }
+      .scopes-table .scope-desc {
+        color: var(--text-color);
+      }
+      .scopes-table .scope-caption {
+        font-size: 0.9em;
+        color: grey;
+        margin: 2px 0 4px;
+      }
+      .scopes-table .scope-fields {
+        font-size: 0.82em;
         color: var(--subdued-text);
+        margin: 0;
+      }
+      .scopes-table .scope-toggle {
+        text-align: right;
+        white-space: nowrap;
+        width: 1%;
       }
       .hidden-scope {
         display: none;
@@ -189,16 +221,17 @@ if (!$app) {
 <div id="form-submission-box" class="landing-page-form">
   <div class="form-container">
     <div class="top-wrapper">
-      <div>
-        <div class="login-status"><?= htmlspecialchars($earthling_emoji) ?> Logged in as <?= htmlspecialchars($first_name) ?></div>
-        <div style="font-size:0.9em;color:grey;margin-bottom: auto;">
+      <a class="back-arrow" href="app-view.php?app_id=<?= intval($app_id) ?>" title="Back to <?= htmlspecialchars($app['app_display_name']) ?>"></a>
+      <div id="status-box">
+        <div id="login-status" class="login-status"><?= htmlspecialchars($earthling_emoji) ?> Logged in as <?= htmlspecialchars($first_name) ?></div>
+        <div id="app-active-status">
           <?php if($app['is_active']): ?>
             🟢 <?= htmlspecialchars($app['app_display_name']) ?> is active
           <?php else: ?>
             ⚪ <?= htmlspecialchars($app['app_display_name']) ?> is not active
           <?php endif; ?>
         </div>
-        <div style="font-size:0.9em;color:grey;">
+        <div id="app-signup-status">
           <?php if($app['allow_signup']): ?>
             🟢 <?= htmlspecialchars($app['app_display_name']) ?> signups enabled
           <?php else: ?>
@@ -302,60 +335,72 @@ if (!$app) {
       </div>
       <?php endif; ?>
       <div class="form-item" style="border-radius:10px 10px 5px 5px;padding-bottom: 10px;">
-        <label for="scopes" style="padding:7px;"><h5>Scopes</h5></label>
-        <div id="scopes" class="scopes-list">
+        <label style="padding:7px;"><h5>Scopes</h5></label>
+        <p style="padding: 0 7px 6px;">Scopes allow you to determine which Buwana user data your app will request, access and use. Only turn on that which your app really needs.</p>
 
-          <!-- Always-on: openid + buwana:basic — hidden inputs, shown as a locked row -->
-          <input type="checkbox" class="scope-checkbox hidden-scope" name="scopes[]" value="openid" checked style="display:none;" />
-          <input type="checkbox" class="scope-checkbox hidden-scope" name="scopes[]" value="buwana:basic" checked style="display:none;" />
+        <!-- Always-on: openid + buwana:basic — hidden inputs, never stripped by the whitelist -->
+        <input type="checkbox" class="scope-checkbox hidden-scope" name="scopes[]" value="openid" checked style="display:none;" />
+        <input type="checkbox" class="scope-checkbox hidden-scope" name="scopes[]" value="buwana:basic" checked style="display:none;" />
 
-          <div class="scope-row">
-            <div class="scope-info">
-              <span>🔒 <b>openid &amp; buwana:basic</b> <span style="font-size:0.8em;color:grey;">(always included)</span></span>
-              <span class="scope-caption">Required foundation for every Buwana login. Always granted — cannot be disabled.</span>
-              <span class="scope-subscopes">iss, sub, aud, exp, iat, nonce, scope &nbsp;·&nbsp; buwana_id, email, given_name, buwana:earthlingEmoji</span>
-            </div>
-            <span style="font-size:1.4em;padding:0 6px;" title="Always enabled">🔒</span>
-          </div>
+        <table class="scopes-table" id="scopes">
+          <tbody>
 
-          <div class="scope-row">
-            <div class="scope-info">
-              <span>👤 <b>buwana:profile</b></span>
-              <span class="scope-caption">Extended personal profile data</span>
-              <span class="scope-subscopes">family_name, created_at, role, gea_status, profile_pic, language, country, birth_date, zoneinfo, community_id, brikcoin_balance, connected_app_ids</span>
-            </div>
-            <label class="toggle-switch">
-              <input type="checkbox" class="scope-checkbox" name="scopes[]" value="buwana:profile" <?= in_array('buwana:profile', $selected_scopes) ? 'checked' : '' ?> />
-              <span class="slider"></span>
-            </label>
-          </div>
+            <tr id="scope-row-basic">
+              <td class="scope-name">🔒 openid<br>buwana:basic</td>
+              <td class="scope-desc">
+                <p class="scope-caption">Required foundation for every Buwana login. Always granted — cannot be disabled.</p>
+                <p class="scope-fields">iss, sub, aud, exp, iat, nonce, scope &nbsp;·&nbsp; buwana_id, email, given_name, buwana:earthlingEmoji</p>
+              </td>
+              <td class="scope-toggle">
+                <span style="font-size:1.3em;" title="Always enabled">🔒</span>
+              </td>
+            </tr>
 
-          <div class="scope-row">
-            <div class="scope-info">
-              <span>🏘️ <b>buwana:community</b></span>
-              <span class="scope-caption">Resolved community membership name</span>
-              <span class="scope-subscopes">buwana:community (community name)</span>
-            </div>
-            <label class="toggle-switch">
-              <input type="checkbox" class="scope-checkbox" name="scopes[]" value="buwana:community" <?= in_array('buwana:community', $selected_scopes) ? 'checked' : '' ?> />
-              <span class="slider"></span>
-            </label>
-          </div>
+            <tr id="scope-row-profile">
+              <td class="scope-name">👤 buwana:profile</td>
+              <td class="scope-desc">
+                <p class="scope-caption">Extended personal profile data</p>
+                <p class="scope-fields">family_name, created_at, role, gea_status, profile_pic, language, country, birth_date, zoneinfo, community_id, brikcoin_balance, connected_app_ids</p>
+              </td>
+              <td class="scope-toggle">
+                <label class="toggle-switch">
+                  <input type="checkbox" class="scope-checkbox" name="scopes[]" value="buwana:profile" <?= in_array('buwana:profile', $selected_scopes) ? 'checked' : '' ?> />
+                  <span class="slider"></span>
+                </label>
+              </td>
+            </tr>
 
-          <div class="scope-row">
-            <div class="scope-info">
-              <span>🌍 <b>buwana:bioregion</b></span>
-              <span class="scope-caption">Geographic and watershed location data</span>
-              <span class="scope-subscopes">continent, location_full, watershed_id, watershed_name, location_watershed, location_lat, location_long</span>
-            </div>
-            <label class="toggle-switch">
-              <input type="checkbox" class="scope-checkbox" name="scopes[]" value="buwana:bioregion" <?= in_array('buwana:bioregion', $selected_scopes) ? 'checked' : '' ?> />
-              <span class="slider"></span>
-            </label>
-          </div>
+            <tr id="scope-row-community">
+              <td class="scope-name">🏘️ buwana:community</td>
+              <td class="scope-desc">
+                <p class="scope-caption">Resolved community membership name</p>
+                <p class="scope-fields">buwana:community (resolved community name)</p>
+              </td>
+              <td class="scope-toggle">
+                <label class="toggle-switch">
+                  <input type="checkbox" class="scope-checkbox" name="scopes[]" value="buwana:community" <?= in_array('buwana:community', $selected_scopes) ? 'checked' : '' ?> />
+                  <span class="slider"></span>
+                </label>
+              </td>
+            </tr>
 
-        </div>
-        <p class="form-caption" data-lang-id="011c-scopes">Select the Buwana data scopes your app requires</p>
+            <tr id="scope-row-bioregion">
+              <td class="scope-name">🌍 buwana:bioregion</td>
+              <td class="scope-desc">
+                <p class="scope-caption">Geographic and watershed location data</p>
+                <p class="scope-fields">continent, location_full, watershed_id, watershed_name, location_watershed, location_lat, location_long</p>
+              </td>
+              <td class="scope-toggle">
+                <label class="toggle-switch">
+                  <input type="checkbox" class="scope-checkbox" name="scopes[]" value="buwana:bioregion" <?= in_array('buwana:bioregion', $selected_scopes) ? 'checked' : '' ?> />
+                  <span class="slider"></span>
+                </label>
+              </td>
+            </tr>
+
+          </tbody>
+        </table>
+        <p class="form-caption" style="margin-top:8px;" data-lang-id="011c-scopes">Select the Buwana data scopes your app requires</p>
         <div id="scopes-error-required" class="form-field-error" style="display:none;">At least one scope is required.</div>
       </div>
       <div class="form-item float-label-group" style="border-radius:10px 10px 5px 5px;padding-bottom: 10px;">

@@ -23,14 +23,10 @@ $app_id    = isset($_GET['app_id']) ? intval($_GET['app_id']) : 0;
 
 $scope_options = [
     'openid',
-    'email',
-    'profile',
-    'address',
-    'phone',
-    'buwana:bioregion',
-    'buwana:earthlingEmoji',
+    'buwana:basic',
+    'buwana:profile',
     'buwana:community',
-    'buwana:location.continent'
+    'buwana:bioregion',
 ];
 
 $redirect_uris     = $_POST['redirect_uris'] ?? '';
