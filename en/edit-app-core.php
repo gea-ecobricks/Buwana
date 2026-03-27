@@ -8,26 +8,10 @@ require_once '../fetch_app_info.php';
 
 $scope_options = [
     'openid',
-    'email',
-    'profile',
-    'address',
-    'phone',
-    'buwana:bioregion',
-    'buwana:earthlingEmoji',
+    'buwana:basic',
+    'buwana:profile',
     'buwana:community',
-    'buwana:location.continent'
-];
-
-$scope_descriptions = [
-    'openid'                  => 'Unique identifier for user login',
-    'email'                   => 'Access to user email address',
-    'profile'                 => 'Basic profile information',
-    'address'                 => 'User postal address details',
-    'phone'                   => 'Telephone number information',
-    'buwana:bioregion'        => 'User watershed & bioregion',
-    'buwana:earthlingEmoji'   => 'Preferred emoji avatar',
-    'buwana:community'        => 'Community membership',
-    'buwana:location.continent' => 'Continent of residence'
+    'buwana:bioregion',
 ];
 
 $lang = basename(dirname($_SERVER['SCRIPT_NAME']));
@@ -320,44 +304,59 @@ if (!$app) {
       <div class="form-item" style="border-radius:10px 10px 5px 5px;padding-bottom: 10px;">
         <label for="scopes" style="padding:7px;"><h5>Scopes</h5></label>
         <div id="scopes" class="scopes-list">
-<?php
-  $profile_scopes = ['openid','email','profile','phone','buwana:earthlingEmoji','buwana:location.continent'];
-  $all_profile = count(array_intersect($profile_scopes, $selected_scopes)) === count($profile_scopes);
-?>
+
+          <!-- Always-on: openid + buwana:basic — hidden inputs, shown as a locked row -->
+          <input type="checkbox" class="scope-checkbox hidden-scope" name="scopes[]" value="openid" checked style="display:none;" />
+          <input type="checkbox" class="scope-checkbox hidden-scope" name="scopes[]" value="buwana:basic" checked style="display:none;" />
 
           <div class="scope-row">
             <div class="scope-info">
-              <span>🌐 <b>Buwana Profile</b></span>
-
-              <span class="scope-caption">Essential user data for logging in and using the app</span>
-              <span class="scope-subscopes">openId, Name, email, profile, phone, buwana:earthlingEmoji, buwana:location_continent</span>
+              <span>🔒 <b>openid &amp; buwana:basic</b> <span style="font-size:0.8em;color:grey;">(always included)</span></span>
+              <span class="scope-caption">Required foundation for every Buwana login. Always granted — cannot be disabled.</span>
+              <span class="scope-subscopes">iss, sub, aud, exp, iat, nonce, scope &nbsp;·&nbsp; buwana_id, email, given_name, buwana:earthlingEmoji</span>
             </div>
-            <label class="toggle-switch">
-              <input type="checkbox" class="scope-checkbox scope-group" data-scopes="<?= implode(',', $profile_scopes) ?>" <?= $all_profile ? 'checked' : '' ?> />
-              <span class="slider"></span>
-            </label>
-<?php foreach ($profile_scopes as $sc): ?>
-            <input type="checkbox" class="scope-checkbox hidden-scope" name="scopes[]" value="<?= htmlspecialchars($sc) ?>" <?= in_array($sc, $selected_scopes) ? 'checked' : '' ?> style="display:none;" />
-<?php endforeach; ?>
+            <span style="font-size:1.4em;padding:0 6px;" title="Always enabled">🔒</span>
           </div>
-<?php foreach ([ 'buwana:community', 'buwana:bioregion' ] as $scope): ?>
+
           <div class="scope-row">
             <div class="scope-info">
-              <span>ℹ️ <b><?= htmlspecialchars($scope) ?></b></span>
-
-              <span class="scope-caption">
-                <?= htmlspecialchars($scope_descriptions[$scope] ?? '') ?>
-              </span>
+              <span>👤 <b>buwana:profile</b></span>
+              <span class="scope-caption">Extended personal profile data</span>
+              <span class="scope-subscopes">family_name, created_at, role, gea_status, profile_pic, language, country, birth_date, zoneinfo, community_id, brikcoin_balance, connected_app_ids</span>
             </div>
             <label class="toggle-switch">
-              <input type="checkbox" class="scope-checkbox" name="scopes[]" value="<?= htmlspecialchars($scope) ?>" <?= in_array($scope, $selected_scopes) ? 'checked' : '' ?> />
+              <input type="checkbox" class="scope-checkbox" name="scopes[]" value="buwana:profile" <?= in_array('buwana:profile', $selected_scopes) ? 'checked' : '' ?> />
               <span class="slider"></span>
             </label>
           </div>
-<?php endforeach; ?>
+
+          <div class="scope-row">
+            <div class="scope-info">
+              <span>🏘️ <b>buwana:community</b></span>
+              <span class="scope-caption">Resolved community membership name</span>
+              <span class="scope-subscopes">buwana:community (community name)</span>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" class="scope-checkbox" name="scopes[]" value="buwana:community" <?= in_array('buwana:community', $selected_scopes) ? 'checked' : '' ?> />
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="scope-row">
+            <div class="scope-info">
+              <span>🌍 <b>buwana:bioregion</b></span>
+              <span class="scope-caption">Geographic and watershed location data</span>
+              <span class="scope-subscopes">continent, location_full, watershed_id, watershed_name, location_watershed, location_lat, location_long</span>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" class="scope-checkbox" name="scopes[]" value="buwana:bioregion" <?= in_array('buwana:bioregion', $selected_scopes) ? 'checked' : '' ?> />
+              <span class="slider"></span>
+            </label>
+          </div>
+
         </div>
-        <p class="form-caption" data-lang-id="011c-scopes">OAuth scopes requested by your app</p>
-        <div id="scopes-error-required" class="form-field-error">This field is required.</div>
+        <p class="form-caption" data-lang-id="011c-scopes">Select the Buwana data scopes your app requires</p>
+        <div id="scopes-error-required" class="form-field-error" style="display:none;">At least one scope is required.</div>
       </div>
       <div class="form-item float-label-group" style="border-radius:10px 10px 5px 5px;padding-bottom: 10px;">
         <input type="text" id="app_domain" name="app_domain" aria-label="App Domain" maxlength="255" required placeholder=" " value="<?= htmlspecialchars($app['app_domain']) ?>">

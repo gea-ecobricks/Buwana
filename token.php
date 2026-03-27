@@ -270,36 +270,46 @@ $stmt->close();
 $stmt_user = $buwana_conn->prepare(
     "SELECT u.email, u.first_name, u.last_name, u.open_id,
             u.earthling_emoji, u.continent_code, u.community_id,
-            u.location_full, u.time_zone, c.country_name
+            u.location_full, u.time_zone,
+            u.created_at, u.role, u.gea_status, u.profile_pic,
+            u.language_id, u.birth_date, u.brikcoin_balance,
+            u.connected_app_ids, u.watershed_id,
+            u.location_watershed, u.location_lat, u.location_long,
+            c.country_name,
+            l.language_name_en   AS language_name,
+            ct.continent_name_en AS continent_name,
+            cm.com_name          AS community_name,
+            w.watershed_name_en  AS watershed_name
      FROM users_tb u
-     LEFT JOIN countries_tb c ON u.country_id = c.country_id
+     LEFT JOIN countries_tb   c  ON u.country_id     = c.country_id
+     LEFT JOIN languages_tb   l  ON u.language_id    = l.language_id
+     LEFT JOIN continents_tb  ct ON u.continent_code = ct.continent_code
+     LEFT JOIN communities_tb cm ON u.community_id   = cm.community_id
+     LEFT JOIN watersheds_tb  w  ON u.watershed_id   = w.watershed_id
      WHERE u.buwana_id = ?"
 );
 $stmt_user->bind_param('i', $user_id);
 $stmt_user->execute();
 $stmt_user->bind_result(
-    $email,
-    $first_name,
-    $last_name,
-    $open_id,
-    $earthling_emoji,
-    $continent_code,
-    $community_id,
-    $location_full,
-    $time_zone,
-    $country_name
+    $email, $first_name, $last_name, $open_id,
+    $earthling_emoji, $continent_code, $community_id,
+    $location_full, $time_zone,
+    $created_at, $role, $gea_status, $profile_pic,
+    $language_id, $birth_date, $brikcoin_balance,
+    $connected_app_ids, $watershed_id,
+    $location_watershed, $location_lat, $location_long,
+    $country_name, $language_name, $continent_name,
+    $community_name, $watershed_name
 );
 $stmt_user->fetch();
 $stmt_user->close();
 
 $is_learning_app = ($client_id === 'lear_a30d677a7b08');
 
-$resolved_given_name   = trim($first_name ?? '');
-$resolved_family_name  = trim($last_name ?? '');
-$resolved_location     = trim($location_full ?? '');
-$resolved_country      = trim($country_name ?? '');
-$resolved_timezone     = trim($time_zone ?? '');
-$resolved_emoji        = trim($earthling_emoji ?? '');
+$resolved_given_name  = trim($first_name ?? '');
+$resolved_family_name = trim($last_name ?? '');
+$resolved_timezone    = trim($time_zone ?? '');
+$resolved_emoji       = trim($earthling_emoji ?? '') ?: '🌏';
 
 auth_log(
     "User lookup results for user_id=$user_id: " . json_encode([
@@ -312,37 +322,25 @@ auth_log(
         'location_full'  => $location_full,
         'time_zone'      => $time_zone,
         'country_name'   => $country_name,
+        'language_name'  => $language_name,
+        'continent_name' => $continent_name,
+        'community_name' => $community_name,
+        'watershed_name' => $watershed_name,
     ])
 );
-
-// Fallback values when profile data is missing
-$default_location = 'Bantul, Jogja';
-$default_country  = 'Indonesia';
-$default_timezone = 'Jakarta UTC+7';
-$default_emoji    = '🌏';
-
-if ($resolved_location === '') {
-    $resolved_location = $default_location;
-}
-if ($resolved_country === '') {
-    $resolved_country = $default_country;
-}
-if ($resolved_timezone === '') {
-    $resolved_timezone = $default_timezone;
-}
-if ($resolved_emoji === '') {
-    $resolved_emoji = $default_emoji;
-}
-
-// Learning-app-specific exception: if no family_name, use the earthling emoji.
-if ($is_learning_app && $resolved_family_name === '') {
-    $resolved_family_name = $resolved_emoji;
-}
 
 /**
  * ================================
  * SECTION 9: TOKEN CLAIM PREPARATION
- * This section constructs the standard and custom claims for the ID and access tokens.
+ * Claims are gated by the scopes requested. Only fields that are non-empty
+ * are included — empty/null values are omitted from the token entirely.
+ *
+ * Scope tiers:
+ *   openid          — always: iss, sub, aud, exp, iat, nonce, scope
+ *   buwana:basic    — identity fingerprint: buwana_id, email, given_name, emoji
+ *   buwana:profile  — extended personal data
+ *   buwana:community — resolved community name
+ *   buwana:bioregion — geographic/watershed data
  * ================================
  */
 
@@ -350,40 +348,76 @@ $now = time();
 $exp = $now + 5400;
 $sub = $open_id ?? ("buwana_$user_id");
 
+// Parse requested scopes (handle space- or comma-separated storage)
+$requested_scopes = preg_split('/[\s,]+/', trim($scope ?? ''), -1, PREG_SPLIT_NO_EMPTY);
+$has_basic     = in_array('buwana:basic',     $requested_scopes, true);
+$has_profile   = in_array('buwana:profile',   $requested_scopes, true);
+$has_community = in_array('buwana:community', $requested_scopes, true);
+$has_bioregion = in_array('buwana:bioregion', $requested_scopes, true);
+
+// Helper: only add a claim if the value is non-empty and not the string 'null'
+function add_claim(array &$payload, string $key, $value): void {
+    if ($value !== null && $value !== '' && $value !== 'null') {
+        $payload[$key] = $value;
+    }
+}
+
+// openid base claims — always present
 $id_token_payload = [
-    "iss"  => "https://buwana.ecobricks.org",
-    "sub"  => $sub,
-    "aud"  => $client_id,
-    "exp"  => $exp,
-    "iat"  => $now,
-
-    "email"       => $email,
-    // Standard OIDC name claims
-    "given_name"  => $resolved_given_name,
-    "family_name" => $resolved_family_name,
-    // Extra non-standard alias for compatibility
-    "last_name"   => $resolved_family_name,
-
-    "nonce"       => $nonce,
-    "scope"       => $scope,
-
-    "buwana_id"              => $user_id,
-    "buwana:earthlingEmoji"  => $resolved_emoji,
-    "buwana:community"       => "Planet Earth",
-    "buwana:location.continent" => $continent_code,
+    "iss"   => "https://buwana.ecobricks.org",
+    "sub"   => $sub,
+    "aud"   => $client_id,
+    "exp"   => $exp,
+    "iat"   => $now,
+    "nonce" => $nonce,
+    "scope" => $scope,
 ];
 
-// Pass location and country to ALL apps via both address object and simple claims
-$id_token_payload["address"] = array_filter([
-    "locality" => $resolved_location,
-    "country"  => $resolved_country,
-]);
+// buwana:basic — identity fingerprint
+if ($has_basic) {
+    $id_token_payload["buwana_id"] = $user_id;
+    add_claim($id_token_payload, "email",               $email);
+    add_claim($id_token_payload, "given_name",          $resolved_given_name);
+    add_claim($id_token_payload, "buwana:earthlingEmoji", $resolved_emoji);
+}
 
-$id_token_payload["zoneinfo"] = $resolved_timezone;
+// buwana:profile — extended personal data
+if ($has_profile) {
+    // TODO: remove is_learning_app override once lear_ app updated to use buwana:profile
+    $effective_family = $resolved_family_name;
+    if ($is_learning_app && $effective_family === '') {
+        $effective_family = $resolved_emoji;
+    }
+    add_claim($id_token_payload, "family_name",      $effective_family);
+    add_claim($id_token_payload, "last_name",         $effective_family); // compat alias
+    add_claim($id_token_payload, "created_at",        $created_at);
+    add_claim($id_token_payload, "role",              $role);
+    add_claim($id_token_payload, "gea_status",        $gea_status);
+    add_claim($id_token_payload, "profile_pic",       $profile_pic);
+    add_claim($id_token_payload, "language",          $language_name);
+    add_claim($id_token_payload, "country",           $country_name);
+    add_claim($id_token_payload, "birth_date",        $birth_date);
+    add_claim($id_token_payload, "zoneinfo",          $resolved_timezone);
+    add_claim($id_token_payload, "connected_app_ids", $connected_app_ids);
+    if ($community_id)        $id_token_payload["community_id"]    = (int)$community_id;
+    if ($brikcoin_balance !== null) $id_token_payload["brikcoin_balance"] = (float)$brikcoin_balance;
+}
 
-// Optional flat claims for convenience (e.g. mapping in clients)
-$id_token_payload["city"]    = $resolved_location;
-$id_token_payload["country"] = $resolved_country;
+// buwana:community — resolved community name
+if ($has_community) {
+    add_claim($id_token_payload, "buwana:community", $community_name);
+}
+
+// buwana:bioregion — geographic and watershed data
+if ($has_bioregion) {
+    add_claim($id_token_payload, "continent",          $continent_name);
+    add_claim($id_token_payload, "location_full",      $location_full);
+    add_claim($id_token_payload, "location_watershed", $location_watershed);
+    add_claim($id_token_payload, "watershed_name",     $watershed_name);
+    if ($watershed_id)  $id_token_payload["watershed_id"]  = (int)$watershed_id;
+    if ($location_lat)  $id_token_payload["location_lat"]  = (float)$location_lat;
+    if ($location_long) $id_token_payload["location_long"] = (float)$location_long;
+}
 
 try {
     $id_token = JWT::encode($id_token_payload, $jwt_private_key, 'RS256', $client_id);

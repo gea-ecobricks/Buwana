@@ -70,8 +70,8 @@ if (strpos($scope, 'openid') === false) {
     exit;
 }
 
-// --- Validate client_id exists in DB
-$stmt = $buwana_conn->prepare("SELECT client_id FROM apps_tb WHERE client_id = ?");
+// --- Validate client_id exists in DB and fetch registered scopes
+$stmt = $buwana_conn->prepare("SELECT client_id, scopes FROM apps_tb WHERE client_id = ?");
 $stmt->bind_param("s", $client_id);
 $stmt->execute();
 $stmt->store_result();
@@ -81,7 +81,23 @@ if ($stmt->num_rows !== 1) {
     echo json_encode(['error' => 'invalid_client_id']);
     exit;
 }
+$stmt->bind_result($db_client_id, $registered_scopes_str);
+$stmt->fetch();
 $stmt->close();
+
+// --- Validate requested buwana:* scopes are permitted for this app
+$registered_scopes = preg_split('/[\s,]+/', trim($registered_scopes_str ?? ''), -1, PREG_SPLIT_NO_EMPTY);
+$requested_scopes  = preg_split('/[\s,]+/', trim($scope), -1, PREG_SPLIT_NO_EMPTY);
+$buwana_scope_names = ['buwana:basic', 'buwana:profile', 'buwana:community', 'buwana:bioregion'];
+
+foreach ($requested_scopes as $s) {
+    if (in_array($s, $buwana_scope_names, true) && !in_array($s, $registered_scopes, true)) {
+        auth_log("Scope not permitted for $client_id: $s");
+        http_response_code(400);
+        echo json_encode(['error' => 'invalid_scope', 'scope' => $s]);
+        exit;
+    }
+}
 
 // --- Handle prompt=none (silent check) ---
 if ($prompt === 'none' && !isset($_SESSION['user_id'])) {
