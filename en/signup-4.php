@@ -210,7 +210,6 @@ https://github.com/gea-ecobricks/buwana/-->
                         <!-- Map preview wrapper: starts as 40px preview, expands on click -->
                         <div id="map-preview-wrapper" style="display:none;">
                             <div id="map"></div>
-                            <button id="map-close-btn" type="button" aria-label="Collapse map">✕</button>
                             <div id="show-map-text">
                                 <span data-lang-id="009-see-local-map">▼ Don't know your local river? See a local map of rivers around you.</span>
                             </div>
@@ -475,7 +474,6 @@ $(function () {
         // Show the 40px preview wrapper so Leaflet has real dimensions to work with
         $('#map-preview-wrapper').show();
         $('#map').removeClass('map-expanded');
-        $('#map-close-btn').hide();
         $('#show-map-text').show();
         $('#map-info').hide();
 
@@ -552,19 +550,26 @@ function fetchNearbyRivers(lat, lon) {
         })
     );
 
-    const overpassUrl = `https://overpass-api.de/api/interpreter?data=[out:json];(way["waterway"="river"](around:5000,${lat},${lon});relation["waterway"="river"](around:5000,${lat},${lon}););out geom;`;
+    // Relations span entire watersheds (can be hundreds of km of geometry) and are
+    // the main cause of 504 timeouts. Way elements are sufficient for local rivers.
+    const overpassQuery = `[out:json][timeout:25];(way["waterway"="river"](around:5000,${lat},${lon});way["waterway"="stream"](around:5000,${lat},${lon}););out geom;`;
 
-    $.get(overpassUrl, function (data) {
+    const overpassEndpoints = [
+        'https://overpass-api.de/api/interpreter',
+        'https://overpass.kumi.systems/api/interpreter'
+    ];
+
+    function handleRiverData(data) {
         let rivers = data.elements;
         let uniqueRivers = new Set();
 
         rivers.forEach((river) => {
-            let riverName = river.tags.name;
+            let riverName = river.tags && river.tags.name;
             if (riverName && !uniqueRivers.has(riverName) && !riverName.toLowerCase().includes("unnamed")) {
                 uniqueRivers.add(riverName);
 
                 let coordinates = river.geometry.map(point => [point.lat, point.lon]);
-                let riverPolyline = L.polyline(coordinates, { color: 'blue' }).addTo(riverLayerGroup).bindPopup(riverName);
+                L.polyline(coordinates, { color: 'blue' }).addTo(riverLayerGroup).bindPopup(riverName);
                 riverLayerGroup.addTo(map);
 
                 $("#watershed_select").append(new Option(riverName, riverName));
@@ -584,34 +589,22 @@ function fetchNearbyRivers(lat, lon) {
 
         // Add special fixed options (translated)
         $("#watershed_select").append(
-            $('<option>', {
-                value: "watershed unknown",
-                text: translations['011c-unknown'] || "I don't know",
-                'data-lang-id': "011c-unknown"
-            })
+            $('<option>', { value: "watershed unknown", text: translations['011c-unknown'] || "I don't know", 'data-lang-id': "011c-unknown" })
         );
         $("#watershed_select").append(
-            $('<option>', {
-                value: "watershed unseen",
-                text: translations['011d-unseen'] || "I don't see my river",
-                'data-lang-id': "011d-unseen"
-            })
+            $('<option>', { value: "watershed unseen", text: translations['011d-unseen'] || "I don't see my river", 'data-lang-id': "011d-unseen" })
         );
         $("#watershed_select").append(
-            $('<option>', {
-                value: "no watershed",
-                text: translations['011e-no-watershed'] || "No watershed",
-                'data-lang-id': "011e-no-watershed"
-            })
+            $('<option>', { value: "no watershed", text: translations['011e-no-watershed'] || "No watershed", 'data-lang-id': "011e-no-watershed" })
         );
 
-        // Re-run switchLanguage to apply ARIA/placeholder translations on new items
         if (window.currentLanguage) {
             switchLanguage(window.currentLanguage);
         }
+    }
 
-    }).fail(function () {
-        console.error("Failed to fetch data from Overpass API.");
+    function handleRiverError() {
+        console.error("Failed to fetch river data from all Overpass endpoints.");
         $("#watershed_select").append(
             $('<option>', {
                 value: "",
@@ -620,12 +613,34 @@ function fetchNearbyRivers(lat, lon) {
                 'data-lang-id': "011f-fetch-error"
             })
         );
-
-        // Ensure translation applied to error
         if (window.currentLanguage) {
             switchLanguage(window.currentLanguage);
         }
-    });
+    }
+
+    function tryOverpassEndpoint(index) {
+        if (index >= overpassEndpoints.length) {
+            handleRiverError();
+            return;
+        }
+
+        $.ajax({
+            url: overpassEndpoints[index],
+            method: 'GET',
+            data: { data: overpassQuery },
+            dataType: 'json',
+            timeout: 20000, // 20s client-side cut-off
+            success: function (data) {
+                handleRiverData(data);
+            },
+            error: function (xhr) {
+                console.warn(`Overpass endpoint ${overpassEndpoints[index]} failed (${xhr.status}), trying next...`);
+                tryOverpassEndpoint(index + 1);
+            }
+        });
+    }
+
+    tryOverpassEndpoint(0);
 }
 
 
@@ -641,7 +656,6 @@ function fetchNearbyRivers(lat, lon) {
     // Expand map to full size when the show-map-text bar is clicked
     $('#show-map-text').on('click', function () {
         $('#map').addClass('map-expanded');
-        $('#map-close-btn').show();
         $('#show-map-text').hide();
         $('#map-info').show();
         if (typeof map !== 'undefined') {
@@ -649,19 +663,15 @@ function fetchNearbyRivers(lat, lon) {
         }
     });
 
-    // Collapse map back to 40px preview — triggered by X button or the map-info bar
-    function collapseMap() {
+    // Collapse map back to 40px preview when the map-info bar is clicked
+    $('#map-info').on('click', function () {
         $('#map').removeClass('map-expanded');
-        $('#map-close-btn').hide();
         $('#map-info').hide();
         $('#show-map-text').show();
         if (typeof map !== 'undefined') {
             setTimeout(function () { map.invalidateSize(); }, 370);
         }
-    }
-
-    $('#map-close-btn').on('click', collapseMap);
-    $('#map-info').on('click', collapseMap);
+    });
 
     // Submit form when Enter key is pressed
     $('#user-signup-form').on('keydown', function(e) {
