@@ -198,25 +198,27 @@ https://github.com/gea-ecobricks/buwana/-->
                 <!-- MAP AND WATERSHED SEARCH SECTION -->
                 <div class="form-item" id="watershed-map-section" style="display: none; margin-top:20px;">
                     <label for="watershed_select" data-lang-id="007-in-which-river-basin">In which river basin do you live?</label><br>
-                    <select id="watershed_select" name="watershed_select" aria-label="Watershed Select" style="width: 100%; padding: 10px;">
-                        <option value="" disabled <?= empty($location_watershed) ? 'selected' : '' ?> data-lang-id="010-select-your-river">👉 Select your local river...</option>
-                        <?php if (!empty($location_watershed)) : ?>
-                            <option value="<?= htmlspecialchars($location_watershed) ?>" selected><?= htmlspecialchars($location_watershed) ?></option>
-                        <?php endif; ?>
-                    </select>
 
-                    <!-- Map preview wrapper: starts as 40px preview, expands on click -->
-                    <div id="map-preview-wrapper" style="display:none;">
-                        <div id="map"></div>
-                        <button id="map-close-btn" type="button" aria-label="Collapse map">✕</button>
-                        <div id="show-map-text">
-                            <span data-lang-id="009-see-local-map">Don't know your local river? See a local map of rivers around you.</span>
+                    <div id="watershed-select-group">
+                        <select id="watershed_select" name="watershed_select" aria-label="Watershed Select">
+                            <option value="" disabled <?= empty($location_watershed) ? 'selected' : '' ?> data-lang-id="010-select-your-river">👉 Select your local river...</option>
+                            <?php if (!empty($location_watershed)) : ?>
+                                <option value="<?= htmlspecialchars($location_watershed) ?>" selected><?= htmlspecialchars($location_watershed) ?></option>
+                            <?php endif; ?>
+                        </select>
+
+                        <!-- Map preview wrapper: starts as 40px preview, expands on click -->
+                        <div id="map-preview-wrapper" style="display:none;">
+                            <div id="map"></div>
+                            <button id="map-close-btn" type="button" aria-label="Collapse map">✕</button>
+                            <div id="show-map-text">
+                                <span data-lang-id="009-see-local-map">▼ Don't know your local river? See a local map of rivers around you.</span>
+                            </div>
+                            <div id="map-info" data-lang-id="008-the map shows" style="display:none;">
+                                <span>↑ The map shows rivers and streams around you. Choose the one to which your water flows.</span>
+                            </div>
                         </div>
                     </div>
-
-                    <p id="map-info" class="form-caption" data-lang-id="008-the map shows" style="display:none;margin-top:6px;">
-                        ℹ️ The map shows rivers and streams around you. Choose the one to which your water flows.
-                    </p>
                 </div>
 
 
@@ -647,16 +649,19 @@ function fetchNearbyRivers(lat, lon) {
         }
     });
 
-    // Collapse map back to 40px preview when the X button is clicked
-    $('#map-close-btn').on('click', function () {
+    // Collapse map back to 40px preview — triggered by X button or the map-info bar
+    function collapseMap() {
         $('#map').removeClass('map-expanded');
         $('#map-close-btn').hide();
-        $('#show-map-text').show();
         $('#map-info').hide();
+        $('#show-map-text').show();
         if (typeof map !== 'undefined') {
             setTimeout(function () { map.invalidateSize(); }, 370);
         }
-    });
+    }
+
+    $('#map-close-btn').on('click', collapseMap);
+    $('#map-info').on('click', collapseMap);
 
     // Submit form when Enter key is pressed
     $('#user-signup-form').on('keydown', function(e) {

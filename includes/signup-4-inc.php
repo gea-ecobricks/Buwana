@@ -62,16 +62,31 @@
 /* margin: -37px 0px 20px 12px; */
 /* } */
 
+/* ── Watershed select + map group ── */
+#watershed-select-group {
+    border: 2px solid var(--button-2-1);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+/* Strip the select's own border/radius so it sits flush inside the group */
+#watershed_select {
+    border: none !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    padding: 10px !important;
+}
+
 /* ── Map preview wrapper ── */
 #map-preview-wrapper {
     position: relative;
-    margin-top: 4px;
 }
 
 #map {
     height: 40px;
     width: 100%;
-    border-radius: 6px 6px 0 0;
+    border-radius: 0;
     transition: height 0.35s ease;
 }
 
@@ -79,19 +94,29 @@
     height: 350px;
 }
 
-#show-map-text {
+/* Shared style for both the collapsed bar and the expanded info bar */
+#show-map-text,
+#map-info {
     background: var(--button-2-1);
     padding: 8px 14px;
-    cursor: pointer;
-    border-radius: 0 0 6px 6px;
     user-select: none;
 }
 
-#show-map-text:hover {
+#show-map-text {
+    cursor: pointer;
+}
+
+#map-info {
+    cursor: pointer;
+}
+
+#show-map-text:hover,
+#map-info:hover {
     opacity: 0.88;
 }
 
-#show-map-text span {
+#show-map-text span,
+#map-info span {
     color: #ffffff;
     font-family: "Mulish", sans-serif;
     font-size: 0.88em;
