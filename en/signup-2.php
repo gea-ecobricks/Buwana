@@ -70,7 +70,7 @@ if ($stmt_lookup_user) {
 
 
 
-// ✅ Check if signup is already completed
+// ✅ Check if signup is already completed test
 if (!is_null($earthling_emoji) && trim($earthling_emoji) !== '') {
     // Redirect because signup is already done
     $login_url = build_login_url($app_info['app_login_url'], [
