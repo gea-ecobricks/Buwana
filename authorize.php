@@ -70,8 +70,8 @@ if (strpos($scope, 'openid') === false) {
     exit;
 }
 
-// --- Validate client_id exists in DB and fetch registered scopes
-$stmt = $buwana_conn->prepare("SELECT client_id, scopes FROM apps_tb WHERE client_id = ?");
+// --- Validate client_id exists in DB and fetch registered scopes + redirect URIs
+$stmt = $buwana_conn->prepare("SELECT client_id, scopes, redirect_uris FROM apps_tb WHERE client_id = ?");
 $stmt->bind_param("s", $client_id);
 $stmt->execute();
 $stmt->store_result();
@@ -81,9 +81,23 @@ if ($stmt->num_rows !== 1) {
     echo json_encode(['error' => 'invalid_client_id']);
     exit;
 }
-$stmt->bind_result($db_client_id, $registered_scopes_str);
+$stmt->bind_result($db_client_id, $registered_scopes_str, $registered_redirect_uris_str);
 $stmt->fetch();
 $stmt->close();
+
+// --- Validate redirect_uri against registered whitelist
+if (!empty(trim($registered_redirect_uris_str))) {
+    $registered_uris = array_map('trim', explode(',', $registered_redirect_uris_str));
+    $normalized_registered = array_map('normalize_redirect_uri', $registered_uris);
+    if (!in_array($redirect_uri, $normalized_registered, true)) {
+        auth_log("Rejecting request: redirect_uri not in registered list for client_id=$client_id. Supplied: $redirect_uri");
+        http_response_code(400);
+        echo json_encode(['error' => 'invalid_redirect_uri']);
+        exit;
+    }
+} else {
+    auth_log("WARNING: client_id=$client_id has no registered redirect_uris — whitelist check skipped (backward compat)");
+}
 
 // --- Validate requested buwana:* scopes are permitted for this app
 $registered_scopes = preg_split('/[\s,]+/', trim($registered_scopes_str ?? ''), -1, PREG_SPLIT_NO_EMPTY);

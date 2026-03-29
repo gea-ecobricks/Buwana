@@ -162,7 +162,7 @@ if ($grant_type !== 'authorization_code' || !$code || !$redirect_uri || !$client
  */
 
 $stmt = $buwana_conn->prepare(
-    "SELECT client_secret, jwt_private_key, app_name
+    "SELECT client_secret, jwt_private_key, app_name, redirect_uris
      FROM apps_tb
      WHERE client_id = ?"
 );
@@ -174,11 +174,25 @@ if ($stmt->num_rows !== 1) {
     echo json_encode(["error" => "invalid_client"]);
     exit;
 }
-$stmt->bind_result($expected_secret, $jwt_private_key, $app_name);
+$stmt->bind_result($expected_secret, $jwt_private_key, $app_name, $registered_redirect_uris_str);
 $stmt->fetch();
 $stmt->close();
 
 $app_name = $app_name ?: $client_id; // fallback if app_name is null/empty
+
+// --- Validate redirect_uri against registered whitelist (defense-in-depth)
+if (!empty(trim($registered_redirect_uris_str))) {
+    $registered_uris = array_map('trim', explode(',', $registered_redirect_uris_str));
+    $normalized_registered = array_map('normalize_redirect_uri', $registered_uris);
+    if (!in_array($redirect_uri, $normalized_registered, true)) {
+        auth_log("Rejecting token request: redirect_uri not in registered list for client_id=$client_id. Supplied: $redirect_uri");
+        http_response_code(400);
+        echo json_encode(["error" => "invalid_redirect_uri"]);
+        exit;
+    }
+} else {
+    auth_log("WARNING: client_id=$client_id has no registered redirect_uris — whitelist check skipped (backward compat)");
+}
 
 /**
  * ================================
