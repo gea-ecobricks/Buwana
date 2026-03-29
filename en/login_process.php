@@ -4,6 +4,13 @@ require_once '../earthenAuth_helper.php'; // Include the authentication helper f
 // Start a secure session with regeneration to prevent session fixation
 startSecureSession();
 
+// PART 0: CSRF token validation
+$submitted_csrf = $_POST['csrf_token'] ?? '';
+if (empty($submitted_csrf) || !hash_equals($_SESSION['csrf_token'] ?? '', $submitted_csrf)) {
+    http_response_code(403);
+    die('Invalid or missing CSRF token.');
+}
+
 // PART 1: Grab user credentials from the login form submission
 $credential_key = $_POST['credential_key'] ?? '';
 $password = $_POST['password'] ?? '';

@@ -113,10 +113,6 @@ $jwt_public_key  = $app['jwt_public_key'] ?? '';
 $jwt_private_key = $app['jwt_private_key'] ?? '';
 $client_secret   = $app['client_secret'] ?? '';
 
-// Override $app_info so the page header shows this app's branding,
-// not whatever client_id was cached in the session (e.g. from a concurrent GoBrik session).
-$app_info = array_merge($app_info, array_filter($app, function($v) { return $v !== null && $v !== ''; }));
-
 if (!$app) {
     echo "<p>App not found or access denied.</p>";
     exit();
@@ -131,27 +127,29 @@ if (!$app) {
     <style>
       .top-wrapper {
         background: var(--darker-lighter);
+        overflow: visible; /* allow back-arrow ::before rotation to escape the border-radius */
       }
       .back-arrow {
         display: flex;
         align-items: center;
         text-decoration: none;
         color: var(--text-color);
-        padding: 8px 24px 8px 4px;
+        padding: 12px 24px 12px 8px;
         margin-right: 8px;
         flex-shrink: 0;
-        min-height: 46px;
+        min-height: 52px;
         overflow: visible;
       }
+      /* Square ::before: 16×16 rotated 45° → ~22.6px bounding box, fits easily */
       .back-arrow::before {
         content: '';
-        display: inline-block;
-        width: 14px;
-        height: 28px;
-        border-left: 2px solid currentColor;
-        border-bottom: 2px solid currentColor;
+        display: block;
+        width: 16px;
+        height: 16px;
+        border-left: 2.5px solid currentColor;
+        border-bottom: 2.5px solid currentColor;
         transform: rotate(45deg);
-        margin-right: 10px;
+        margin-right: 14px;
         flex-shrink: 0;
       }
       .back-arrow:hover { opacity: 0.6; }

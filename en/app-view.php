@@ -431,7 +431,13 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(r => r.json())
         .then(list => {
           if (!list.length) { resultsBox.style.display = 'none'; return; }
-          resultsBox.innerHTML = list.map(u => '<div data-id="' + u.buwana_id + '">' + u.full_name + '</div>').join('');
+          resultsBox.innerHTML = '';
+          list.forEach(function(u) {
+            var div = document.createElement('div');
+            div.dataset.id = u.buwana_id;
+            div.textContent = u.full_name;
+            resultsBox.appendChild(div);
+          });
           resultsBox.style.display = 'block';
         });
     });
@@ -452,7 +458,11 @@ document.addEventListener('DOMContentLoaded', function() {
       var div = document.createElement('div');
       div.className = 'owner-box';
       div.dataset.id = id;
-      div.innerHTML = '<span class="remove-owner">✖</span>' + name;
+      var removeSpan = document.createElement('span');
+      removeSpan.className = 'remove-owner';
+      removeSpan.textContent = '✖';
+      div.appendChild(removeSpan);
+      div.appendChild(document.createTextNode(name));
       selectedBox.appendChild(div);
       selectedOwners[id] = name;
       searchInput.value = '';
@@ -485,7 +495,11 @@ document.addEventListener('DOMContentLoaded', function() {
             var div = document.createElement('div');
             div.className = 'owner-box current-owner';
             div.dataset.id = k;
-            div.innerHTML = '<span class="remove-current-owner">✖</span>' + selectedOwners[k];
+            var removeSpan2 = document.createElement('span');
+            removeSpan2.className = 'remove-current-owner';
+            removeSpan2.textContent = '✖';
+            div.appendChild(removeSpan2);
+            div.appendChild(document.createTextNode(selectedOwners[k]));
             document.getElementById('current-owners').appendChild(div);
           }
           selectedOwners = {};
@@ -553,14 +567,19 @@ document.addEventListener('DOMContentLoaded', function() {
   $('#userTable tbody').on('click', 'tr', function() {
     var user = $(this).data('user');
     if (!user) return;
-    var html = '<table class="basic-table">';
+    var table = document.createElement('table');
+    table.className = 'basic-table';
     for (var k in user) {
       if (Object.prototype.hasOwnProperty.call(user, k)) {
-        html += '<tr><th>' + k + '</th><td>' + user[k] + '</td></tr>';
+        var row = table.insertRow();
+        var th = document.createElement('th');
+        th.textContent = k;
+        row.appendChild(th);
+        var td = row.insertCell();
+        td.textContent = user[k];
       }
     }
-    html += '</table>';
-    openModal(html);
+    openModal(table.outerHTML);
   });
 });
 </script>

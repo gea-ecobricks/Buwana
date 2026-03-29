@@ -65,10 +65,21 @@
         display: none;
     }
 
-    /* Center the Buwana logo within the remaining header space */
+    /* Center the Buwana/app logo within the remaining header space.
+       margin-right: 70px was there to counterbalance the hamburger button;
+       once the hamburger is hidden the offset must be cleared so the
+       background-position:center re-centres relative to the full flex column. */
     body.sidebar-is-open #buwana-top-logo,
     body.sidebar-is-open #top-app-logo {
-        justify-content: center;
+        margin-right: 0 !important;
+        margin-left: 0 !important;
+    }
+
+    /* Keep the settings/login buttons pinned to the top-right of the
+       adjusted (shifted) header — they must not drift with the logo. */
+    body.sidebar-is-open #function-icons {
+        flex-shrink: 0;
+        margin-left: auto;
     }
 
     /* X close button — top-right corner of the sidebar */

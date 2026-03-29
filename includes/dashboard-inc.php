@@ -210,4 +210,23 @@
 
 </style>
 
-<?php require_once ("../header-2026b.php");?>
+<?php
+// BAM pages always show BAM's own branding — override any app_info that
+// may have been set by fetch_app_info.php (which can drift to GoBrik via session).
+$bam_client_id = 'buwana_mgr_001';
+if (isset($buwana_conn)) {
+    $bam_stmt = $buwana_conn->prepare("SELECT * FROM apps_tb WHERE client_id = ?");
+    if ($bam_stmt) {
+        $bam_stmt->bind_param('s', $bam_client_id);
+        $bam_stmt->execute();
+        $bam_result = $bam_stmt->get_result();
+        if ($bam_result && $bam_result->num_rows > 0) {
+            $bam_row = $bam_result->fetch_assoc();
+            // Merge: non-null DB values override any previous $app_info defaults
+            $app_info = array_merge($app_info, array_filter($bam_row, function($v) { return $v !== null && $v !== ''; }));
+        }
+        $bam_stmt->close();
+    }
+}
+require_once ("../header-2026b.php");
+?>

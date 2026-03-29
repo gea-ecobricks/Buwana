@@ -39,27 +39,17 @@ These bugs can be exploited immediately and may result in account takeover, data
 
 ---
 
-### BUG-04 — CSRF Token Generated But Never Validated on Login
+### ~~BUG-04 — CSRF Token Generated But Never Validated on Login~~ ✓ FIXED
 - **Component**: App Manager (BAM)
 - **Files**: `en/login_process.php` (entire file), `en/login.php` (token generation)
-- **Description**: `login.php` generates a CSRF token and injects it into the login form. However, `login_process.php` never checks this token — the submitted token is silently ignored.
-- **Impact**: An attacker can forge a login request on behalf of an authenticated user from a malicious third-party page, bypassing the CSRF protection entirely.
-- **Fix**: At the top of `login_process.php`, retrieve `$_SESSION['csrf_token']` and compare it to `$_POST['csrf_token']`. Reject the request with HTTP 403 if they do not match.
+- **Fixed**: Added CSRF validation at the top of `login_process.php` (before any credential checks). Uses `hash_equals()` to compare `$_SESSION['csrf_token']` against `$_POST['csrf_token']`; returns HTTP 403 and halts on mismatch.
 
 ---
 
-### BUG-05 — DOM-Based XSS in App View Page
+### ~~BUG-05 — DOM-Based XSS in App View Page~~ ✓ FIXED
 - **Component**: App Manager (BAM)
 - **Files**: `en/app-view.php` (lines 434, 455, 488, 559)
-- **Description**: User-controlled data from API responses is assigned directly to `innerHTML` without sanitization:
-  ```js
-  resultsBox.innerHTML = list.map(u =>
-    '<div data-id="' + u.buwana_id + '">' + u.full_name + '</div>'
-  ).join('');
-  ```
-  If any user's `full_name` (or other field) contains HTML/JS, it will execute in the browser.
-- **Impact**: Arbitrary JavaScript execution in the context of the logged-in app manager, leading to session hijacking or account takeover.
-- **Fix**: Replace `innerHTML` with `textContent` for plain text values, or use `createElement`/`appendChild` for structured elements. Do not build HTML by string concatenation from server data.
+- **Fixed**: Replaced all four unsafe `innerHTML` string-concatenation patterns with `createElement`/`textContent`/`appendChild` DOM methods. User-supplied values (`full_name`, object keys/values) are now always assigned via `textContent`, never interpolated into HTML strings.
 
 ---
 
