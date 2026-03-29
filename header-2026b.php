@@ -414,9 +414,9 @@ $menu_app_slogan = htmlspecialchars($app_info['app_slogan'] ?? '');
   <span class="status-circle" style="background-color: fuchsia;" title="About the app"></span>
 </div>
 
-<div class="app-slogan" style="margin-top:30px; font-size:1.1em; font-family: 'Mulish', sans-serif;"><?= $menu_app_slogan ?></div>
+<div class="app-slogan"><?= $menu_app_slogan ?></div>
 
-<div style="margin:auto;margin-bottom: 5px;font-size: smaller; text-align: center; font-family: 'Arvo', serif;" data-lang-id="1000-authentication-by">Authentication by Buwana</div>
+<div class="menu-auth-by" data-lang-id="1000-authentication-by">Authentication by Buwana</div>
 
 <p class="app-slogan-links" style="margin:0 auto 12px; text-align:center; font-family: 'Mulish', sans-serif; font-size:0.85rem;">
     <a href="javascript:void(0);" onclick="openAboutBuwana(); return false;">Buwana</a>

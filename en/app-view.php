@@ -3,6 +3,10 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 session_start();
 
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 require_once '../vendor/autoload.php';
 require_once '../buwanaconn_env.php';
 require_once '../fetch_app_info.php';
@@ -120,6 +124,12 @@ if (!$is_owner && !$is_connected) {
 }
 
 if ($is_owner && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_flags'])) {
+    $submitted_csrf = $_POST['csrf_token'] ?? '';
+    if (empty($submitted_csrf) || !hash_equals($_SESSION['csrf_token'] ?? '', $submitted_csrf)) {
+        http_response_code(403);
+        echo json_encode(['error' => 'invalid_csrf_token']);
+        exit();
+    }
     $is_active = isset($_POST['is_active']) ? 1 : 0;
     $allow_signup = isset($_POST['allow_signup']) ? 1 : 0;
     $sql = "UPDATE apps_tb a
@@ -247,6 +257,7 @@ if ($is_owner) {
 <div id="form-submission-box" class="landing-page-form">
   <div class="form-container">
     <div class="top-wrapper">
+      <a class="back-arrow" href="dashboard.php" title="Back to Dashboard"></a>
       <div>
         <div class="login-status"><?= htmlspecialchars($earthling_emoji) ?> Logged in as <?= htmlspecialchars($first_name) ?></div>
         <div style="font-size:0.9em;color:grey;margin-bottom: auto;">
@@ -374,6 +385,7 @@ if ($is_owner) {
 </div>
 </div> <!-- closes main -->
 <script>
+var buwanaCsrfToken = <?php echo json_encode($_SESSION['csrf_token']); ?>;
 document.addEventListener('DOMContentLoaded', function() {
   if (typeof updateChartTextColor === 'function') {
     updateChartTextColor();
@@ -541,7 +553,8 @@ document.addEventListener('DOMContentLoaded', function() {
       body: new URLSearchParams({
         app_id: <?= intval($app_id) ?>,
         field: field,
-        value: val
+        value: val,
+        csrf_token: buwanaCsrfToken
       })
     }).then(r => r.json()).then(d => {
       if (!d.success) {

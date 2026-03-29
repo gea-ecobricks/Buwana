@@ -56,7 +56,6 @@
     }
 
     body.sidebar-is-open #header {
-        left: 360px;
         width: calc(100vw - 360px);
     }
 
@@ -117,4 +116,26 @@
         overflow-y: auto;
         padding-top: 10px;
     }
+}
+
+/* ── Side-menu typography — shared across GoBrik and Buwana ──────────────── */
+
+/* App slogan line beneath the menu items */
+.app-slogan {
+    font-family: 'Mulish', sans-serif;
+    color: var(--subdued-text);
+    font-size: 1.0em;
+    margin-top: 30px;
+    text-align: center;
+    padding: 0 12px;
+}
+
+/* "Authentication by …" / "Authentication by Buwana" label */
+.menu-auth-by {
+    font-family: 'Arvo', serif;
+    font-size: smaller;
+    text-align: center;
+    margin: auto;
+    margin-bottom: 5px;
+    color: var(--subdued-text);
 }

@@ -126,33 +126,8 @@ if (!$app) {
     <?php require_once("../includes/dashboard-inc.php"); ?>
     <style>
       .top-wrapper {
-        background: var(--darker-lighter);
-        overflow: visible; /* allow back-arrow ::before rotation to escape the border-radius */
+        background: var(--darker-lighter); /* page-specific background override */
       }
-      .back-arrow {
-        display: flex;
-        align-items: center;
-        text-decoration: none;
-        color: var(--text-color);
-        padding: 12px 24px 12px 8px;
-        margin-right: 8px;
-        flex-shrink: 0;
-        min-height: 52px;
-        overflow: visible;
-      }
-      /* Square ::before: 16×16 rotated 45° → ~22.6px bounding box, fits easily */
-      .back-arrow::before {
-        content: '';
-        display: block;
-        width: 16px;
-        height: 16px;
-        border-left: 2.5px solid currentColor;
-        border-bottom: 2.5px solid currentColor;
-        transform: rotate(45deg);
-        margin-right: 14px;
-        flex-shrink: 0;
-      }
-      .back-arrow:hover { opacity: 0.6; }
       #status-box {
         display: flex;
         flex-direction: column;

@@ -98,21 +98,17 @@ These bugs represent significant vulnerabilities or defects that should be resol
 
 ---
 
-### BUG-09 — Duplicate Code Block in `token.php` Silently Overwrites Variables
+### ~~BUG-09 — Duplicate Code Block in `token.php` Silently Overwrites Variables~~ ✓ FIXED
 - **Component**: SSO / OIDC
 - **Files**: `token.php` (lines 119-155)
-- **Description**: The "INPUT GATHERING" section appears twice. The second occurrence re-declares and overwrites variables set by the first. This is likely an incomplete refactor that left dead or conflicting code in place.
-- **Impact**: Unpredictable behavior depending on which code path executes; potential for subtle auth logic bugs that are hard to diagnose.
-- **Fix**: Remove the duplicate section. Audit the surrounding logic to confirm only one code path handles input parsing.
+- **Fixed**: Removed the duplicate SECTION 3 "INPUT GATHERING & NORMALIZATION" block. The second occurrence (which re-declared and overwrote all six input variables and re-ran the early-exit validation) has been deleted. One canonical code path remains.
 
 ---
 
-### BUG-10 — CSRF Protection Missing on App Management POST Forms
+### ~~BUG-10 — CSRF Protection Missing on App Management POST Forms~~ ✓ FIXED
 - **Component**: App Manager (BAM)
-- **Files**: `en/app-view.php` (lines 122-137)
-- **Description**: POST forms that toggle `is_active` and `allow_signup` flags submit without including or validating a CSRF token.
-- **Impact**: An attacker can trick an authenticated app manager into disabling their own app or enabling open signups via a forged cross-origin request.
-- **Fix**: Add a CSRF token to each POST form and validate it server-side at the handler.
+- **Files**: `en/app-view.php` (lines 122-137), `api/update_app_flag.php`
+- **Fixed**: CSRF token is now generated at session start in `app-view.php` and embedded as `buwanaCsrfToken` in the page JS. The `updateFlag` fetch call passes it as `csrf_token` in the POST body; `api/update_app_flag.php` validates it with `hash_equals()` and returns HTTP 403 on mismatch. The legacy `update_flags` PHP POST handler in `app-view.php` also validates the token before executing any DB write.
 
 ---
 

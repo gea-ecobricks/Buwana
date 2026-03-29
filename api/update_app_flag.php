@@ -3,6 +3,13 @@ session_start();
 require_once '../buwanaconn_env.php';
 header('Content-Type: application/json');
 
+$submitted_csrf = $_POST['csrf_token'] ?? '';
+if (empty($submitted_csrf) || !hash_equals($_SESSION['csrf_token'] ?? '', $submitted_csrf)) {
+    http_response_code(403);
+    echo json_encode(['success' => false, 'error' => 'invalid_csrf_token']);
+    exit();
+}
+
 $buwana_id = intval($_SESSION['buwana_id'] ?? 0);
 $app_id = intval($_POST['app_id'] ?? 0);
 $field = $_POST['field'] ?? '';

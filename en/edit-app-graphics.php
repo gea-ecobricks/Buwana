@@ -92,6 +92,7 @@ if (!$app) {
 <div id="form-submission-box" class="landing-page-form">
   <div class="form-container">
     <div class="top-wrapper">
+      <a class="back-arrow" href="app-view.php?app_id=<?= intval($app_id) ?>" title="Back to <?= htmlspecialchars($app['app_display_name']) ?>"></a>
       <div>
         <div class="login-status"><?= htmlspecialchars($earthling_emoji) ?> Logged in as <?= htmlspecialchars($first_name) ?></div>
         <div style="font-size:0.9em;color:grey;margin-bottom: auto;">

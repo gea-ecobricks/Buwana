@@ -131,29 +131,6 @@ if ($grant_type !== 'authorization_code' || !$code || !$redirect_uri || !$client
     exit;
 }
 
-
-/**
- * ================================
- * SECTION 3: INPUT GATHERING & NORMALIZATION
- * This section collects POST parameters and normalizes the redirect URI.
- * ================================
- */
-
-$grant_type    = $_POST['grant_type']    ?? '';
-$code          = $_POST['code']          ?? '';
-$redirect_uri  = $_POST['redirect_uri']  ?? '';
-$client_id     = $_POST['client_id']     ?? '';
-$client_secret = $_POST['client_secret'] ?? '';
-$code_verifier = $_POST['code_verifier'] ?? '';
-
-$redirect_uri = normalize_redirect_uri($redirect_uri);
-
-if ($grant_type !== 'authorization_code' || !$code || !$redirect_uri || !$client_id) {
-    http_response_code(400);
-    echo json_encode(["error" => "invalid_request"]);
-    exit;
-}
-
 /**
  * ================================
  * SECTION 4: CLIENT LOOKUP
