@@ -113,6 +113,10 @@ $jwt_public_key  = $app['jwt_public_key'] ?? '';
 $jwt_private_key = $app['jwt_private_key'] ?? '';
 $client_secret   = $app['client_secret'] ?? '';
 
+// Override $app_info so the page header shows this app's branding,
+// not whatever client_id was cached in the session (e.g. from a concurrent GoBrik session).
+$app_info = array_merge($app_info, array_filter($app, function($v) { return $v !== null && $v !== ''; }));
+
 if (!$app) {
     echo "<p>App not found or access denied.</p>";
     exit();
@@ -133,20 +137,22 @@ if (!$app) {
         align-items: center;
         text-decoration: none;
         color: var(--text-color);
-        padding: 5px 24px 5px 4px;
+        padding: 8px 24px 8px 4px;
         margin-right: 8px;
         flex-shrink: 0;
-        min-height: 36px;
+        min-height: 46px;
+        overflow: visible;
       }
       .back-arrow::before {
         content: '';
         display: inline-block;
-        width: 18px;
-        height: 36px;
+        width: 14px;
+        height: 28px;
         border-left: 2px solid currentColor;
         border-bottom: 2px solid currentColor;
         transform: rotate(45deg);
-        margin-right: 7px;
+        margin-right: 10px;
+        flex-shrink: 0;
       }
       .back-arrow:hover { opacity: 0.6; }
       #status-box {
