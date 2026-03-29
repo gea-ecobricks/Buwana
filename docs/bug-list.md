@@ -25,17 +25,10 @@ These bugs can be exploited immediately and may result in account takeover, data
 
 ---
 
-### BUG-03 — Path Traversal via `lang` GET Parameter
+### ~~BUG-03 — Path Traversal via `lang` GET Parameter~~ ✓ FIXED
 - **Component**: SSO / OIDC
-- **Files**: `authorize.php` (line 46, line 124)
-- **Description**: The `lang` parameter is read directly from `$_GET` with no allowlist check:
-  ```php
-  $lang = $_GET['lang'] ?? 'en';
-  header("Location: /$lang/login.php");
-  ```
-  An attacker can supply values like `../../../etc` causing redirection to unintended paths, or serve a spoofed login page at a crafted URL.
-- **Impact**: Phishing via open redirect to attacker-controlled login pages; potential information disclosure depending on server configuration.
-- **Fix**: Validate `$lang` against an explicit allowlist: `['en', 'fr', 'es', 'id']`. Default to `'en'` for unrecognized values.
+- **Files**: `authorize.php` (line 46)
+- **Fixed**: Added an allowlist check immediately after the `$lang` assignment. Any value not in `['en', 'fr', 'es', 'id']` is silently replaced with `'en'`, preventing traversal sequences from reaching the `header("Location: /$lang/login.php")` redirect.
 
 ---
 

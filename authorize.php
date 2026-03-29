@@ -44,6 +44,9 @@ $scope                 = $_GET['scope'] ?? '';
 $state                 = $_GET['state'] ?? null;
 $nonce                 = $_GET['nonce'] ?? null;
 $lang                  = $_GET['lang'] ?? 'en';
+if (!in_array($lang, ['en', 'fr', 'es', 'id'], true)) {
+    $lang = 'en';
+}
 $code_challenge        = $_GET['code_challenge'] ?? null;
 $code_challenge_method = $_GET['code_challenge_method'] ?? null;
 $prompt                = $_GET['prompt'] ?? '';
