@@ -16,7 +16,7 @@ $scope_options = [
 
 $lang = basename(dirname($_SERVER['SCRIPT_NAME']));
 $page = 'edit-app-core.php';
-$version = '0.12';
+$version = '0.2';
 $lastModified = date('Y-m-d\TH:i:s\Z', filemtime(__FILE__));
 
 if (empty($_SESSION['buwana_id'])) {
