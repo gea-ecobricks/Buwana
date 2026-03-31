@@ -84,3 +84,97 @@ function closeMainMenu() { closeSettings(); }
 window.openSideMenu  = openSideMenu;
 window.closeSettings = closeSettings;
 window.closeMainMenu = closeMainMenu;
+
+// ── Expand-panel overrides for header-2026b ────────────────────────────────
+// Loaded after core-2025.js. Overrides showLangSelector / showLoginSelector /
+// hideLangSelector / hideLoginSelector / loginOrMenu so that clicking the lang
+// or app icon expands #settings-buttons downward instead of showing the old
+// separate slider elements.  Also closes the expand panel if the user clicks
+// outside or toggles the settings bar closed.
+// --------------------------------------------------------------------------
+
+(function () {
+    document.addEventListener('DOMContentLoaded', function () {
+        var expandPanel    = document.getElementById('settings-expand-panel');
+        var settingsButtons = document.getElementById('settings-buttons');
+
+        // Only activate on pages that use the 2026b expand-panel structure.
+        if (!expandPanel || !settingsButtons) return;
+
+        // Duration (ms) of the bapFadeUp CSS animation — must match header-2026.css.
+        var FADE_MS = 160;
+
+        // ── Open a named grid section inside the expand panel ──────────────
+        function openSection(sectionId) {
+            var target = document.getElementById(sectionId);
+            if (!target) return;
+
+            // Same button clicked again → toggle closed
+            if (target.classList.contains('grid-visible')) {
+                closePanel();
+                return;
+            }
+
+            // Instantly reset any other open section (no animation needed)
+            expandPanel.querySelectorAll('.expand-grid-section').forEach(function (s) {
+                s.classList.remove('grid-visible', 'grid-hiding');
+            });
+
+            // Expand the wrapper and show the section
+            expandPanel.classList.add('panel-open');
+            settingsButtons.classList.add('panel-expanded');
+            target.classList.add('grid-visible');
+
+            // Defer click-outside listener so this click doesn't immediately close
+            setTimeout(function () {
+                document.addEventListener('click', clickOutsideHandler);
+            }, 0);
+        }
+
+        // ── Collapse with animation: fade content out, then shrink wrapper ──
+        function closePanel() {
+            var visible = expandPanel.querySelector('.grid-visible');
+            if (!visible) return;
+
+            // 1. Fade the grid content out
+            visible.classList.remove('grid-visible');
+            visible.classList.add('grid-hiding');
+
+            // 2. After the fade, collapse the max-height wrapper
+            setTimeout(function () {
+                visible.classList.remove('grid-hiding');
+                expandPanel.classList.remove('panel-open');
+                settingsButtons.classList.remove('panel-expanded');
+            }, FADE_MS);
+
+            document.removeEventListener('click', clickOutsideHandler);
+        }
+
+        function clickOutsideHandler(e) {
+            if (!settingsButtons.contains(e.target)) {
+                closePanel();
+            }
+        }
+
+        // ── Override core-2025.js public API ──────────────────────────────
+        window.showLangSelector  = function () { openSection('language-menu-slider'); };
+        window.hideLangSelector  = function () { closePanel(); };
+        window.showLoginSelector = function () { openSection('login-menu-slider'); };
+        window.hideLoginSelector = function () { closePanel(); };
+
+        window.loginOrMenu = function (loginUrl, loggedIn) {
+            if (loggedIn) {
+                openSection('login-menu-slider');
+            } else {
+                window.location.href = loginUrl;
+            }
+        };
+
+        // Close expand panel when user slides the settings bar closed
+        var origToggle = window.toggleSettingsMenu;
+        window.toggleSettingsMenu = function () {
+            closePanel();
+            if (typeof origToggle === 'function') origToggle();
+        };
+    });
+}());

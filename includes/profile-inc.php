@@ -226,7 +226,7 @@ color: var(--text-color);
 
 
 
-<?php require_once ("../header-2026.php");?>
+<?php require_once ("../header-2026b.php");?>
 
 
 

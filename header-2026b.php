@@ -60,6 +60,10 @@ if ($is_logged_in && isset($buwana_conn) && $buwana_id) {
         $stmt->close();
     }
 }
+// Sort apps by icon filename length (ascending) for deterministic ordering
+usort($connected_apps, fn($a, $b) =>
+    strlen(basename($a['app_icon_url'])) - strlen(basename($b['app_icon_url']))
+);
     ?>
 
 
@@ -460,79 +464,110 @@ $menu_app_slogan = htmlspecialchars($app_info['app_slogan'] ?? '');
   <!-- Right Settings Buttons -->
   <div id="function-icons">
     <div id="settings-buttons" aria-label="App Settings Panel">
-      <button type="button"
-              id="top-settings-button"
-              aria-label="Toggle settings menu"
-              aria-expanded="false"
-              aria-controls="language-menu-slider login-menu-slider"
-              onclick="toggleSettingsMenu()">
-      </button>
 
-      <!-- Language Switch -->
-      <div id="language-code"
-           onclick="showLangSelector()"
-           role="button"
-           tabindex="0"
-           aria-haspopup="true"
-           aria-expanded="false"
-           aria-controls="language-menu-slider"
-           aria-label="Switch language">
-        🌐 <span data-lang-id="000-language-code">EN</span>
-      </div>
+      <!-- Top row of controls (always visible when settings panel is open) -->
+      <div id="settings-btn-row">
+        <button type="button"
+                id="top-settings-button"
+                aria-label="Toggle settings menu"
+                aria-expanded="false"
+                onclick="toggleSettingsMenu()">
+        </button>
 
-      <!-- Login Services -->
-      <button type="button"
-              class="top-login-button"
-              onclick="loginOrMenu('<?php echo htmlspecialchars($app_login_url); ?>', <?php echo $is_logged_in ? 'true' : 'false'; ?>)"
-              aria-haspopup="true"
-              aria-expanded="false"
-              aria-controls="login-menu-slider"
-              aria-label="Login Services">
-      </button>
+        <!-- Language Switch -->
+        <div id="language-code"
+             onclick="showLangSelector()"
+             role="button"
+             tabindex="0"
+             aria-haspopup="true"
+             aria-expanded="false"
+             aria-label="Switch language">
+          🌐 <span data-lang-id="000-language-code">EN</span>
+        </div>
 
-      <!-- Dark Mode Toggle -->
-      <dark-mode-toggle
-        id="dark-mode-toggle-5"
-        class="slider"
-        style="min-width:82px;margin-top:-5px;margin-bottom:-15px;"
-        appearance="toggle">
-      </dark-mode-toggle>
-    </div>
-  </div>
-</div>
+        <!-- Login Services -->
+        <button type="button"
+                class="top-login-button"
+                onclick="loginOrMenu('<?php echo htmlspecialchars($app_login_url); ?>', <?php echo $is_logged_in ? 'true' : 'false'; ?>)"
+                aria-haspopup="true"
+                aria-expanded="false"
+                aria-label="Login Services">
+        </button>
 
+        <!-- Dark Mode Toggle -->
+        <dark-mode-toggle
+          id="dark-mode-toggle-5"
+          class="slider"
+          style="min-width:82px;margin-top:-5px;margin-bottom:-15px;"
+          appearance="toggle">
+        </dark-mode-toggle>
+      </div><!-- /settings-btn-row -->
 
-<!-- LANGUAGE SELECTOR -->
-<div id="language-menu-slider" class="top-slider-menu" tabindex="-1" role="menu">
-  <div class="lang-selector-box">
-    <button onclick="navigateTo('../id/<?php echo $active_url; ?>')">🇮🇩 IN</button>
-    <button onclick="navigateTo('../es/<?php echo $active_url; ?>')">🇪🇸 ES</button>
-    <button onclick="navigateTo('../fr/<?php echo $active_url; ?>')">🇫🇷 FR</button>
-    <button onclick="navigateTo('../en/<?php echo $active_url; ?>')">🇬🇧 EN</button>
-    <button onclick="navigateTo('../ar/<?php echo $active_url; ?>')">🇸🇦 AR</button>
-    <button onclick="navigateTo('../zh/<?php echo $active_url; ?>')">🇨🇳 中文</button>
-    <button onclick="navigateTo('../de/<?php echo $active_url; ?>')">🇩🇪 DE</button>
-  </div>
-</div>
+      <!-- Expandable grid panel — grows downward when lang or app button is clicked -->
+      <div id="settings-expand-panel">
 
-
-
-<!-- LOGIN SELECTOR -->
-<div id="login-menu-slider" class="top-slider-menu" tabindex="-1" role="menu">
-  <div class="login-selector-box" id="login-selector-box">
-    <?php if ($is_logged_in && !empty($connected_apps)): ?>
-        <?php foreach ($connected_apps as $connected_app): ?>
-            <a class="login-app-logo" target="_blank" href="<?= htmlspecialchars($connected_app['app_login_url']) ?>"
-               alt="<?= htmlspecialchars($connected_app['app_display_name']) ?> App Logo"
-               title="<?= htmlspecialchars($connected_app['app_display_name']) ?> <?= htmlspecialchars($connected_app['app_version']) ?> | <?= htmlspecialchars($connected_app['app_slogan']) ?>"
-               data-light-logo="<?= htmlspecialchars($connected_app['app_icon_url']) ?>"
-               data-dark-logo="<?= htmlspecialchars($connected_app['app_icon_url']) ?>">
+        <!-- Language Grid -->
+        <div id="language-menu-slider" class="expand-grid-section" tabindex="-1" role="menu">
+          <div class="bap-header">
+            <span class="bap-title">Switch Language</span>
+          </div>
+          <div class="bap-grid">
+            <a class="bap-lang-tile" href="../id/<?php echo htmlspecialchars($active_url); ?>" onclick="navigateTo('../id/<?php echo htmlspecialchars($active_url); ?>'); return false;">
+              <div class="bap-lang-flag">🇮🇩</div>
+              <span class="bap-app-name">Bahasa</span>
             </a>
-        <?php endforeach; ?>
-    <?php endif; ?>
-  </div>
-  <button type="button" class="login-selector-close" id="login-selector-close" onclick="hideLoginSelector()" aria-label="Close login selector"></button>
-</div>
+            <a class="bap-lang-tile" href="../es/<?php echo htmlspecialchars($active_url); ?>" onclick="navigateTo('../es/<?php echo htmlspecialchars($active_url); ?>'); return false;">
+              <div class="bap-lang-flag">🇪🇸</div>
+              <span class="bap-app-name">Español</span>
+            </a>
+            <a class="bap-lang-tile" href="../fr/<?php echo htmlspecialchars($active_url); ?>" onclick="navigateTo('../fr/<?php echo htmlspecialchars($active_url); ?>'); return false;">
+              <div class="bap-lang-flag">🇫🇷</div>
+              <span class="bap-app-name">Français</span>
+            </a>
+            <a class="bap-lang-tile" href="../en/<?php echo htmlspecialchars($active_url); ?>" onclick="navigateTo('../en/<?php echo htmlspecialchars($active_url); ?>'); return false;">
+              <div class="bap-lang-flag">🇬🇧</div>
+              <span class="bap-app-name">English</span>
+            </a>
+            <a class="bap-lang-tile" href="../ar/<?php echo htmlspecialchars($active_url); ?>" onclick="navigateTo('../ar/<?php echo htmlspecialchars($active_url); ?>'); return false;">
+              <div class="bap-lang-flag">🇸🇦</div>
+              <span class="bap-app-name">العربية</span>
+            </a>
+            <a class="bap-lang-tile" href="../zh/<?php echo htmlspecialchars($active_url); ?>" onclick="navigateTo('../zh/<?php echo htmlspecialchars($active_url); ?>'); return false;">
+              <div class="bap-lang-flag">🇨🇳</div>
+              <span class="bap-app-name">中文</span>
+            </a>
+            <a class="bap-lang-tile" href="../de/<?php echo htmlspecialchars($active_url); ?>" onclick="navigateTo('../de/<?php echo htmlspecialchars($active_url); ?>'); return false;">
+              <div class="bap-lang-flag">🇩🇪</div>
+              <span class="bap-app-name">Deutsch</span>
+            </a>
+          </div>
+        </div><!-- /language-menu-slider -->
+
+        <!-- My Buwana Apps Grid -->
+        <div id="login-menu-slider" class="expand-grid-section" tabindex="-1" role="dialog" aria-label="My Buwana Apps">
+          <div class="bap-header">
+            <span class="bap-title">My Buwana Apps</span>
+          </div>
+          <div class="bap-grid" id="login-selector-box">
+            <?php if ($is_logged_in && !empty($connected_apps)): ?>
+                <?php foreach ($connected_apps as $connected_app): ?>
+                    <a class="bap-app-tile" target="_blank" href="<?= htmlspecialchars($connected_app['app_login_url']) ?>"
+                       title="<?= htmlspecialchars($connected_app['app_display_name']) ?> | <?= htmlspecialchars($connected_app['app_slogan']) ?>">
+                      <div class="bap-app-icon"
+                           data-light-logo="<?= htmlspecialchars($connected_app['app_icon_url']) ?>"
+                           data-dark-logo="<?= htmlspecialchars($connected_app['app_icon_url']) ?>">
+                      </div>
+                      <span class="bap-app-name"><?= htmlspecialchars($connected_app['app_display_name']) ?></span>
+                    </a>
+                <?php endforeach; ?>
+            <?php endif; ?>
+          </div>
+        </div><!-- /login-menu-slider -->
+
+      </div><!-- /settings-expand-panel -->
+    </div><!-- /settings-buttons -->
+  </div><!-- /function-icons -->
+</div><!-- /header -->
 
 <!-- Sidebar JS — overrides openSideMenu() and closeSettings() with sidebar behaviour -->
 <script src="../js/header-2026.js?v=1"></script>

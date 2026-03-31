@@ -139,3 +139,106 @@
     margin-bottom: 5px;
     color: var(--subdued-text);
 }
+
+/* ── Settings Expand Panel (header-2026b) ────────────────────────────────── *
+ *                                                                             *
+ *  The #settings-buttons div acts as the whole panel. It is position:        *
+ *  absolute within #header, slides in from the right (existing behaviour),   *
+ *  and now also GROWS DOWNWARD when lang or app button is clicked.            *
+ *  The grids (#language-menu-slider, #login-menu-slider) live inside it.     *
+ * -------------------------------------------------------------------------- */
+
+/* Wider off-screen start position (panel is min 300px wide now) */
+#settings-buttons {
+    right: -320px;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0;
+    min-width: 300px;
+    /* keep existing: transition: right 0.4s ease — added box-shadow below */
+    transition: right 0.4s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    overflow: hidden; /* clip expand panel to rounded corners */
+}
+
+/* The top button row — always visible when settings panel is slid in */
+#settings-btn-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 10px 12px 10px 12px;
+    gap: 4px;
+    transition: border-bottom 0.2s ease;
+}
+
+/* Divider between button row and expanded grid */
+#settings-buttons.panel-expanded #settings-btn-row {
+    border-bottom: 1px solid var(--divider-line);
+}
+
+/* Elevated styling when a grid is showing */
+#settings-buttons.panel-expanded {
+    box-shadow: 0 10px 36px rgba(0, 0, 0, 0.26);
+    border: 2px solid var(--settings-border);
+}
+
+/* The wrapper that expands vertically */
+#settings-expand-panel {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#settings-expand-panel.panel-open {
+    max-height: 560px;
+}
+
+/* Each interchangeable grid section (lang or apps) */
+.expand-grid-section {
+    display: none;
+    padding: 12px;
+}
+
+.expand-grid-section.grid-visible {
+    display: block;
+    animation: bapFadeDown 0.26s ease forwards;
+}
+
+.expand-grid-section.grid-hiding {
+    display: block;
+    animation: bapFadeUp 0.16s ease forwards;
+}
+
+@keyframes bapFadeDown {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bapFadeUp {
+    from { opacity: 1; transform: translateY(0); }
+    to   { opacity: 0; transform: translateY(-4px); }
+}
+
+/* Language tile — mirrors .bap-app-tile from main.css */
+.bap-lang-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 4px 7px;
+    border-radius: 12px;
+    background-color: var(--app-tile-bg);
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.18s ease;
+    gap: 4px;
+    border: none;
+    color: var(--text-color);
+}
+
+.bap-lang-tile:hover {
+    background-color: var(--app-tile-bg-hover);
+}
+
+.bap-lang-flag {
+    font-size: 1.55rem;
+    line-height: 1.15;
+}
