@@ -148,9 +148,10 @@
  *  The grids (#language-menu-slider, #login-menu-slider) live inside it.     *
  * -------------------------------------------------------------------------- */
 
-/* Wider off-screen start position (panel is min 300px wide now) */
+/* Keep original off-screen start — with min-width 300px the gear icon
+   still peeks ~55px into the viewport (300 - 245 = 55px visible) */
 #settings-buttons {
-    right: -320px;
+    right: -245px;
     flex-direction: column;
     align-items: stretch;
     padding: 0;
