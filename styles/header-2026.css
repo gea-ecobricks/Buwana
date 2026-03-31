@@ -178,7 +178,7 @@
 
 /* Elevated styling when a grid is showing */
 #settings-buttons.panel-expanded {
-    box-shadow: 0 10px 36px rgba(0, 0, 0, 0.26);
+    box-shadow: 0 10px 36px var(--expand-glow);
     border: 2px solid var(--settings-border);
 }
 
@@ -242,4 +242,45 @@
 .bap-lang-flag {
     font-size: 1.55rem;
     line-height: 1.15;
+}
+
+/* ── Fix: reset ID-level positioning that main.css applies to the slider
+   elements when they are repurposed as inline expand-panel sections ────────
+   #language-menu-slider has position:absolute + opacity:0 + visibility:hidden
+   #login-menu-slider   has position:fixed   + display:none
+   Both specificity wins over .expand-grid-section, so we need double-ID
+   selectors (specificity 2-0-0) + !important to neutralise main.css rules. */
+
+#settings-expand-panel #language-menu-slider,
+#settings-expand-panel #login-menu-slider {
+    position:         static      !important;
+    display:          none        !important;
+    opacity:          1           !important;
+    visibility:       visible     !important;
+    transform:        none        !important;
+    box-shadow:       none        !important;
+    border:           none        !important;
+    background-color: transparent !important;
+    padding:          0           !important;
+    margin:           0           !important;
+    width:            auto        !important;
+    max-width:        none        !important;
+    top:              auto        !important;
+    right:            auto        !important;
+    z-index:          auto        !important;
+    border-radius:    0           !important;
+    transition:       none        !important;
+    flex-direction:   column      !important;
+}
+
+#settings-expand-panel #language-menu-slider.grid-visible,
+#settings-expand-panel #login-menu-slider.grid-visible {
+    display:   block !important;
+    animation: bapFadeDown 0.26s ease forwards;
+}
+
+#settings-expand-panel #language-menu-slider.grid-hiding,
+#settings-expand-panel #login-menu-slider.grid-hiding {
+    display:   block !important;
+    animation: bapFadeUp 0.16s ease forwards;
 }

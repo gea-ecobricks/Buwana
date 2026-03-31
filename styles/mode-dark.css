@@ -140,6 +140,7 @@
 
     --app-tile-bg: rgba(255, 255, 255, 0.06);
     --app-tile-bg-hover: rgba(255, 255, 255, 0.14);
+    --expand-glow: rgba(1, 97, 145, 0.70);
  }
 
       .modal-content-box {
