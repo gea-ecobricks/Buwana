@@ -85,6 +85,45 @@ window.openSideMenu  = openSideMenu;
 window.closeSettings = closeSettings;
 window.closeMainMenu = closeMainMenu;
 
+// ── Alert Modal (non-fullscreen confirmation dialog) ─────────────────────────
+
+function alertModalKeyHandler(e) {
+    if (e.key === 'Escape') closeAlertModal();
+}
+
+function openAlertModal(options) {
+    var modal = document.getElementById('alert-modal');
+    if (!modal) return;
+    var title   = modal.querySelector('.alert-modal-title');
+    var body    = document.getElementById('alert-modal-body');
+    var actions = document.getElementById('alert-modal-actions');
+
+    if (title)   title.textContent = options.title   || '';
+    if (body)    body.innerHTML    = options.body     || '';
+    if (actions) actions.innerHTML = options.actions  || '';
+
+    modal.style.display = 'flex';
+    document.body.classList.add('no-scroll');
+
+    modal.onclick = function (e) {
+        if (e.target === modal) closeAlertModal();
+    };
+
+    document.addEventListener('keydown', alertModalKeyHandler);
+
+    if (options.onOpen) options.onOpen(modal);
+}
+
+function closeAlertModal() {
+    var modal = document.getElementById('alert-modal');
+    if (modal) modal.style.display = 'none';
+    document.body.classList.remove('no-scroll');
+    document.removeEventListener('keydown', alertModalKeyHandler);
+}
+
+window.openAlertModal  = openAlertModal;
+window.closeAlertModal = closeAlertModal;
+
 // ── Expand-panel overrides for header-2026b ────────────────────────────────
 // Loaded after core-2025.js. Overrides showLangSelector / showLoginSelector /
 // hideLangSelector / hideLoginSelector / loginOrMenu so that clicking the lang

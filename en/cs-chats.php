@@ -11,7 +11,7 @@ $lang = strtolower(preg_replace('/[^a-z]/i', '', $langInput) ?: 'en');
 $version = '0.43';
 $page = 'cs-chats';
 $lastModified = date("Y-m-d\\TH:i:s\\Z", filemtime(__FILE__));
-$headerFile = __DIR__ . '/../header-2026.php';
+$headerFile = __DIR__ . '/../header-2026b.php';
 $footerFile = __DIR__ . '/../footer-2026.php';
 
 $session_buwana_id = $_SESSION['buwana_id'] ?? null;

@@ -77,14 +77,16 @@ $buwana_id = intval($_SESSION['buwana_id']);
 
 $first_name = '';
 $earthling_emoji = '';
-$stmt = $buwana_conn->prepare("SELECT first_name, earthling_emoji FROM users_tb WHERE buwana_id = ?");
+$role = '';
+$stmt = $buwana_conn->prepare("SELECT first_name, earthling_emoji, role FROM users_tb WHERE buwana_id = ?");
 if ($stmt) {
     $stmt->bind_param('i', $buwana_id);
     $stmt->execute();
-    $stmt->bind_result($first_name, $earthling_emoji);
+    $stmt->bind_result($first_name, $earthling_emoji, $role);
     $stmt->fetch();
     $stmt->close();
 }
+$isAdminUser = stripos($role ?? '', 'admin') !== false;
 
 
 // Fetch app and verify the user either owns or is connected to it
@@ -193,6 +195,7 @@ if ($is_owner) {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="../scripts/jquery.dataTables.js"></script>
     <?php require_once("../includes/dashboard-inc.php"); ?>
+    <?php require_once("../includes/app-view-inc.php"); ?>
     <style>
       .top-wrapper {
         background: var(--darker-lighter);
@@ -380,6 +383,15 @@ if ($is_owner) {
         </div>
         <p >This turns off all logins and signups on your app</p>
       </div>
+
+<?php if ($isAdminUser): ?>
+      <div class="delete-app-section">
+        <button type="button" class="delete-app-trigger-btn" onclick="openDeleteAppModal()">
+          Delete App
+        </button>
+      </div>
+<?php endif; ?>
+
 <?php endif; ?>
   </div>
 </div>
@@ -596,6 +608,6 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 </script>
-<?php require_once("../footer-2025.php"); ?>
+<?php require_once("../footer-2026.php"); ?>
 </body>
 </html>

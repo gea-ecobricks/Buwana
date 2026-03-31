@@ -298,6 +298,18 @@ max-height: 200px;
 
 </div>
 
+<!-- ALERT MODAL — non-fullscreen dialog for confirmations & warnings -->
+<div id="alert-modal" class="alert-modal-backdrop" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="alert-modal-title">
+    <div class="alert-modal-box">
+        <div class="alert-modal-header">
+            <h4 class="alert-modal-title" id="alert-modal-title"></h4>
+            <button type="button" class="alert-modal-close" onclick="closeAlertModal()" aria-label="Close">&times;</button>
+        </div>
+        <div class="alert-modal-body" id="alert-modal-body"></div>
+        <div class="alert-modal-actions" id="alert-modal-actions"></div>
+    </div>
+</div>
+
 
 
 <!-- MAIN MENU — sidebar on desktop (≥ 1201px), full-screen overlay on mobile -->
