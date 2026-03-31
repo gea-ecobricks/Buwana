@@ -253,7 +253,7 @@ ul li, ol li {
     position: relative;
     top: 0;
     /*background: var(--top-header);*/
-    z-index: 20;
+    z-index: 45; /* raised from 20 — must exceed .form-container (20) so settings panel drawers always paint on top */
     display: flex;
     align-items: center;
     justify-content: space-between;
