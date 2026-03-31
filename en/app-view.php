@@ -13,7 +13,7 @@ require_once '../fetch_app_info.php';
 
 $lang = basename(dirname($_SERVER['SCRIPT_NAME']));
 $page = 'app-view';
-$version = '0.1';
+$version = '0.2';
 $lastModified = date('Y-m-d\TH:i:s\Z', filemtime(__FILE__));
 
 use Firebase\JWT\JWT;
