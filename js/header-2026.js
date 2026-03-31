@@ -131,21 +131,25 @@ window.closeMainMenu = closeMainMenu;
             }, 0);
         }
 
-        // ── Collapse with animation: fade content out, then shrink wrapper ──
+        // ── Collapse with animation: fade content and shrink wrapper simultaneously ──
         function closePanel() {
             var visible = expandPanel.querySelector('.grid-visible');
             if (!visible) return;
 
-            // 1. Fade the grid content out
+            // Start content fade and panel collapse at the same time.
+            // This prevents the sudden layout snap that occurs when display:none
+            // is applied at the end of the fade while max-height only then begins
+            // its 380ms transition (causing the content to "explode" in size).
             visible.classList.remove('grid-visible');
             visible.classList.add('grid-hiding');
+            expandPanel.classList.remove('panel-open');
+            settingsButtons.classList.remove('panel-expanded');
 
-            // 2. After the fade, collapse the max-height wrapper
+            // Clean up after the max-height transition finishes (380ms + buffer).
+            // Content is already opacity:0 at this point (fade took only 160ms).
             setTimeout(function () {
                 visible.classList.remove('grid-hiding');
-                expandPanel.classList.remove('panel-open');
-                settingsButtons.classList.remove('panel-expanded');
-            }, FADE_MS);
+            }, 420);
 
             document.removeEventListener('click', clickOutsideHandler);
         }

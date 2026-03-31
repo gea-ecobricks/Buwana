@@ -390,6 +390,11 @@ $menu_app_slogan = htmlspecialchars($app_info['app_slogan'] ?? '');
    </div>
 
    <div class="menu-page-item">
+     <a href="<?= htmlspecialchars($logout_url) ?>">Log out</a>
+     <span style="margin-right:-8px;" title="Log out">🐳</span>
+   </div>
+
+   <div class="menu-page-item">
        <a href="<?= htmlspecialchars($app_info['app_dashboard_url'] ?? $lang_segment . '/dashboard.php') ?>">Dashboard</a>
        <span class="status-circle" style="background-color: GREEN;" title="Dashboard"></span>
    </div>
@@ -397,11 +402,6 @@ $menu_app_slogan = htmlspecialchars($app_info['app_slogan'] ?? '');
    <div class="menu-page-item">
      <a href="<?= htmlspecialchars($profile_url) ?>">Edit user profile</a>
      <span class="status-circle" style="background-color: LIMEGREEN;" title="Edit profile"></span>
-   </div>
-
-   <div class="menu-page-item">
-     <a href="<?= htmlspecialchars($logout_url) ?>">Log out</a>
-     <span style="margin-right:-8px;" title="Log out">🐳</span>
    </div>
 
  <?php endif; ?>

@@ -807,7 +807,6 @@ border-color: #00a112 !important;
     align-items: center;
     justify-content: space-between;
     padding-bottom: 8px;
-    border-bottom: 1px solid var(--divider-line);
 }
 
 .bap-title {

@@ -283,6 +283,7 @@
 
 #settings-expand-panel #language-menu-slider.grid-hiding,
 #settings-expand-panel #login-menu-slider.grid-hiding {
-    display:   block !important;
+    display:   block   !important;
+    padding:   12px    !important;  /* match grid-visible padding so layout doesn't snap */
     animation: bapFadeUp 0.16s ease forwards;
 }
