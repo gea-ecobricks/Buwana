@@ -162,6 +162,13 @@ window.closeMainMenu = closeMainMenu;
         window.showLoginSelector = function () { openSection('login-menu-slider'); };
         window.hideLoginSelector = function () { closePanel(); };
 
+        // Directly bind language button — bypasses inline onclick resolution ambiguity
+        // caused by the hoisted global function hideLangSelector() in core-2025.js
+        var langCodeBtn = document.getElementById('language-code');
+        if (langCodeBtn) {
+            langCodeBtn.onclick = function () { openSection('language-menu-slider'); };
+        }
+
         window.loginOrMenu = function (loginUrl, loggedIn) {
             if (loggedIn) {
                 openSection('login-menu-slider');
