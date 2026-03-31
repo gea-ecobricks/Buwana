@@ -8,15 +8,20 @@ Organized by category. Within each category, items are listed roughly in priorit
 
 ## 1. Security Hardening
 
-### IMP-01 — Centralized HTTP Security Headers
-- **Files affected**: All entry points (`authorize.php`, `token.php`, `userinfo.php`, `en/*.php`, `api/*.php`)
-- **Description**: No security headers are currently set. A single shared include or web server config should add:
-  - `Strict-Transport-Security: max-age=31536000; includeSubDomains`
-  - `X-Frame-Options: DENY`
-  - `X-Content-Type-Options: nosniff`
-  - `Cache-Control: no-store` (auth endpoints)
-  - `Content-Security-Policy: default-src 'self'; script-src 'self' 'nonce-{nonce}'; ...`
-- **Expected benefit**: Security — eliminates clickjacking, MIME-sniffing, downgrade attacks, and caching of sensitive tokens as a class of vulnerabilities.
+### ~~IMP-01 — Centralized HTTP Security Headers (Stage 1)~~ ✓ DONE
+- **Files affected**: `includes/security-headers.php` (new), `earthenAuth_helper.php`, `authorize.php`, `token.php`, `userinfo.php`
+- **Implemented**: `send_security_headers(bool $is_auth_endpoint)` in `includes/security-headers.php`. Called from `earthenAuth_helper.php` (covers all BAM/login/signup pages) and directly from the three auth endpoints with `$is_auth_endpoint = true` to also set `Cache-Control: no-store`. Headers added: `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Strict-Transport-Security: max-age=31536000; includeSubDomains`, `Cache-Control: no-store` (auth endpoints only).
+
+---
+
+### IMP-01b — Content Security Policy with Nonce System (Stage 2)
+- **Files affected**: `includes/security-headers.php`, all PHP pages with inline `<script>` blocks (`en/*.php`, `includes/*-inc.php`, `header-2026b.php`, etc.)
+- **Description**: Stage 1 left out `Content-Security-Policy` because the codebase uses inline `<script>` blocks throughout. A strict CSP (`default-src 'self'; script-src 'self' 'nonce-{nonce}'`) would block all of these immediately. Stage 2 requires:
+  1. Generate a cryptographic nonce per request in `send_security_headers()` and expose it (e.g. as `$csp_nonce`)
+  2. Add `nonce="<?= $csp_nonce ?>"` to every inline `<script>` tag across all pages and includes
+  3. Move any remaining un-nonceable inline scripts to external `.js` files
+  4. Emit the `Content-Security-Policy` header once the above is complete
+- **Expected benefit**: Security — even if an XSS vulnerability exists, the browser refuses to execute injected scripts. This is the last line of defence against code-injection attacks on the login and OAuth flows.
 
 ---
 

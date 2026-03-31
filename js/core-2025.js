@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 🔐 Toggle login selector
+    // 🔐 Toggle login selector (My Buwana Apps panel)
     window.showLoginSelector = () => {
         const isVisible = loginMenu.classList.contains('menu-slider-visible');
         hideLangSelector();
@@ -148,12 +148,8 @@ document.addEventListener('DOMContentLoaded', () => {
             hideLoginSelector();
         } else {
             loginMenu.classList.add('menu-slider-visible');
-            loginMenu.style.maxHeight = loginMenu.scrollHeight + 'px';
-            loginMenu.style.overflow = 'hidden';
-            loginMenu.style.transition = 'max-height 0.4s ease';
-
             document.addEventListener('click', documentClickListenerLogin);
-            updateHeaderVisuals(); // ✅ Apply background and z-index
+            updateHeaderVisuals();
         }
     };
 
@@ -167,19 +163,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.hideLoginSelector = () => {
         if (loginMenu.classList.contains('menu-slider-visible')) {
-            loginMenu.style.maxHeight = '0';
-            loginMenu.style.overflow = 'hidden';
-            loginMenu.style.transition = 'max-height 0.4s ease';
-
-            setTimeout(() => {
-                loginMenu.classList.remove('menu-slider-visible');
-                loginMenu.style.removeProperty('max-height');
-                loginMenu.style.removeProperty('overflow');
-                loginMenu.style.removeProperty('transition');
-                updateHeaderVisuals();
-            }, 400);
-
+            loginMenu.classList.remove('menu-slider-visible');
             document.removeEventListener('click', documentClickListenerLogin);
+            updateHeaderVisuals();
         }
     };
 
@@ -214,6 +200,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
+    updateLogoElements('.bap-app-icon');
+
     fetch('/api/get_user_app_connections.php')
         .then(resp => resp.json())
         .then(data => {
@@ -223,21 +211,30 @@ document.addEventListener('DOMContentLoaded', () => {
                     box.innerHTML = '';
                     data.apps.forEach(app => {
                         const a = document.createElement('a');
-                        a.className = 'login-app-logo';
+                        a.className = 'bap-app-tile';
                         a.target = '_blank';
                         a.href = app.app_login_url;
-                        a.setAttribute('data-light-logo', app.app_icon_url);
-                        a.setAttribute('data-dark-logo', app.app_icon_url);
-                        a.setAttribute('alt', app.app_display_name + ' App Logo');
-                        a.setAttribute('title', `${app.app_display_name} ${app.app_version} | ${app.app_slogan}`);
+                        a.title = `${app.app_display_name} | ${app.app_slogan}`;
+
+                        const icon = document.createElement('div');
+                        icon.className = 'bap-app-icon';
+                        icon.setAttribute('data-light-logo', app.app_icon_url);
+                        icon.setAttribute('data-dark-logo', app.app_icon_url);
+
+                        const name = document.createElement('span');
+                        name.className = 'bap-app-name';
+                        name.textContent = app.app_display_name;
+
+                        a.appendChild(icon);
+                        a.appendChild(name);
                         box.appendChild(a);
                     });
-                    updateLogoElements('.login-app-logo');
+                    updateLogoElements('.bap-app-icon');
                 }
             }
         });
 
-    document.addEventListener('colorschemechange', () => updateLogoElements('.login-app-logo'));
+    document.addEventListener('colorschemechange', () => updateLogoElements('.bap-app-icon'));
 });
 
 // 🔻 Hide dropdowns on scroll

@@ -584,21 +584,26 @@ max-height: 200px;
 
 
 
-<!-- LOGIN SELECTOR -->
-<div id="login-menu-slider" class="top-slider-menu" tabindex="-1" role="menu">
-  <div class="login-selector-box" id="login-selector-box">
+<!-- MY BUWANA APPS PANEL -->
+<div id="login-menu-slider" class="buwana-apps-panel" tabindex="-1" role="dialog" aria-label="My Buwana Apps">
+  <div class="bap-header">
+    <span class="bap-title">My Buwana Apps</span>
+    <button type="button" class="bap-close-btn" onclick="hideLoginSelector()" aria-label="Close apps panel">✕</button>
+  </div>
+  <div class="bap-grid" id="login-selector-box">
     <?php if ($is_logged_in && !empty($connected_apps)): ?>
         <?php foreach ($connected_apps as $connected_app): ?>
-            <a class="login-app-logo" target="_blank" href="<?= htmlspecialchars($connected_app['app_login_url']) ?>"
-               alt="<?= htmlspecialchars($connected_app['app_display_name']) ?> App Logo"
-               title="<?= htmlspecialchars($connected_app['app_display_name']) ?> <?= htmlspecialchars($connected_app['app_version']) ?> | <?= htmlspecialchars($connected_app['app_slogan']) ?>"
-               data-light-logo="<?= htmlspecialchars($connected_app['app_icon_url']) ?>"
-               data-dark-logo="<?= htmlspecialchars($connected_app['app_icon_url']) ?>">
+            <a class="bap-app-tile" target="_blank" href="<?= htmlspecialchars($connected_app['app_login_url']) ?>"
+               title="<?= htmlspecialchars($connected_app['app_display_name']) ?> | <?= htmlspecialchars($connected_app['app_slogan']) ?>">
+              <div class="bap-app-icon"
+                   data-light-logo="<?= htmlspecialchars($connected_app['app_icon_url']) ?>"
+                   data-dark-logo="<?= htmlspecialchars($connected_app['app_icon_url']) ?>">
+              </div>
+              <span class="bap-app-name"><?= htmlspecialchars($connected_app['app_display_name']) ?></span>
             </a>
         <?php endforeach; ?>
     <?php endif; ?>
   </div>
-  <button type="button" class="login-selector-close" id="login-selector-close" onclick="hideLoginSelector()" aria-label="Close login selector"></button>
 </div>
 
 

@@ -1,6 +1,8 @@
 <?php
 session_start();
 require_once 'buwanaconn_env.php';
+require_once __DIR__ . '/includes/security-headers.php';
+send_security_headers(true);
 
 // 🔒 Log helper
 function auth_log($msg) {

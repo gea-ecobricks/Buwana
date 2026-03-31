@@ -1,6 +1,8 @@
 <?php
 require_once 'vendor/autoload.php';
 require_once 'buwanaconn_env.php';
+require_once __DIR__ . '/includes/security-headers.php';
+send_security_headers(true);
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 

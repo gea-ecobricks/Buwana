@@ -137,6 +137,9 @@
     --fuscia-button: #804280;
     --fuscia-button-over: #a93aa9;
     --facebook: #1d2e53;
+
+    --app-tile-bg: rgba(255, 255, 255, 0.06);
+    --app-tile-bg-hover: rgba(255, 255, 255, 0.14);
  }
 
       .modal-content-box {

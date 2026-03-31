@@ -322,8 +322,7 @@ ul li, ol li {
 }
 
 /* Base state (hidden but in layout) */
-#language-menu-slider,
-#login-menu-slider {
+#language-menu-slider {
     position: absolute;
     top: 0px;
     right: 10px;
@@ -355,8 +354,7 @@ ul li, ol li {
 
 
 /* Selector Containers */
-.lang-selector-box,
-.login-selector-box {
+.lang-selector-box {
     display: flex;
     flex-direction: column;
     gap: normal;
@@ -366,8 +364,7 @@ ul li, ol li {
 }
 
 /* Buttons/Links */
-.lang-selector-box button,
-.login-selector-box a:not(.login-app-logo) {
+.lang-selector-box button {
     background: none;
     border: none;
     font-size: 1em;
@@ -382,17 +379,14 @@ ul li, ol li {
 
 @media screen and (max-width: 700px) {
     /* Buttons/Links */
-    .lang-selector-box button,
-    .login-selector-box a:not(.login-app-logo) {
-
+    .lang-selector-box button {
         font-size: 0.9em;
         padding: 8px 10px;
     }
 }
 
 /* Hover states */
-.lang-selector-box button:hover,
-.login-selector-box a:not(.login-app-logo):hover {
+.lang-selector-box button:hover {
     background-color: var(--hover-bg);
     color: var(--h1);
 }
@@ -779,73 +773,110 @@ border-color: #00a112 !important;
 
   /* ------------
 
-  Login Selector Menu
+  My Buwana Apps Panel
 
   ------------------------*/
 
-
-  #login-menu-slider {
+#login-menu-slider {
     position: fixed;
-    width: 100%;
-    height: auto;
-    top: -35px;
-    background-color: var(--sub-menu);
-    display: flex;
-    flex-flow: row;
-    z-index: 26;
-    color: var(--text-color) !important;
-    transition: 0.3s;
-    margin-top: 0px;
+    top: 58px;
+    right: 12px;
+    width: 300px;
+    max-width: calc(100vw - 24px);
+    background-color: var(--settings-background);
+    border: 2px solid var(--settings-border);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.22);
+    z-index: 35;
     display: none;
-
+    flex-direction: column;
+    padding: 16px;
+    gap: 12px;
 }
 
-
-.login-selector-box {
-  display: flex;
-    flex-flow: row;
-    margin: auto 10px 0px 10px;
-    width: 100%;
-    flex-wrap: wrap;
-    gap: 10px;
+#login-menu-slider.menu-slider-visible {
+    display: flex;
+    top: 58px !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
 }
 
-.login-selector {
+.bap-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--divider-line);
+}
 
-    padding: 10px;
-    background-color: var(--selector-highlight);
-    margin: 10px;
-    border-radius: 10px;
-    border: none;
-    margin-top: auto;
-    color: var(--text-color);
+.bap-title {
     font-family: 'Mulish', sans-serif;
-    text-align: center;
-    font-size: 0.9em;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--subdued-text);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.bap-close-btn {
+    background: none;
+    border: none;
+    color: var(--subdued-text);
+    font-size: 1rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 2px 7px;
+    border-radius: 6px;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.bap-close-btn:hover {
+    background: var(--app-tile-bg-hover);
+    color: var(--text-color);
+}
+
+.bap-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.bap-app-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 6px 8px;
+    border-radius: 12px;
+    background-color: var(--app-tile-bg);
     text-decoration: none;
     cursor: pointer;
+    transition: background-color 0.18s ease;
+    gap: 6px;
 }
 
-.login-selector:hover {
- background-color:var(--selector-highlight-over);
- color: var(--text-color);
- text-decoration: underline;
-
+.bap-app-tile:hover {
+    background-color: var(--app-tile-bg-hover);
 }
 
-/* Close button for login selector */
-.login-selector-close {
-  border: none;
-  width: 40px;
-  height: 30px;
-  margin: 10px auto 0;
-  background: url('../svgs/up-arrow.svg') no-repeat center;
-  background-size: contain;
-  cursor: pointer;
+.bap-app-icon {
+    width: 52px;
+    height: 52px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    border-radius: 10px;
+    flex-shrink: 0;
 }
 
-.login-selector-close:hover {
-  background-image: url('../svgs/up-arrow-over.svg');
+.bap-app-name {
+    font-family: 'Mulish', sans-serif;
+    font-size: 0.72rem;
+    color: var(--text-color);
+    text-align: center;
+    line-height: 1.25;
+    word-break: break-word;
+    max-width: 72px;
 }
 
 
