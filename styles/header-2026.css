@@ -190,7 +190,7 @@
 }
 
 #settings-expand-panel.panel-open {
-    max-height: 560px;
+    max-height: 800px;
 }
 
 /* Each interchangeable grid section (lang or apps) */
