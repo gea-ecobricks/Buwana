@@ -559,6 +559,7 @@ $menu_app_slogan = htmlspecialchars($app_info['app_slogan'] ?? '');
         <div id="login-menu-slider" class="expand-grid-section" tabindex="-1" role="dialog" aria-label="My Buwana Apps">
           <div class="bap-header">
             <span class="bap-title">My Buwana Apps</span>
+            <a href="https://buwana.ecobricks.org/en/index.php" class="bap-add-app" title="Add a new app" aria-label="Add a new app">+</a>
           </div>
           <div class="bap-grid" id="login-selector-box">
             <?php if ($is_logged_in && !empty($connected_apps)): ?>

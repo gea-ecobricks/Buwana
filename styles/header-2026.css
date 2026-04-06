@@ -219,6 +219,33 @@
     to   { opacity: 0; transform: translateY(-4px); }
 }
 
+/* ── App / language drawer header row ───────────────────────────────────── */
+
+.bap-header {
+    display: flex;
+    align-items: center;
+    padding: 0 4px 8px;
+}
+
+/* "+" add-app link — far right of the drawer header */
+.bap-add-app {
+    margin-left: auto;
+    font-size: 1.5rem;
+    line-height: 1;
+    font-weight: 300;
+    color: var(--text-color);
+    text-decoration: none;
+    opacity: 0.55;
+    padding: 0 8px 2px;
+    border-radius: 6px;
+    transition: opacity 0.18s, background 0.2s;
+}
+
+.bap-add-app:hover {
+    opacity: 1;
+    background: rgba(128, 128, 128, 0.15);
+}
+
 /* Language tile — mirrors .bap-app-tile from main.css */
 .bap-lang-tile {
     display: flex;
