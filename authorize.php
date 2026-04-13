@@ -52,6 +52,10 @@ if (!in_array($lang, ['en', 'fr', 'es', 'id'], true)) {
 $code_challenge        = $_GET['code_challenge'] ?? null;
 $code_challenge_method = $_GET['code_challenge_method'] ?? null;
 $prompt                = $_GET['prompt'] ?? '';
+$mode                  = $_GET['mode'] ?? null;
+if (!in_array($mode, ['light', 'dark'], true)) {
+    $mode = null;
+}
 
 // --- Basic parameter validation
 if (!$client_id || !$response_type || !$redirect_uri || !$state || !$nonce) {
@@ -138,9 +142,12 @@ if (!isset($_SESSION['user_id'])) {
         'nonce' => $nonce,
         'lang' => $lang,
         'code_challenge' => $code_challenge,
-        'code_challenge_method' => $code_challenge_method
+        'code_challenge_method' => $code_challenge_method,
+        'mode' => $mode
     ];
-    header("Location: /$lang/login.php");
+    $login_redirect = "/$lang/login.php";
+    if ($mode) $login_redirect .= '?mode=' . urlencode($mode);
+    header("Location: $login_redirect");
     exit;
 }
 

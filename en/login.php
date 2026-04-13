@@ -116,6 +116,10 @@ $code = isset($_GET['code']) ? filter_var($_GET['code'], FILTER_SANITIZE_SPECIAL
 $credential_key = ''; // Initialize $credential_key as empty
 $first_name = '';  // Initialize the first_name variable
 $redirect = isset($_GET['redirect']) ? filter_var($_GET['redirect'], FILTER_SANITIZE_SPECIAL_CHARS) : '';
+$mode = $_GET['mode'] ?? ($_SESSION['pending_oauth_request']['mode'] ?? null);
+if (!in_array($mode, ['light', 'dark'], true)) {
+    $mode = null;
+}
 
 // Check if buwana_id is available and valid to fetch corresponding email and first_name from users_tb
 if (!empty($buwana_id)) {
@@ -157,6 +161,10 @@ echo '<!DOCTYPE html>
 <meta charset="UTF-8">
 
 ';
+
+if ($mode) {
+    echo '<script>(function(){var m=' . json_encode($mode, JSON_HEX_TAG) . ';if(m==="light"||m==="dark"){try{localStorage.setItem("dark-mode-toggle",m);}catch(e){}document.documentElement.setAttribute("data-theme",m);}})();</script>' . "\n";
+}
 
 // JavaScript variables for dynamic use
 echo '<script>';
@@ -205,6 +213,7 @@ echo '</script>';
             <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
             <input type="hidden" name="redirect" value="<?php echo htmlspecialchars($redirect); ?>">
             <input type="hidden" name="status" value="<?php echo htmlspecialchars($status); ?>">
+            <?php if ($mode): ?><input type="hidden" name="mode" value="<?php echo htmlspecialchars($mode); ?>"><?php endif; ?>
             <input type="hidden" name="client_id" value="<?= htmlspecialchars($app_info['client_id']) ?>">
             <input type="hidden" name="response_type" value="id_token">
             <input type="hidden" name="scope" value="openid email profile">

@@ -46,7 +46,7 @@ These bugs can be exploited immediately and may result in account takeover, data
 
 ---
 
-### BUG-06 — Hardcoded `app_id = 5` in User Search API
+### claude — Hardcoded `app_id = 5` in User Search API
 - **Component**: App Manager (BAM)
 - **Files**: `api/search_app_users.php` (line 16)
 - **Description**: The SQL query hardcodes `app_id = 5` regardless of the requesting user's app context:

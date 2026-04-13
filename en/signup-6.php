@@ -106,6 +106,10 @@ Developed and made open source by the Global Ecobrick Alliance
 See our git hub repository for the full code and to help out:
 https://github.com/gea-ecobricks/buwana/-->
 
+<?php
+$mode = $_SESSION['pending_oauth_request']['mode'] ?? null;
+if (!in_array($mode, ['light', 'dark'], true)) $mode = null;
+if ($mode): ?><script>(function(){var m=<?php echo json_encode($mode, JSON_HEX_TAG); ?>;if(m==="light"||m==="dark"){try{localStorage.setItem("dark-mode-toggle",m);}catch(e){}document.documentElement.setAttribute("data-theme",m);}})();</script><?php endif; ?>
 <?php require_once ("../includes/signup-6-inc.php");?>
 
 
