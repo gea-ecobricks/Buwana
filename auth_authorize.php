@@ -10,7 +10,7 @@ $authLogFile = dirname(__DIR__) . 'logs/auth.log';
 function auth_log($message) {
     global $authLogFile;
     if (!file_exists(dirname($authLogFile))) {
-        mkdir(dirname($authLogFile), 0777, true);
+        mkdir(dirname($authLogFile), 0750, true);
     }
     error_log('[' . date('Y-m-d H:i:s') . "] TOKEN: " . $message . PHP_EOL, 3, $authLogFile);
 }

@@ -79,15 +79,10 @@ These bugs represent significant vulnerabilities or defects that should be resol
 
 ---
 
-### BUG-08 — World-Writable Auth Log Directories (0777)
+### ~~BUG-08 — World-Writable Auth Log Directories (0777)~~ ✓ FIXED
 - **Component**: SSO / OIDC
-- **Files**: `token.php` (line 26), `auth_authorize.php` (line 13), `token-with-checks.php` (line 12)
-- **Description**: Log directories for authentication events are created with world-writable permissions:
-  ```php
-  mkdir(dirname($authLogFile), 0777, true);
-  ```
-- **Impact**: Any local system user can read auth logs (containing authentication events, tokens, and user IDs) or tamper with them, compromising audit integrity.
-- **Fix**: Use `0750` (owner read/write/execute, group read/execute, others none) and ensure the web server user owns the directory.
+- **Files**: `token.php`, `auth_authorize.php`, `token-with-checks.php`
+- **Fixed**: Changed all three `mkdir(..., 0777, true)` calls to `mkdir(..., 0750, true)`. Log directories are now readable only by the owner and group, not world-readable or world-writable.
 
 ---
 
@@ -114,16 +109,10 @@ These bugs represent significant vulnerabilities or defects that should be resol
 
 ---
 
-### BUG-12 — `javascript:history.back()` Used as Error Redirect
+### ~~BUG-12 — `javascript:history.back()` Used as Error Redirect~~ ✓ FIXED
 - **Component**: App Manager (BAM)
-- **Files**: `en/app-connect_process.php` (line 218)
-- **Description**:
-  ```php
-  echo "<p><a href='javascript:history.back()'>Try again</a></p>";
-  ```
-  This is output server-side and relies on browser JavaScript behavior as a navigation mechanism.
-- **Impact**: Non-standard and unreliable across environments. If JavaScript is disabled or the page was navigated directly, the link is non-functional. In some browser contexts this pattern can be abused.
-- **Fix**: Redirect to a proper URL via `header("Location: ...")` or output a safe relative URL in the anchor's `href`.
+- **Files**: `en/app-connect_process.php`
+- **Fixed**: Replaced `javascript:history.back()` with a safe relative URL: `/en/app-connect.php?client_id=...`. The `client_id` is output-escaped with `htmlspecialchars()`. The link now works regardless of JavaScript availability.
 
 ---
 
@@ -133,12 +122,10 @@ These bugs have real security or correctness impact but require additional condi
 
 ---
 
-### BUG-13 — Authorization Codes Have No Expiration Check
+### ~~BUG-13 — Authorization Codes Have No Expiration Check~~ ✓ FIXED
 - **Component**: SSO / OIDC
-- **Files**: `token.php` (lines 132-134, 257-260)
-- **Description**: Authorization codes are stored with an `issued_at` timestamp but the token endpoint never checks whether the code has expired. OAuth 2.0 (RFC 6749 §4.1.2) requires codes to expire within a short window (typically 10 minutes).
-- **Impact**: An intercepted authorization code remains valid indefinitely, giving an attacker unlimited time to exchange it for tokens.
-- **Fix**: Add a check: `if (time() - $code_row['issued_at'] > 600) { /* reject */ }`. Delete expired codes in the validation step and via a cleanup cron.
+- **Files**: `token.php` (SECTION 5)
+- **Fixed**: Added `issued_at` to the authorization code SELECT. After fetching the code row, `token.php` now checks `(time() - strtotime($issued_at)) > 600` and returns `authorization_code_expired` (HTTP 400) if the code is older than 10 minutes. Expired codes are deleted immediately on rejection.
 
 ---
 

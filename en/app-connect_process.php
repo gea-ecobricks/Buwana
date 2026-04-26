@@ -215,7 +215,7 @@ if (!$response || empty($response['success'])) {
     $err = $response['error'] ?? 'unknown_error';
     echo "<h2>⚠️ Failed to connect your account</h2>";
     echo "<p>Error: " . htmlspecialchars($err) . "</p>";
-    echo "<p><a href='javascript:history.back()'>Try again</a></p>";
+    echo "<p><a href='/en/app-connect.php?client_id=" . htmlspecialchars($client_id, ENT_QUOTES, 'UTF-8') . "'>Try again</a></p>";
     exit;
 }
 

@@ -25,7 +25,7 @@ function auth_log($message) {
     $log_message = '[' . date('Y-m-d H:i:s') . "] TOKEN: " . $message;
 
     if (!file_exists(dirname($authLogFile))) {
-        mkdir(dirname($authLogFile), 0777, true);
+        mkdir(dirname($authLogFile), 0750, true);
     }
 
     // Write ONLY to the dedicated auth log file
@@ -181,7 +181,7 @@ if (!empty(trim($registered_redirect_uris_str))) {
  */
 
 $stmt = $buwana_conn->prepare(
-    "SELECT user_id, redirect_uri, scope, nonce, code_challenge, code_challenge_method
+    "SELECT user_id, redirect_uri, scope, nonce, code_challenge, code_challenge_method, issued_at
      FROM authorization_codes_tb
      WHERE code = ? AND client_id = ?"
 );
@@ -193,9 +193,20 @@ if ($stmt->num_rows !== 1) {
     echo json_encode(["error" => "invalid_code"]);
     exit;
 }
-$stmt->bind_result($user_id, $stored_redirect_uri, $scope, $nonce, $code_challenge, $code_challenge_method);
+$stmt->bind_result($user_id, $stored_redirect_uri, $scope, $nonce, $code_challenge, $code_challenge_method, $issued_at);
 $stmt->fetch();
 $stmt->close();
+
+if ((time() - strtotime($issued_at)) > 600) {
+    $del = $buwana_conn->prepare("DELETE FROM authorization_codes_tb WHERE code = ?");
+    $del->bind_param('s', $code);
+    $del->execute();
+    $del->close();
+    auth_log("Rejected expired authorization code for client_id=$client_id");
+    http_response_code(400);
+    echo json_encode(["error" => "authorization_code_expired"]);
+    exit;
+}
 
 $stored_redirect_uri = normalize_redirect_uri($stored_redirect_uri);
 
