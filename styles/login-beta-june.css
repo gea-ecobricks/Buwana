@@ -1,0 +1,319 @@
+/*
+ * Login BETA (June) stylesheet — en/login-beta-june.php
+ * ----------------------------------------------------------------------------
+ * An isolated, front-end-only refinement of the live login layout. EVERY rule
+ * is scoped under `.login-beta` so this file cannot affect any other page, and
+ * it overrides the global rules in styles/main.css via specificity (one extra
+ * `.login-beta` ancestor) rather than relying on link order.
+ *
+ * Goals: vertical centering + viewport-height-aware fit, fluid spacing/type via
+ * clamp() + CSS variables, filled float-up labels, dynamic (non-reserved) error
+ * spacing, and short-viewport handling — while preserving Buwana's palette,
+ * imagery and overall mood. Nothing here changes backend/JS behaviour.
+ *
+ * Because the toggle radios were renamed (#password/#code -> #toggle-password/
+ * #toggle-code) to fix duplicate IDs, the toggle-slider state rules that live in
+ * includes/login-inc.php (keyed on the old ids) no longer match; they are
+ * re-declared here for the new ids (see "TOGGLE SLIDER" below).
+ */
+
+/* ---------------------------------------------------------------------------
+   DESIGN TOKENS
+   --------------------------------------------------------------------------- */
+.login-beta {
+  --lb-radius: 12px;
+  --lb-gap: clamp(10px, 2.2vh, 22px);
+  --lb-card-pad-x: clamp(16px, 3vw, 30px);
+  --lb-card-pad-b: clamp(14px, 2.4vh, 24px);
+
+  /* Top image: smaller than the old fixed 170px and height-aware */
+  --lb-image-h: clamp(96px, 14vh, 150px);
+  --lb-image-rise: clamp(-14px, -1.6vh, -6px); /* slight float above card top */
+
+  /* Fluid typography */
+  --lb-title: clamp(1.5rem, 1.15rem + 1.5vw, 2rem);
+  --lb-sub:   clamp(1rem, 0.92rem + 0.45vw, 1.28rem);
+  --lb-input: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+  --lb-label: clamp(0.95rem, 0.9rem + 0.2vw, 1.05rem);
+  --lb-caption: clamp(0.82rem, 0.78rem + 0.2vw, 0.95rem);
+  --lb-btn: clamp(1rem, 0.95rem + 0.4vw, 1.2rem);
+  --lb-error: clamp(0.82rem, 0.78rem + 0.2vw, 0.95rem);
+}
+
+/* ---------------------------------------------------------------------------
+   PANEL / VIEWPORT FIT — vertically centre the card; only very short
+   viewports scroll (handled in the media queries near the bottom).
+   --------------------------------------------------------------------------- */
+.login-beta.page-panel-group {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;       /* centre the card group in the viewport */
+  gap: clamp(12px, 3vh, 28px);
+  padding-block: clamp(12px, 3vh, 32px);
+}
+
+/* Drop the hard-coded `min-height:calc(100vh - 54px)` magic number; let the card
+   size to its content and be centred by the panel group above. */
+.login-beta #form-submission-box.landing-page-form {
+  min-height: auto;
+  justify-content: center;
+  width: 100%;
+}
+
+/* ---------------------------------------------------------------------------
+   CARD
+   --------------------------------------------------------------------------- */
+.login-beta .form-container {
+  width: 100%;
+  max-width: 640px !important;            /* beats login-inc's max-width:800px !important */
+  margin: 0 auto;
+  padding-top: calc(var(--lb-image-h) + clamp(8px, 2vh, 22px)); /* clears floating image */
+  padding-inline: var(--lb-card-pad-x);
+  padding-bottom: var(--lb-card-pad-b);
+  border-radius: 18px;
+}
+
+/* Top image — coupled to --lb-image-h so card padding and image scale together */
+.login-beta .top-page-image {
+  height: var(--lb-image-h);
+  top: var(--lb-image-rise);
+  margin-bottom: 0;                       /* old rule reserved 70px; not needed here */
+}
+
+/* ---------------------------------------------------------------------------
+   TITLE / SUBTITLE
+   --------------------------------------------------------------------------- */
+.login-beta .lb-status-block {
+  text-align: center;
+  width: 100%;
+  margin: 0 auto clamp(10px, 2vh, 18px);
+}
+
+.login-beta #status-message {
+  font-size: var(--lb-title);
+  line-height: 1.25;
+  font-weight: 600;
+}
+
+.login-beta #sub-status-message {
+  font-size: var(--lb-sub);
+  line-height: 1.4;
+  margin-top: clamp(4px, 1vh, 8px);
+  margin-bottom: 0;
+  font-weight: 300;
+}
+
+/* ---------------------------------------------------------------------------
+   FORM ITEMS — joined into one cohesive rounded block (no reserved gaps)
+   --------------------------------------------------------------------------- */
+.login-beta .form-item {
+  max-width: 500px;
+  margin: 0 auto;                         /* flush stack, still centred */
+  border-radius: 0;
+  padding: clamp(10px, 1.6vh, 16px) 12px clamp(8px, 1.4vh, 14px);
+}
+
+.login-beta .lb-item-top {
+  border-radius: var(--lb-radius) var(--lb-radius) 0 0;
+}
+
+.login-beta .lb-item-bottom {
+  border-radius: 0 0 var(--lb-radius) var(--lb-radius);
+}
+
+/* ---------------------------------------------------------------------------
+   INPUTS + ICONS
+   --------------------------------------------------------------------------- */
+.login-beta .lb-float {
+  position: relative;
+}
+
+.login-beta .lb-float input {
+  width: 100%;
+  font-size: var(--lb-input) !important;  /* beats main.css's 18px !important */
+  /* extra top padding makes room for the floated label inside the field */
+  padding: 18px 40px 7px 12px;
+  margin: 0;
+}
+
+/* Credential/password reveal icons (previously inline-styled) */
+.login-beta .toggle-select-key,
+.login-beta .toggle-password {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  cursor: pointer;
+  z-index: 2;
+}
+
+/* ---------------------------------------------------------------------------
+   FILLED FLOAT-UP LABELS (accessible: real <label for>, not placeholder-only)
+   The space placeholder (" ") drives :placeholder-shown without showing text.
+   --------------------------------------------------------------------------- */
+.login-beta .lb-label {
+  position: absolute;
+  left: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  margin: 0;
+  padding: 0;
+  font-size: var(--lb-input);
+  font-family: "Mulish", sans-serif;
+  color: var(--subdued-text);
+  pointer-events: none;                   /* clicks pass through to the input */
+  transition: transform 0.16s ease, font-size 0.16s ease, color 0.16s ease, top 0.16s ease;
+  white-space: nowrap;
+  max-width: calc(100% - 52px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.login-beta .lb-float input:focus + .lb-label,
+.login-beta .lb-float input:not(:placeholder-shown) + .lb-label {
+  top: 8px;
+  transform: translateY(0) scale(0.78);
+  transform-origin: left top;
+  color: var(--subdued-text);
+}
+
+.login-beta .lb-float input:focus + .lb-label {
+  color: var(--emblem-green);
+}
+
+/* ---------------------------------------------------------------------------
+   DYNAMIC ERROR SPACING — hidden = zero reserved space; shown = natural push.
+   (main.css keeps .form-field-error display:none by default; JS toggles it.)
+   --------------------------------------------------------------------------- */
+.login-beta .form-field-error {
+  padding: 5px 10px 0;
+  margin: 0;
+  font-size: var(--lb-error);
+  line-height: 1.3;
+}
+
+/* ---------------------------------------------------------------------------
+   CAPTIONS / SECONDARY TEXT
+   --------------------------------------------------------------------------- */
+.login-beta .form-caption {
+  font-size: var(--lb-caption);
+  margin-top: clamp(4px, 1vh, 8px);
+  margin-bottom: 0;
+}
+
+.login-beta #code-status {
+  margin-top: 5px;
+}
+
+.login-beta .code-wrapper {
+  text-align: center;
+}
+
+/* ---------------------------------------------------------------------------
+   LOGIN BUTTONS BLOCK
+   --------------------------------------------------------------------------- */
+.login-beta .lb-login-buttons {
+  text-align: center;
+  width: 100%;
+  max-width: 500px;
+  margin: clamp(12px, 2.2vh, 18px) auto 0;
+}
+
+.login-beta .login-button-75,
+.login-beta .code-button-75 {
+  font-size: var(--lb-btn);
+}
+
+/* ---------------------------------------------------------------------------
+   SIGNUP LINK
+   --------------------------------------------------------------------------- */
+.login-beta .lb-signup-link {
+  text-align: center;
+  width: 100%;
+  font-size: 1rem;
+}
+
+.login-beta .lb-signup-link p {
+  font-size: 1rem;
+  margin: 0;
+}
+
+/* ---------------------------------------------------------------------------
+   TOGGLE SLIDER — re-declared for the renamed radios (#toggle-password /
+   #toggle-code). Mirrors the state rules in includes/login-inc.php, which were
+   keyed on the now-removed #password / #code ids.
+   --------------------------------------------------------------------------- */
+.login-beta #toggle-password:checked ~ .login-slider { left: 0%; }
+.login-beta #toggle-code:checked ~ .login-slider { left: 15%; }
+
+.login-beta #toggle-password:checked ~ .toggle-button.password { opacity: 0; width: 85%; }
+.login-beta #toggle-password:checked ~ .toggle-button.code { opacity: 0.8; width: 15%; }
+.login-beta #toggle-code:checked ~ .toggle-button.code { opacity: 1; width: 85%; }
+.login-beta #toggle-code:checked ~ .toggle-button.password { opacity: 0.8; width: 15%; }
+
+/* ---------------------------------------------------------------------------
+   ACCESSIBILITY — visible focus (keep the existing cyan glow, add a ring)
+   --------------------------------------------------------------------------- */
+.login-beta .lb-float input:focus-visible {
+  outline: 2px solid var(--emblem-green);
+  outline-offset: 1px;
+}
+
+.login-beta .login-button-75:focus-visible,
+.login-beta .code-button-75:focus-visible,
+.login-beta .toggle-button:focus-visible,
+.login-beta .underline-link:focus-visible {
+  outline: 2px solid var(--emblem-green);
+  outline-offset: 2px;
+}
+
+/* ---------------------------------------------------------------------------
+   RESPONSIVE — SHORT VIEWPORTS (the gap the live page never handled)
+   --------------------------------------------------------------------------- */
+
+/* Laptop / short desktop: shrink the image & tighten rhythm so the whole card
+   stays on screen without scrolling. */
+@media screen and (min-width: 769px) and (max-height: 760px) {
+  .login-beta {
+    --lb-image-h: clamp(72px, 11vh, 112px);
+    --lb-gap: clamp(8px, 1.6vh, 14px);
+  }
+  .login-beta.page-panel-group {
+    gap: clamp(8px, 2vh, 16px);
+    padding-block: clamp(8px, 2vh, 18px);
+  }
+}
+
+/* Genuinely short viewports (landscape phones, very short windows): stop forcing
+   full-height centering so content can scroll naturally instead of being clipped. */
+@media screen and (max-height: 620px) {
+  .login-beta.page-panel-group {
+    min-height: auto;
+    justify-content: flex-start;
+    padding-block: 16px;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   RESPONSIVE — MOBILE (preserve the existing small-screen behaviour)
+   --------------------------------------------------------------------------- */
+@media screen and (max-width: 768px) {
+  /* Keep the top-anchored flow the live page uses on phones */
+  .login-beta.page-panel-group {
+    justify-content: flex-start;
+    min-height: 100vh;
+  }
+
+  .login-beta .form-container {
+    max-width: 96vw !important;
+    padding-inline: clamp(12px, 4vw, 18px);
+  }
+
+  .login-beta .form-item,
+  .login-beta .lb-login-buttons {
+    max-width: 100%;
+  }
+}
