@@ -358,15 +358,12 @@ if (guidedTourModal && guidedTourModal.style.display !== "none") {
 
 
     var footer = document.getElementById("registration-footer");
-    var emailRegistration = document.getElementById("email-registration");
     var upArrow = document.getElementById("reg-up-button");
     var downArrow = document.getElementById("reg-down-button");
 
     // Adjust the height of the registration footer
     footer.style.height = "70vh";
 
-    // Make the email registration section visible
-    emailRegistration.style.display = "block";
     upArrow.style.display = "none";
     downArrow.style.display = "block";
     updateShowCounter();
@@ -377,7 +374,6 @@ if (guidedTourModal && guidedTourModal.style.display !== "none") {
 
   function sendDownRegistration() {
     var footer = document.getElementById("registration-footer");
-    var emailRegistration = document.getElementById("email-registration");
     var upArrow = document.getElementById("reg-up-button");
     var downArrow = document.getElementById("reg-down-button");
 
@@ -385,8 +381,7 @@ if (guidedTourModal && guidedTourModal.style.display !== "none") {
     // Adjust the height of the registration footer
     footer.style.height = "77px";
 
-    // Make the email registration section visible
-    emailRegistration.style.display = "none";
+    // Hide any registration details
     upArrow.style.display = "block";
     downArrow.style.display = "none";
 
