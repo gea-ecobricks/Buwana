@@ -581,6 +581,19 @@ document.addEventListener('DOMContentLoaded', function () {
         const form = this;
         const formData = new FormData(form);
 
+        // 📍 Location is required — country & continent are auto-derived from it
+        // server-side, so we can't save without it. (The fetch submit bypasses
+        // the HTML `required` attribute, hence this explicit guard.)
+        const locationInput = document.getElementById('location_full');
+        const locationError = document.getElementById('location-error-required');
+        if (!locationInput.value.trim()) {
+            if (locationError) locationError.style.display = 'block';
+            locationInput.focus();
+            locationInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+        }
+        if (locationError) locationError.style.display = 'none';
+
         // 🧠 If community_id is blank, try to fetch it from the server
         const communityId = formData.get('community_id');
         const communityName = formData.get('community_name');
@@ -993,7 +1006,11 @@ $(function () {
                     },
                     data: {
                         q: request.term,
-                        format: "json"
+                        format: "json",
+                        // Force English place names so the trailing country name
+                        // matches countries_tb for the server-side country/continent
+                        // derivation in profile_service.php.
+                        "accept-language": "en"
                     },
                     success: function (data) {
                         $("#loading-spinner").hide();

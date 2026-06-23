@@ -22,10 +22,54 @@
  */
 function profile_required_fields(): array
 {
+    // country_id + continent_code are intentionally NOT listed: they are derived
+    // server-side from location_full (see resolve_country_and_continent) and never
+    // trusted from the form. location_full is required so the derivation always
+    // has something to work from.
     return [
-        'first_name', 'last_name', 'country_id', 'language_id',
-        'continent_code', 'community_id', 'location_full', 'latitude', 'longitude',
+        'first_name', 'last_name', 'language_id',
+        'community_id', 'location_full', 'latitude', 'longitude',
         'location_watershed', 'earthling_emoji', 'time_zone',
+    ];
+}
+
+/**
+ * Resolve a user's country_id + continent_code from their location string.
+ *
+ * Mirrors the signup flow (en/signup-4_process.php): the country is the last
+ * comma-separated component of the Nominatim location string, looked up in
+ * countries_tb — which carries the authoritative continent_code per country.
+ *
+ * @param mysqli $buwana_conn
+ * @param string $location_full
+ * @return array{country_id:int, continent_code:string}|null  null if unresolved.
+ */
+function resolve_country_and_continent($buwana_conn, string $location_full): ?array
+{
+    $parts = explode(',', $location_full);
+    $country_name = trim(end($parts));
+    if ($country_name === '') {
+        return null;
+    }
+
+    $sql = "SELECT country_id, continent_code FROM countries_tb WHERE country_name = ? LIMIT 1";
+    $stmt = $buwana_conn->prepare($sql);
+    if (!$stmt) {
+        return null;
+    }
+    $stmt->bind_param('s', $country_name);
+    $stmt->execute();
+    $stmt->bind_result($country_id, $continent_code);
+    $found = $stmt->fetch();
+    $stmt->close();
+
+    if (!$found || !$country_id) {
+        return null;
+    }
+
+    return [
+        'country_id'     => (int) $country_id,
+        'continent_code' => (string) $continent_code,
     ];
 }
 
@@ -56,10 +100,8 @@ function validate_profile_input($buwana_conn, array $input): array
     $clean = [
         'first_name'         => trim($input['first_name']),
         'last_name'          => trim($input['last_name']),
-        'country_id'         => (int) $input['country_id'],
         'language_id'        => trim($input['language_id']),
         'birth_date'         => $birth_date,
-        'continent_code'     => trim($input['continent_code']),
         'community_id'       => (int) $input['community_id'],
         'location_full'      => trim($input['location_full']),
         'latitude'           => (float) $input['latitude'],
@@ -86,6 +128,21 @@ function validate_profile_input($buwana_conn, array $input): array
     if (!$exists) {
         return ['ok' => false, 'message' => 'Invalid community ID: Not found in communities_tb.', 'clean' => []];
     }
+
+    // Derive country_id + continent_code from the chosen location. The form's
+    // country/continent controls are read-only and intentionally NOT trusted —
+    // we always set them from location_full so the same rule applies to the
+    // profile API.
+    $geo = resolve_country_and_continent($buwana_conn, $clean['location_full']);
+    if ($geo === null) {
+        return [
+            'ok' => false,
+            'message' => 'Could not determine your country from the location. Please try re-entering your location and saving one more time.',
+            'clean' => [],
+        ];
+    }
+    $clean['country_id']     = $geo['country_id'];
+    $clean['continent_code'] = $geo['continent_code'];
 
     return ['ok' => true, 'message' => '', 'clean' => $clean];
 }
