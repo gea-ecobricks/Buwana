@@ -44,12 +44,23 @@
    PANEL / VIEWPORT FIT — vertically centre the card; only very short
    viewports scroll (handled in the media queries near the bottom).
    --------------------------------------------------------------------------- */
+/* The global #main forces min-height:100vh AND carries an inline padding-top:40px.
+   Combined with the 70px in-flow #header above #main and this panel's own 100vh,
+   the card was pushed well below centre and the page was forced to scroll.
+   Neutralise #main's contribution (scoped to this page via :has()) so the panel
+   can size to the space that actually remains under the header. */
+#main:has(.login-beta.page-panel-group) {
+  min-height: 0;
+  padding-top: 0 !important;     /* defeats the inline padding-top:40px */
+}
+
 .login-beta.page-panel-group {
-  min-height: 100vh;
+  position: relative;            /* anchor for the bottom-pinned signup link */
+  min-height: calc(100vh - 70px);/* fill the area under the 70px header, no overflow */
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;       /* centre the card group in the viewport */
+  justify-content: center;       /* centre the card in the viewport */
   gap: clamp(12px, 3vh, 28px);
   padding-block: clamp(12px, 3vh, 32px);
 }
@@ -69,7 +80,10 @@
   width: 100%;
   max-width: 640px !important;            /* beats login-inc's max-width:800px !important */
   margin: 0 auto;
-  padding-top: calc(var(--lb-image-h) + clamp(8px, 2vh, 22px)); /* clears floating image */
+  /* Reserve down to the image's actual bottom edge (image-h + the negative rise)
+     plus a small gap. The old "+clamp(8..22)" reserved well past the image and
+     left a fixed dead band above the title. */
+  padding-top: calc(var(--lb-image-h) + var(--lb-image-rise) + clamp(4px, 1vh, 10px));
   padding-inline: var(--lb-card-pad-x);
   padding-bottom: var(--lb-card-pad-b);
   border-radius: 18px;
@@ -79,7 +93,11 @@
 .login-beta .top-page-image {
   height: var(--lb-image-h);
   top: var(--lb-image-rise);
-  margin-bottom: 0;                       /* old rule reserved 70px; not needed here */
+  margin: 0;                              /* kills the global margin-bottom:70px AND the
+                                             min-width:700px margin-top:-4% that floated
+                                             the image up and opened a gap above the title */
+  background-position: center bottom;     /* seat the logo at the image-box bottom,
+                                             close to the status message */
 }
 
 /* ---------------------------------------------------------------------------
@@ -112,7 +130,15 @@
   max-width: 500px;
   margin: 0 auto;                         /* flush stack, still centred */
   border-radius: 0;
-  padding: clamp(10px, 1.6vh, 16px) 12px clamp(8px, 1.4vh, 14px);
+  /* No side padding: the (box-less) input is full-bleed so the whole field
+     surface focuses it — no more dead margin around an inner input box. */
+  padding: clamp(8px, 1.4vh, 12px) 0;
+}
+
+/* The form-item IS the visible field surface; ring it on focus since the input
+   itself no longer carries a border. */
+.login-beta .form-item:focus-within {
+  box-shadow: inset 0 0 0 2px var(--emblem-green);
 }
 
 .login-beta .lb-item-top {
@@ -136,6 +162,11 @@
   /* extra top padding makes room for the floated label inside the field */
   padding: 18px 40px 7px 12px;
   margin: 0;
+  /* The .form-item is the field surface; keep the input box-less so each row
+     reads as ONE field instead of a box-in-a-box (the "two nested fields" bug). */
+  background: transparent !important;     /* beats main.css input background */
+  border: none !important;                /* beats main.css 2px input border */
+  box-shadow: none;                       /* drop the global cyan focus glow */
 }
 
 /* Credential/password reveal icons (previously inline-styled) */
@@ -231,6 +262,13 @@
    SIGNUP LINK
    --------------------------------------------------------------------------- */
 .login-beta .lb-signup-link {
+  /* Pinned to the panel bottom (out of flow) so the card centres on its own
+     rather than the card+link group sitting above centre. Reverts to static
+     flow on short/mobile viewports below. */
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: clamp(14px, 3vh, 30px);
   text-align: center;
   width: 100%;
   font-size: 1rem;
@@ -295,6 +333,10 @@
     justify-content: flex-start;
     padding-block: 16px;
   }
+  /* back into the scroll flow so it can't overlap the card */
+  .login-beta .lb-signup-link {
+    position: static;
+  }
 }
 
 /* ---------------------------------------------------------------------------
@@ -305,6 +347,11 @@
   .login-beta.page-panel-group {
     justify-content: flex-start;
     min-height: 100vh;
+  }
+
+  /* back into the scroll flow under the card on phones */
+  .login-beta .lb-signup-link {
+    position: static;
   }
 
   .login-beta .form-container {

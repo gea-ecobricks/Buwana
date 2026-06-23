@@ -12,30 +12,46 @@ $version = '0.61';
 $page = 'profile';
 $lastModified = date("Y-m-d\TH:i:s\Z", filemtime(__FILE__));
 
-// 📌 Get the buwana_id and client_id from the URL
-$buwana_id = isset($_GET['buwana']) ? intval($_GET['buwana']) : null;
-$client_id = $_GET['app'] ?? ($_GET['client_id'] ?? null);
+// 🔐 AUTH GATE -------------------------------------------------------------
+// The profile shown/edited here is ALWAYS the Buwana user authenticated in THIS
+// session — never a buwana_id read from the URL. Client-app users arrive with
+// ?app=<client_id>; they must (1) be logged into Buwana via SSO and (2) hold a
+// registered connection to that client app. Any ?buwana= parameter is ignored
+// on purpose, so the page can no longer be pivoted to another user's account.
 
-if (!$buwana_id || !$client_id) {
-    die('Missing buwana ID or client ID.');
+// Resolve the client-app context (URL first, then the SSO session).
+$client_id = $_GET['app'] ?? ($_GET['client_id'] ?? ($_SESSION['client_id'] ?? null));
+if ($client_id !== null) {
+    $client_id = filter_var(trim($client_id), FILTER_SANITIZE_SPECIAL_CHARS);
 }
 
-// 📥 Verify the user/app connection exists
-$sql_connection = "SELECT id FROM user_app_connections_tb WHERE buwana_id = ? AND client_id = ?";
-$stmt_connection = $buwana_conn->prepare($sql_connection);
+// (1) Must be logged into Buwana. If not, bounce to login and come back here.
+if (!isLoggedIn()) {
+    $login_query = http_build_query(array_filter([
+        'redirect' => 'edit-profile.php',
+        'app'      => $client_id,
+        'status'   => 'loggedout',
+    ]));
+    header('Location: login.php?' . $login_query);
+    exit();
+}
 
-if ($stmt_connection) {
-    $stmt_connection->bind_param('is', $buwana_id, $client_id);
-    $stmt_connection->execute();
-    $stmt_connection->bind_result($connection_id);
-    $stmt_connection->fetch();
-    $stmt_connection->close();
+// Authoritative identity — taken from the session, set at Buwana login.
+$buwana_id = (int) $_SESSION['buwana_id'];
 
-    if (!$connection_id) {
-        die('Connection not found.');
-    }
-} else {
-    die('Error preparing statement for connection lookup: ' . $buwana_conn->error);
+if (!$client_id) {
+    die('Missing client ID.');
+}
+$_SESSION['client_id'] = $client_id; // keep app context for downstream pages
+
+// (2) Must have a registered connection to this client app. This redirects to
+//     app-connect.php if the authenticated user isn't connected to the app.
+require_once '../api/check_user_app_connection.php';
+check_user_app_connection($buwana_conn, $buwana_id, $client_id, $lang, true);
+
+// CSRF token for the profile-update and account-deletion actions on this page.
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
 // 🧭 Get the app's info
@@ -250,6 +266,8 @@ echo '<!DOCTYPE html>
 
 <!-- Profile Update Form -->
 <form action="profile_update_process.php" method="POST" id="main-buwana-update">
+
+    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
 
     <!-- First Name -->
     <div class="form-item">
@@ -517,7 +535,7 @@ echo '<!DOCTYPE html>
         <button
             type="button"
             class="submit-button delete"
-            onclick='confirmDeletion(<?= json_encode($buwana_id); ?>, <?= json_encode($lang); ?>)'
+            onclick='confirmDeletion(<?= json_encode($lang); ?>, <?= json_encode($_SESSION['csrf_token']); ?>)'
             data-lang-id="0010-delete-button">
             Delete My Account
         </button>
@@ -1170,12 +1188,17 @@ function selectEarthlingEmoji(emoji) {
 </script>
 
 <script>
-function confirmDeletion(ecobrickerId, lang = 'en') {
+function confirmDeletion(lang = 'en', csrfToken = '') {
     if (confirm("Are you certain you wish to delete your account? This cannot be undone.")) {
         if (confirm("Ok. We will delete your account! Note that this does not affect ecobrick data that has been permanently archived in the brikchain. If you have a Buwana account and/or a subscription to our Earthen newsletter it will also be deleted.")) {
 
-            // Send request to delete the user
-            fetch('../processes/delete_accounts.php?id=' + encodeURIComponent(ecobrickerId))
+            // POST (with CSRF token) to delete the logged-in user. The server
+            // identifies the account from the session — no id is sent in the URL.
+            fetch('../processes/delete_accounts.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'csrf_token=' + encodeURIComponent(csrfToken)
+            })
                 .then(response => response.text())
                 .then(text => {
                     try {

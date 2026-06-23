@@ -111,7 +111,14 @@ if (!empty(trim($registered_redirect_uris_str))) {
 // --- Validate requested buwana:* scopes are permitted for this app
 $registered_scopes = preg_split('/[\s,]+/', trim($registered_scopes_str ?? ''), -1, PREG_SPLIT_NO_EMPTY);
 $requested_scopes  = preg_split('/[\s,]+/', trim($scope), -1, PREG_SPLIT_NO_EMPTY);
-$buwana_scope_names = ['buwana:basic', 'buwana:profile', 'buwana:community', 'buwana:bioregion'];
+// Recognised buwana:* scopes. Any of these requested by an app MUST appear in
+// that app's apps_tb.scopes allow-list or the request is rejected. The
+// profile.read / profile.write scopes are API permissions (consumed by the
+// Buwana profile API), not claim-bearing like buwana:profile.
+$buwana_scope_names = [
+    'buwana:basic', 'buwana:profile', 'buwana:community', 'buwana:bioregion',
+    'buwana:profile.read', 'buwana:profile.write',
+];
 
 foreach ($requested_scopes as $s) {
     if (in_array($s, $buwana_scope_names, true) && !in_array($s, $registered_scopes, true)) {

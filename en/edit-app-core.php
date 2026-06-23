@@ -12,6 +12,8 @@ $scope_options = [
     'buwana:profile',
     'buwana:community',
     'buwana:bioregion',
+    'buwana:profile.read',
+    'buwana:profile.write',
 ];
 
 $lang = basename(dirname($_SERVER['SCRIPT_NAME']));
@@ -374,6 +376,34 @@ if (!$app) {
               <td class="scope-toggle">
                 <label class="toggle-switch">
                   <input type="checkbox" class="scope-checkbox" name="scopes[]" value="buwana:bioregion" <?= in_array('buwana:bioregion', $selected_scopes) ? 'checked' : '' ?> />
+                  <span class="slider"></span>
+                </label>
+              </td>
+            </tr>
+
+            <tr id="scope-row-profile-read">
+              <td class="scope-name">📖 buwana:profile.read</td>
+              <td class="scope-desc">
+                <p class="scope-caption">API permission: read the user's profile from Buwana (for an in-app profile page). Does not add data to the token.</p>
+                <p class="scope-fields">Grants access to the Buwana profile read API</p>
+              </td>
+              <td class="scope-toggle">
+                <label class="toggle-switch">
+                  <input type="checkbox" class="scope-checkbox" name="scopes[]" value="buwana:profile.read" <?= in_array('buwana:profile.read', $selected_scopes) ? 'checked' : '' ?> />
+                  <span class="slider"></span>
+                </label>
+              </td>
+            </tr>
+
+            <tr id="scope-row-profile-write">
+              <td class="scope-name">✏️ buwana:profile.write</td>
+              <td class="scope-desc">
+                <p class="scope-caption">API permission: update the user's profile in Buwana from within your app. Buwana remains the source of truth.</p>
+                <p class="scope-fields">Grants access to the Buwana profile update API</p>
+              </td>
+              <td class="scope-toggle">
+                <label class="toggle-switch">
+                  <input type="checkbox" class="scope-checkbox" name="scopes[]" value="buwana:profile.write" <?= in_array('buwana:profile.write', $selected_scopes) ? 'checked' : '' ?> />
                   <span class="slider"></span>
                 </label>
               </td>

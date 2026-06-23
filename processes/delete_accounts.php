@@ -23,10 +23,27 @@ try {
         throw new Exception('EarthCal DB connection is not available.');
     }
 
-    // Accept buwana_id from query or session
-    $buwana_id = $_GET['buwana_id'] ?? $_SESSION['buwana_id'] ?? '';
-    if (empty($buwana_id) || !is_numeric($buwana_id)) {
-        throw new Exception('Invalid Buwana ID. Please provide a valid ID.');
+    // 🔐 Identity comes ONLY from the authenticated session — never the URL.
+    // Previously $_GET['buwana_id'] was trusted ahead of the session AND there was
+    // no login check, so any unauthenticated caller could delete ANY account by id
+    // (and enumerate the whole user base). A user may only ever delete themselves.
+    if (!isLoggedIn()) {
+        throw new Exception('You must be logged in to delete your account.');
+    }
+
+    // CSRF + method: deletion must be a POST carrying the session CSRF token, so
+    // it can't be triggered cross-site (e.g. via an <img>/link GET).
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        throw new Exception('Invalid request method.');
+    }
+    $csrf_token = $_POST['csrf_token'] ?? '';
+    if (empty($_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $csrf_token)) {
+        throw new Exception('Invalid or missing CSRF token.');
+    }
+
+    $buwana_id = (int) $_SESSION['buwana_id'];
+    if ($buwana_id <= 0) {
+        throw new Exception('Invalid Buwana ID.');
     }
 
     // Fetch user email from Buwana users table

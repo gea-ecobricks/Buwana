@@ -27,6 +27,8 @@ $scope_options = [
     'buwana:profile',
     'buwana:community',
     'buwana:bioregion',
+    'buwana:profile.read',
+    'buwana:profile.write',
 ];
 
 $redirect_uris     = $_POST['redirect_uris'] ?? '';

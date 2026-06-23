@@ -14,7 +14,8 @@ echo json_encode([
     'id_token_signing_alg_values_supported' => ['RS256'],
     'scopes_supported' => [
         'openid', 'email', 'profile',
-        'buwana:earthlingEmoji', 'buwana:community', 'buwana:location.continent'
+        'buwana:earthlingEmoji', 'buwana:community', 'buwana:location.continent',
+        'buwana:profile.read', 'buwana:profile.write'
     ],
     'token_endpoint_auth_methods_supported' => ['client_secret_post', 'none'],
     'code_challenge_methods_supported' => ['plain', 'S256'],
