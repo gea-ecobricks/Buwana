@@ -12,7 +12,6 @@ function buwana_allowed_origins(): array
 {
     return [
         'https://earthcal.app',
-        'https://calendar.earthen.io',
         'https://gobrik.com',
         'https://ecobricks.org',
         'https://learning.ecobricks.org',

@@ -8,18 +8,24 @@
  * zones). Buwana is the source of truth — clients keep no local copy.
  */
 
+// Load the JSON + CORS helpers and start output buffering + send CORS headers
+// BEFORE any heavier include can emit output. Otherwise a stray notice or trailing
+// whitespace (display_errors is on) would flush headers early and the CORS header
+// would be lost (browser sees "Access-Control-Allow-Origin missing").
+require_once __DIR__ . '/../includes/api_response.php';
+require_once __DIR__ . '/../includes/cors.php';
+
+init_json_api();
+send_api_cors_headers('GET, OPTIONS');
+
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../buwanaconn_env.php';            // $buwana_conn
 require_once __DIR__ . '/../includes/security-headers.php';
-require_once __DIR__ . '/../includes/cors.php';
-require_once __DIR__ . '/../includes/api_response.php';
 require_once __DIR__ . '/../includes/api_auth.php';
 require_once __DIR__ . '/../includes/profile_service.php';
 require_once __DIR__ . '/../includes/profile_reference.php';
 
-init_json_api();
 send_security_headers(true);
-send_api_cors_headers('GET, OPTIONS');
 
 if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'GET') {
     api_error('method_not_allowed', 405);
