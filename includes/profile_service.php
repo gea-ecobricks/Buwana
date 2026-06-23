@@ -148,6 +148,77 @@ function validate_profile_input($buwana_conn, array $input): array
 }
 
 /**
+ * Read a user's profile — editable fields plus resolved display names and a few
+ * read-only account fields. Used by the profile API GET and to echo the fresh
+ * state back after an update.
+ *
+ * @param mysqli $buwana_conn
+ * @param int    $buwana_id
+ * @return array|null  null if the user doesn't exist.
+ */
+function get_user_profile($buwana_conn, $buwana_id): ?array
+{
+    $buwana_id = (int) $buwana_id;
+    $sql = "SELECT u.full_name, u.first_name, u.last_name, u.email,
+                   u.language_id, u.birth_date, u.earthling_emoji,
+                   u.community_id, u.country_id, u.continent_code,
+                   u.location_full, u.location_lat, u.location_long,
+                   u.location_watershed, u.time_zone,
+                   u.created_at, u.account_status, u.role,
+                   c.country_name,
+                   ct.continent_name_en      AS continent_name,
+                   cm.com_name               AS community_name,
+                   l.languages_native_name   AS language_name
+            FROM users_tb u
+            LEFT JOIN countries_tb   c  ON u.country_id     = c.country_id
+            LEFT JOIN continents_tb  ct ON u.continent_code = ct.continent_code
+            LEFT JOIN communities_tb cm ON u.community_id   = cm.community_id
+            LEFT JOIN languages_tb   l  ON u.language_id    = l.language_id
+            WHERE u.buwana_id = ?";
+    $stmt = $buwana_conn->prepare($sql);
+    if (!$stmt) {
+        return null;
+    }
+    $stmt->bind_param('i', $buwana_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result ? $result->fetch_assoc() : null;
+    $stmt->close();
+
+    if (!$row) {
+        return null;
+    }
+
+    return [
+        'buwana_id'          => $buwana_id,
+        'full_name'          => $row['full_name'],
+        'first_name'         => $row['first_name'],
+        'last_name'          => $row['last_name'],
+        'email'              => $row['email'],                 // read-only
+        'language_id'        => $row['language_id'],
+        'language_name'      => $row['language_name'],
+        'birth_date'         => $row['birth_date'],
+        'earthling_emoji'    => $row['earthling_emoji'],
+        'community_id'       => $row['community_id'] !== null ? (int) $row['community_id'] : null,
+        'community_name'     => $row['community_name'],
+        'location_full'      => $row['location_full'],
+        'location_lat'       => $row['location_lat'] !== null ? (float) $row['location_lat'] : null,
+        'location_long'      => $row['location_long'] !== null ? (float) $row['location_long'] : null,
+        'location_watershed' => $row['location_watershed'],
+        'time_zone'          => $row['time_zone'],
+        // read-only / auto-derived from location
+        'country_id'         => $row['country_id'] !== null ? (int) $row['country_id'] : null,
+        'country_name'       => $row['country_name'],
+        'continent_code'     => $row['continent_code'],
+        'continent_name'     => $row['continent_name'],
+        // read-only account fields
+        'created_at'         => $row['created_at'],
+        'account_status'     => $row['account_status'],
+        'role'               => $row['role'],
+    ];
+}
+
+/**
  * Validate the input then update users_tb for $buwana_id.
  *
  * @param mysqli    $buwana_conn
