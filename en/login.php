@@ -3,7 +3,7 @@ require_once '../earthenAuth_helper.php'; // Include the authentication helper f
 
 require_once '../buwanaconn_env.php';         // Sets up $buwana_conn
 
-// Logging helper for authentication steps
+// Logging helper for authentication steps for the user
 $authLogFile = dirname(__DIR__) . '/logs/auth.log';
 function auth_log($message) {
     global $authLogFile;
