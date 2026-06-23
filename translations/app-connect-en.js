@@ -7,6 +7,7 @@ TEXT TRANSLATION SNIPPETS FOR GOBRIK.com
 const en_Page_Translations = {
     "001-first-time-to-connect": "Connect to",
     "001-authorized-app": "is an authorized Buwana app",
+
     "002-looks-like": "it looks like you are trying to login to",
     "003-to-do-so": "To do so, we will connect your Buwana account to",
     "004-buwana-profile": "Buwana Profile",
