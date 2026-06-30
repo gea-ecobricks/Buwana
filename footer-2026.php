@@ -68,15 +68,37 @@
 <script>
 (function() {
     try {
-        var savedTheme = localStorage.getItem('dark-mode-toggle');
+        // Canonical key is color_mode; fall back to legacy keys once. See
+        // docs/color-mode-policy.md
+        function validMode(m){ return m === 'light' || m === 'dark'; }
+        var savedTheme = localStorage.getItem('color_mode')
+            || localStorage.getItem('dark-mode-toggle')
+            || localStorage.getItem('user_dark_mode');
         const toggle = document.getElementById('dark-mode-toggle-5');
         const bannerElement = document.getElementById('top-page-image');
 
         let initialMode = 'light';
-        if (savedTheme) {
+        if (validMode(savedTheme)) {
             initialMode = savedTheme;
         } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
             initialMode = 'dark';
+        }
+        // Normalize storage onto the canonical key immediately.
+        try { localStorage.setItem('color_mode', initialMode); } catch (e) {}
+
+        // Persist a Buwana-side toggle to the server source of truth. No-op
+        // (graceful) when no CSRF token / not logged in.
+        function persistColorMode(mode) {
+            try {
+                var csrf = (typeof CSRF_TOKEN !== 'undefined') ? CSRF_TOKEN : null;
+                if (!csrf) return;
+                fetch('/api/set_color_mode.php', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mode: mode, csrf_token: csrf })
+                }).catch(function(){});
+            } catch (e) {}
         }
 
         if (toggle) {
@@ -126,10 +148,12 @@
             if (toggle) {
                 toggle.addEventListener('colorschemechange', function(event) {
                     const mode = event.detail.colorScheme;
-                    localStorage.setItem('dark-mode-toggle', mode);
+                    localStorage.setItem('color_mode', mode);
+                    localStorage.setItem('dark-mode-toggle', mode); // keep component's own remembered value in sync
                     console.log('🌗 Saved user theme preference:', mode);
                     document.documentElement.setAttribute('data-theme', mode);
 
+                    persistColorMode(mode); // 🌍 update server source of truth
                     updateLogos(); // 🔥 Update logos immediately on toggle!
                     updateBanner();
                 });

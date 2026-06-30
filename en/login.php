@@ -162,9 +162,22 @@ echo '<!DOCTYPE html>
 
 ';
 
-if ($mode) {
-    echo '<script>(function(){var m=' . json_encode($mode, JSON_HEX_TAG) . ';if(m==="light"||m==="dark"){try{localStorage.setItem("dark-mode-toggle",m);}catch(e){}document.documentElement.setAttribute("data-theme",m);}})();</script>' . "\n";
-}
+// Render-blocking pre-paint color-mode applier. Resolution order:
+//   ?mode= (from client / pending oauth)  →  localStorage.color_mode
+//   →  legacy keys  →  prefers-color-scheme  →  'light'
+// See docs/color-mode-policy.md
+echo '<script>(function(){'
+   . 'var u=' . json_encode($mode, JSON_HEX_TAG) . ';'
+   . 'function ok(m){return m==="light"||m==="dark";}'
+   . 'var m=null;try{'
+   . 'if(ok(u)){m=u;}'
+   . 'else{var s=localStorage.getItem("color_mode");if(ok(s)){m=s;}'
+   . 'else{var l=localStorage.getItem("user_dark_mode")||localStorage.getItem("dark-mode-toggle");if(ok(l)){m=l;}}}'
+   . '}catch(e){}'
+   . 'if(!m){m=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";}'
+   . 'try{localStorage.setItem("color_mode",m);}catch(e){}'
+   . 'document.documentElement.setAttribute("data-theme",m);'
+   . '})();</script>' . "\n";
 
 // JavaScript variables for dynamic use
 echo '<script>';

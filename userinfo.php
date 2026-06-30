@@ -124,10 +124,10 @@ if ($buwana_id_from_sub) {
 }
 
 // --- 8️⃣ Fetch full user info ---
-$stmt_user = $buwana_conn->prepare("SELECT email, first_name, earthling_emoji, community_id, continent_code FROM users_tb WHERE buwana_id = ?");
+$stmt_user = $buwana_conn->prepare("SELECT email, first_name, earthling_emoji, community_id, continent_code, color_mode FROM users_tb WHERE buwana_id = ?");
 $stmt_user->bind_param("i", $buwana_id);
 $stmt_user->execute();
-$stmt_user->bind_result($email, $first_name, $earthling_emoji, $community_id, $continent_code);
+$stmt_user->bind_result($email, $first_name, $earthling_emoji, $community_id, $continent_code, $color_mode);
 $stmt_user->fetch();
 $stmt_user->close();
 
@@ -139,7 +139,8 @@ $response = [
     'given_name' => $first_name,
     'buwana:earthlingEmoji' => $earthling_emoji,
     'buwana:community' => $community_id,
-    'buwana:location.continent' => $continent_code
+    'buwana:location.continent' => $continent_code,
+    'color_mode' => ($color_mode === 'dark') ? 'dark' : 'light'  // see docs/color-mode-policy.md
 ];
 
 echo json_encode($response);

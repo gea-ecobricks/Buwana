@@ -160,6 +160,29 @@ if (!isset($_SESSION['user_id'])) {
 
 // --- User is logged in: issue authorization code
 $user_id = $_SESSION['user_id'];
+
+// --- Persist canonical color mode (source of truth) if the client supplied a
+// fresh preference via ?mode=. Last write wins. See docs/color-mode-policy.md
+if ($mode !== null) {
+    $stmt = $buwana_conn->prepare("UPDATE users_tb SET color_mode = ? WHERE buwana_id = ?");
+    $stmt->bind_param("si", $mode, $user_id);
+    $stmt->execute();
+    $stmt->close();
+}
+
+// --- Resolve the color mode to send back to the client. Prefer the freshly
+// supplied ?mode=, else the stored canonical value, else 'light'.
+$return_mode = $mode;
+if ($return_mode === null) {
+    $stmt = $buwana_conn->prepare("SELECT color_mode FROM users_tb WHERE buwana_id = ?");
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $stmt->bind_result($stored_color_mode);
+    $stmt->fetch();
+    $stmt->close();
+    $return_mode = ($stored_color_mode === 'dark') ? 'dark' : 'light';
+}
+
 $auth_code = bin2hex(random_bytes(32));
 
 $stmt = $buwana_conn->prepare("INSERT INTO authorization_codes_tb
@@ -181,10 +204,14 @@ $stmt->close();
 
 auth_log("Issued auth_code for user_id=$user_id to client_id=$client_id");
 
-// --- Redirect back to client with code
+// --- Redirect back to client with code. Carry the canonical color mode and
+// language so the client can theme its callback before token exchange and
+// avoid a flash of the wrong theme. See docs/color-mode-policy.md
 $redirect = $redirect_uri . '?' . http_build_query([
-    'code' => $auth_code,
-    'state' => $state
+    'code'  => $auth_code,
+    'state' => $state,
+    'mode'  => $return_mode,
+    'lang'  => $lang
 ]);
 
 header("Location: $redirect");

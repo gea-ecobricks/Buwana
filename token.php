@@ -274,7 +274,7 @@ $stmt->close();
 $stmt_user = $buwana_conn->prepare(
     "SELECT u.email, u.first_name, u.last_name, u.open_id,
             u.earthling_emoji, u.continent_code, u.community_id,
-            u.location_full, u.time_zone,
+            u.location_full, u.time_zone, u.color_mode,
             u.created_at, u.role, u.gea_status, u.profile_pic,
             u.language_id, u.birth_date, u.brikcoin_balance,
             u.connected_app_ids, u.watershed_id,
@@ -297,7 +297,7 @@ $stmt_user->execute();
 $stmt_user->bind_result(
     $email, $first_name, $last_name, $open_id,
     $earthling_emoji, $continent_code, $community_id,
-    $location_full, $time_zone,
+    $location_full, $time_zone, $color_mode,
     $created_at, $role, $gea_status, $profile_pic,
     $language_id, $birth_date, $brikcoin_balance,
     $connected_app_ids, $watershed_id,
@@ -314,6 +314,8 @@ $resolved_given_name  = trim($first_name ?? '');
 $resolved_family_name = trim($last_name ?? '');
 $resolved_timezone    = trim($time_zone ?? '');
 $resolved_emoji       = trim($earthling_emoji ?? '') ?: '🌏';
+// Canonical dark/light UI preference — see docs/color-mode-policy.md
+$resolved_color_mode  = ($color_mode === 'dark') ? 'dark' : 'light';
 
 auth_log(
     "User lookup results for user_id=$user_id: " . json_encode([
@@ -375,6 +377,9 @@ $id_token_payload = [
     "iat"   => $now,
     "nonce" => $nonce,
     "scope" => $scope,
+    // Canonical UI color mode — always present, no scope required.
+    // See docs/color-mode-policy.md
+    "color_mode" => $resolved_color_mode,
 ];
 
 // buwana:basic — identity fingerprint

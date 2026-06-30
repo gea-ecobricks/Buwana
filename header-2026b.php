@@ -111,6 +111,10 @@ usort($connected_apps, fn($a, $b) =>
 <link rel="stylesheet" type="text/css" href="../styles/styles-2026.css?v=<?php echo ($version); ;?>">
 <link rel="stylesheet" type="text/css" href="../styles/2026-panel-styles.css?v=<?php echo ($version); ;?>">
 
+<!-- Pre-paint color-mode applier: sets data-theme before themed CSS paints to
+     avoid a flash. Canonical key color_mode, legacy fallback. See docs/color-mode-policy.md -->
+<script>(function(){function ok(m){return m==="light"||m==="dark";}var m=null;try{var s=localStorage.getItem("color_mode");if(ok(s)){m=s;}else{var l=localStorage.getItem("dark-mode-toggle")||localStorage.getItem("user_dark_mode");if(ok(l)){m=l;}}}catch(e){}if(!m){m=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";}try{localStorage.setItem("color_mode",m);}catch(e){}document.documentElement.setAttribute("data-theme",m);})();</script>
+
 <!--Default Light Styles to load first-->
 <link rel="preload" href="../styles/mode-light.css?v=1<?php echo ($version); ;?>" as="style" onload="this.rel='stylesheet'">
 <link rel="stylesheet" href="../styles/mode-light.css?v=1<?php echo ($version); ;?>" media="(prefers-color-scheme: no-preference), (prefers-color-scheme: light)">

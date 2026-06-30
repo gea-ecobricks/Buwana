@@ -45,6 +45,7 @@ CREATE TABLE `users_tb` (
 `connected_app_ids` text DEFAULT NULL,
 `earthling_emoji` varchar(4) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
 `time_zone` varchar(50) NOT NULL DEFAULT 'Etc/GMT',
+`color_mode` varchar(5) NOT NULL DEFAULT 'light' COMMENT 'Canonical dark/light UI preference. See docs/color-mode-policy.md. Values: light | dark',
 `test_sent` tinyint(1) NOT NULL DEFAULT 0,
 `test_sent_date_time` datetime DEFAULT NULL,
 `validated` tinyint(1) NOT NULL DEFAULT 0,
