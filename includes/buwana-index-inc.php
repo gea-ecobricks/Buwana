@@ -168,6 +168,23 @@
     background-size:contain;
     }
 
+/* Horizontal slider for the landing page */
+#content-slider {
+    overflow: hidden;
+    width: 100%;
+    position: relative;
+}
+
+#content-slider .slides-wrapper {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+}
+
+#content-slider .slide {
+    min-width: 100%;
+    box-sizing: border-box;
+}
+
 
 @media (max-width: 769px) {
 .buwana-lead-banner {
