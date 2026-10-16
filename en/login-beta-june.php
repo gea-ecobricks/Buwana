@@ -163,7 +163,7 @@ echo '<!DOCTYPE html>
 ';
 
 if ($mode) {
-    echo '<script>(function(){var m=' . json_encode($mode, JSON_HEX_TAG) . ';if(m==="light"||m==="dark"){try{localStorage.setItem("dark-mode-toggle",m);}catch(e){}document.documentElement.setAttribute("data-theme",m);}})();</script>' . "\n";
+    echo '<script>(function(){var m=' . json_encode($mode, JSON_HEX_TAG) . ';if(m==="light"||m==="dark"){try{localStorage.setItem("color_mode",m);localStorage.setItem("dark-mode-toggle",m);}catch(e){}document.documentElement.setAttribute("data-theme",m);}})();</script>' . "\n";
 }
 
 // JavaScript variables for dynamic use
@@ -289,7 +289,7 @@ echo '</script>';
  </div>
 
 <!-- FOOTER STARTS HERE -->
-<?php require_once ("../footer-2025.php");?>
+<?php require_once ("../footer-2026.php");?>
 
 <script src="../js/login-beta-june.js?v=<?php echo ($version); ;?>4" defer></script>
 

@@ -124,7 +124,7 @@ https://github.com/gea-ecobricks/gobrik-3.0/tree/main/en-->
 </div>
 
 <!--FOOTER STARTS HERE-->
-<?php require_once ("../footer-2025.php"); ?>
+<?php require_once ("../footer-2026.php"); ?>
 
 
 <script>

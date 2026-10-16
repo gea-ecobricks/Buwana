@@ -190,7 +190,7 @@ document.addEventListener('DOMContentLoaded', function() {
   loadChart();
 });
 </script>
-<?php require_once("../footer-2025.php"); ?>
+<?php require_once("../footer-2026.php"); ?>
 
 <?php require_once ("../scripts/app_modals.php");?>
 </body>

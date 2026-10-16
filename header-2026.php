@@ -117,6 +117,17 @@ $sql = "SELECT a.app_display_name,
      avoid a flash. Canonical key color_mode, legacy fallback. See docs/color-mode-policy.md -->
 <script>(function(){function ok(m){return m==="light"||m==="dark";}var m=null;try{var s=localStorage.getItem("color_mode");if(ok(s)){m=s;}else{var l=localStorage.getItem("dark-mode-toggle")||localStorage.getItem("user_dark_mode");if(ok(l)){m=l;}}}catch(e){}if(!m){m=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";}try{localStorage.setItem("color_mode",m);}catch(e){}document.documentElement.setAttribute("data-theme",m);})();</script>
 
+<?php
+// Page-wide CSRF token for state-changing fetches (e.g. footer-2026.php's
+// color-mode persistence → /api/set_color_mode.php). Same session token the
+// page handlers check, created here if the page hasn't already.
+if (session_status() === PHP_SESSION_ACTIVE && empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+if (!empty($_SESSION['csrf_token'])): ?>
+<script>var CSRF_TOKEN = <?php echo json_encode($_SESSION['csrf_token'], JSON_HEX_TAG); ?>;</script>
+<?php endif; ?>
+
 <!--Default Light Styles to load first-->
 <link rel="preload" href="../styles/mode-light.css?v=1<?php echo ($version); ;?>" as="style" onload="this.rel='stylesheet'">
  <!--Stylesheets for light and dark mode.  They need to be called here-->

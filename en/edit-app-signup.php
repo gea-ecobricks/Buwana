@@ -284,7 +284,7 @@ if (!$app) {
   </div>
 </div>
 </div> <!-- closes main -->
-<?php require_once("../footer-2025.php"); ?>
+<?php require_once("../footer-2026.php"); ?>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   const form = document.getElementById('edit-signup-form');

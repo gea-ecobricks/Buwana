@@ -360,7 +360,7 @@ padding-top: 10px !important;
 
 <?php require_once ("../scripts/app_modals.php");?>
 
-<?php require_once ("../footer-2025.php"); ?>
+<?php require_once ("../footer-2026.php"); ?>
 
 
 </body>

@@ -114,7 +114,7 @@ $page_key = 'signup_3';
 </div>
 </div>
 
-<?php require_once("../footer-2025.php"); ?>
+<?php require_once("../footer-2026.php"); ?>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const staticCode = "AYYEW";

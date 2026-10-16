@@ -68,8 +68,10 @@ Multi-language support mirrors `en/` for other locales (`fr/`, `es/`, `id/`, etc
 - Displays apps where the user is listed in `app_owners_tb`
 - Shows user growth statistics and links to per-app management
 - App creation: `app-wizard.php` → `scripts/create_app.php`
-  - Generates unique `client_id`, `client_secret`, and an RSA keypair per app
+  - Generates unique `client_id`, `client_secret`, and an RS256 keypair (`jwt_private_key` / `jwt_public_key`) per app
+  - Stores scopes as a comma-separated string, whitelisted to the scope list below (`openid,buwana:basic` always included)
   - Registers the creator as the primary owner in `app_owners_tb`
+  - `edit-app-core.php` edits the same scope list; `processes/key_generator.php` (re)generates keys for an existing app
 
 ---
 
@@ -93,8 +95,18 @@ https://buwana.ecobricks.org
 ```
 
 ### Supported Scopes
-- Standard: `openid`, `email`, `profile`
-- Custom: `buwana:earthlingEmoji`, `buwana:community`, `buwana:location.continent`
+Keep these in sync across `.well-known/openid-configuration.php`, `authorize.php`, `token.php`, `en/edit-app-core.php`, `en/app-wizard.php` and `scripts/create_app.php`.
+
+| Scope | Grants |
+|-------|--------|
+| `openid` + `buwana:basic` | Always on. `email`, `given_name`, `buwana:earthlingEmoji` |
+| `buwana:profile` | `family_name`, `created_at`, `role`, `gea_status`, `profile_pic`, `language`, `country`, `birth_date`, `zoneinfo`, `community_id`, `brikcoin_balance`, `connected_app_ids` |
+| `buwana:community` | `buwana:community` (resolved community name) |
+| `buwana:bioregion` | `continent`, `location_full`, `location_watershed`, `watershed_name`, `watershed_id`, `location_lat`, `location_long` |
+| `buwana:profile.read` | API permission: read the profile via the Buwana profile API (no token claims) |
+| `buwana:profile.write` | API permission: update the profile via the Buwana profile API (no token claims) |
+
+`authorize.php` rejects any `buwana:*` scope that is not in the app's `apps_tb.scopes` allow-list.
 
 ### Auth Flow Summary
 1. Client redirects user to `/authorize` with `client_id`, `scope`, `state`, `nonce`, `redirect_uri`
@@ -107,11 +119,19 @@ https://buwana.ecobricks.org
 6. Clients verify tokens via the public key from `/.well-known/jwks.php` (keyed by `kid` = `client_id`)
 
 ### Custom JWT Claims
-Beyond standard OIDC, tokens include:
-- `buwana_id` — numeric user ID
-- `buwana:earthlingEmoji` — user's emoji avatar
-- `buwana:community` — community affiliation
-- `buwana:location.continent` — continent code
+Beyond standard OIDC, tokens include the scope-gated claims in the table above, plus:
+- `color_mode` — `'light'` | `'dark'`, always present (no scope required). See Color Mode below.
+
+---
+
+## Color Mode (dark / light)
+
+Shared contract between Buwana and every client app, specified in `docs/color-mode-policy.md`:
+- localStorage key `color_mode` (`'light'` | `'dark'`); legacy keys `dark-mode-toggle` / `user_dark_mode` are fallback-only
+- Carried across redirects as `?mode=` (and `?lang=`) in both directions — `authorize.php` reads it, stores it in `pending_oauth_request`, and appends it to the client callback
+- Source of truth: `users_tb.color_mode`, emitted as the `color_mode` claim in the ID token and `/userinfo`
+- Buwana-side toggles persist via `POST /api/set_color_mode.php` (session + CSRF)
+- Pages apply the mode pre-paint from an inline `<head>` script (`header-2026.php`, `header-2026b.php`, `en/login.php`)
 
 ---
 
@@ -120,7 +140,7 @@ Beyond standard OIDC, tokens include:
 | Table | Purpose |
 |-------|---------|
 | `apps_tb` | App registry — `client_id`, `client_secret`, RSA keypair, `redirect_uris`, scopes, branding |
-| `users_tb` | Buwana user accounts — `buwana_id`, `open_id` (UUID), email, name, emoji, location |
+| `users_tb` | Buwana user accounts — `buwana_id`, `open_id` (UUID), email, name, emoji, location, `color_mode` |
 | `credentials_tb` | Login credentials — tracks failed attempts, brute-force lockout |
 | `authorization_codes_tb` | Single-use auth codes with PKCE fields |
 | `user_app_connections_tb` | Links users to apps — `status` (registered/pending), `connected_at` |

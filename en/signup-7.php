@@ -71,7 +71,7 @@ https://github.com/gea-ecobricks/buwana/-->
 <?php
 $mode = $_SESSION['pending_oauth_request']['mode'] ?? null;
 if (!in_array($mode, ['light', 'dark'], true)) $mode = null;
-if ($mode): ?><script>(function(){var m=<?php echo json_encode($mode, JSON_HEX_TAG); ?>;if(m==="light"||m==="dark"){try{localStorage.setItem("dark-mode-toggle",m);}catch(e){}document.documentElement.setAttribute("data-theme",m);}})();</script><?php endif; ?>
+if ($mode): ?><script>(function(){var m=<?php echo json_encode($mode, JSON_HEX_TAG); ?>;if(m==="light"||m==="dark"){try{localStorage.setItem("color_mode",m);localStorage.setItem("dark-mode-toggle",m);}catch(e){}document.documentElement.setAttribute("data-theme",m);}})();</script><?php endif; ?>
 <?php require_once ("../includes/signup-7-inc.php");?>
 
 <div class="page-panel-group">
@@ -102,7 +102,7 @@ if ($mode): ?><script>(function(){var m=<?php echo json_encode($mode, JSON_HEX_T
 </div>
 </div>
 
-<?php require_once ("../footer-2025.php"); ?>
+<?php require_once ("../footer-2026.php"); ?>
 
 <script>
   setTimeout(() => {

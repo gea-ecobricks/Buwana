@@ -139,7 +139,7 @@ $page_key = 'signup_1';
 </div>
 
 <!--FOOTER STARTS HERE-->
-<?php require_once ("../footer-2025.php"); ?>
+<?php require_once ("../footer-2026.php"); ?>
 
 <script>
 function confirmDeletion() {

@@ -66,7 +66,7 @@ if ($status === 'reset') {
             </div>
         </div>
     </div>';
-    require_once("../footer-2025.php");
+    require_once("../footer-2026.php");
     require_once("../scripts/app_modals.php");
     echo '</body></html>';
     exit();
@@ -161,7 +161,7 @@ echo '<div id="form-submission-box" class="landing-page-form">
 </div>
 </div>';
 
-require_once ("../footer-2025.php");
+require_once ("../footer-2026.php");
 require_once ("../scripts/app_modals.php");
 
 echo '

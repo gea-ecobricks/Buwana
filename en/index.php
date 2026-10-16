@@ -117,7 +117,7 @@ if ($app_results && $app_results->num_rows > 0) {
 </div>
 </div>
 
-<?php require_once("../footer-2025.php"); ?>
+<?php require_once("../footer-2026.php"); ?>
 <script>
   document.addEventListener('DOMContentLoaded', function () {
     const boxes = document.querySelectorAll('.app-display-box');
