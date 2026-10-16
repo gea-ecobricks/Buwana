@@ -119,7 +119,10 @@ stylesheet links).
 - **On a client:** write `localStorage['color_mode']`, apply immediately, and —
   if the user is logged in — push to Buwana so the source of truth updates. The
   minimal path is to send `?mode=` on the next `/authorize` round-trip
-  (§4.1.2); apps with `buwana:profile.write` may also `PATCH` the profile API.
+  (§4.1.2). Apps with `buwana:profile.write` should also push it right away,
+  server-to-server: `POST /api/set_color_mode.php` with
+  `Authorization: Bearer <access token>` and body `{"mode": "dark"}`.
+  (HopeTurtles does this from its `POST /theme` route.)
 - **On Buwana:** write `localStorage['color_mode']`, apply immediately, and
   persist to `users_tb.color_mode` for the logged-in user.
 

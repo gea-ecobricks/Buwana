@@ -130,7 +130,7 @@ Shared contract between Buwana and every client app, specified in `docs/color-mo
 - localStorage key `color_mode` (`'light'` | `'dark'`); legacy keys `dark-mode-toggle` / `user_dark_mode` are fallback-only
 - Carried across redirects as `?mode=` (and `?lang=`) in both directions — `authorize.php` reads it, stores it in `pending_oauth_request`, and appends it to the client callback
 - Source of truth: `users_tb.color_mode`, emitted as the `color_mode` claim in the ID token and `/userinfo`
-- Buwana-side toggles persist via `POST /api/set_color_mode.php` (session + CSRF)
+- Toggles persist via `POST /api/set_color_mode.php`: session + CSRF from Buwana pages (`CSRF_TOKEN` is defined in the shared headers), or Bearer + `buwana:profile.write` from client apps
 - Pages apply the mode pre-paint from an inline `<head>` script (`header-2026.php`, `header-2026b.php`, `en/login.php`)
 
 ---
