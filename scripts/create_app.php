@@ -24,8 +24,36 @@ $client_id = generateClientId($app_name ?: 'app');
 $client_secret = bin2hex(random_bytes(16));
 $app_registration_dt = date('Y-m-d H:i:s');
 
+// Same scope vocabulary as edit-app-core.php and authorize.php.
+// openid + buwana:basic are always granted.
+$scope_options = [
+    'openid',
+    'buwana:basic',
+    'buwana:profile',
+    'buwana:community',
+    'buwana:bioregion',
+    'buwana:profile.read',
+    'buwana:profile.write',
+];
+$scopes_input = $_POST['scopes'] ?? [];
+$scopes_input = is_array($scopes_input) ? $scopes_input : [];
+$scopes_input = array_merge(['openid', 'buwana:basic'], $scopes_input);
+$scopes = implode(',', array_values(array_intersect($scope_options, $scopes_input)));
+
+// RS256 keypair used by token.php to sign this app's JWTs
+$key_resource = openssl_pkey_new([
+    'private_key_bits' => 2048,
+    'private_key_type' => OPENSSL_KEYTYPE_RSA
+]);
+if (!$key_resource || !openssl_pkey_export($key_resource, $jwt_private_key)) {
+    echo json_encode(['success' => false, 'error' => 'Key generation failed']);
+    exit();
+}
+$jwt_public_key = openssl_pkey_get_details($key_resource)['key'];
+
 $sql = "INSERT INTO apps_tb (
     app_name, app_registration_dt, client_id, client_secret,
+    jwt_private_key, jwt_public_key,
     redirect_uris, app_login_url, scopes, app_domain, app_url, app_favicon,
     app_dashboard_url, app_description, app_version, app_display_name,
     contact_email, app_slogan, app_terms_txt, app_privacy_txt,
@@ -37,7 +65,7 @@ $sql = "INSERT INTO apps_tb (
     signup_7_top_img_light, signup_7_top_img_dark, login_top_img_light, login_top_img_dark,
     is_active, allow_signup, require_verification, last_used_dt, updated_dt
 ) VALUES (
-    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 1, 1, NOW(), NOW())";
+    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 1, 1, NOW(), NOW())";
 
 $stmt = $buwana_conn->prepare($sql);
 if (!$stmt) {
@@ -47,7 +75,8 @@ if (!$stmt) {
 
 $params = [
     $app_name, $app_registration_dt, $client_id, $client_secret,
-    $_POST['redirect_uris'] ?? '', $_POST['app_login_url'] ?? '', $_POST['scopes'] ?? '',
+    $jwt_private_key, $jwt_public_key,
+    $_POST['redirect_uris'] ?? '', $_POST['app_login_url'] ?? '', $scopes,
     $_POST['app_domain'] ?? '', $_POST['app_url'] ?? '', $_POST['app_favicon'] ?? '', $_POST['app_dashboard_url'] ?? '',
     $_POST['app_description'] ?? '', $_POST['app_version'] ?? '', $_POST['app_display_name'] ?? '',
     $_POST['contact_email'] ?? '', $_POST['app_slogan'] ?? '', $_POST['app_terms_txt'] ?? '',

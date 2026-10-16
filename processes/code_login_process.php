@@ -10,7 +10,8 @@ $response = array('status' => 'error', 'message' => 'Something went wrong');
 
 // Helper function to log debug messages
 function log_debug($message) {
-    file_put_contents('debug.log', "[" . date('Y-m-d H:i:s') . "] " . $message . "\n", FILE_APPEND);
+    // PHP's own error log, never a file in the web root (it was served publicly).
+    error_log("[code_login] " . $message);
 }
 
 // Helper function to send JSON response and exit
@@ -90,7 +91,7 @@ if (!empty($_POST['code']) && !empty($_POST['credential_key'])) {
                 $response = array('status' => 'success', 'redirect' => 'dashboard.php');
             } else {
                 // Invalid code
-                log_debug("Invalid code for credential: $credential_key");
+                log_debug("Invalid code for a credential");
                 $response = array('status' => 'invalid', 'message' => 'Invalid code');
             }
         } else {

@@ -9,7 +9,8 @@ $client_id = isset($_GET['app']) ? filter_var($_GET['app'], FILTER_SANITIZE_SPEC
 $redirect = isset($_GET['redirect']) ? filter_var($_GET['redirect'], FILTER_SANITIZE_SPECIAL_CHARS) : '';
 
 // Log the action for debugging purposes
-file_put_contents('debug.log', "Logging out user with session ID: " . session_id() . "\n", FILE_APPEND);
+// PHP's own error log, never a file in the web root; no session ids in logs.
+error_log("[logout] user logging out");
 
 // Unset all session variables, including any JWT that may be stored
 unset($_SESSION['jwt']);

@@ -5,7 +5,12 @@ ob_start();
  * ================================
  * SECTION 1: INITIALIZATION & LOGGING SETUP
  * This section starts the session, loads dependencies, and defines a helper
- * for writing all authentication-related logs to /auth_log.
+ * for writing authentication-related logs OUTSIDE the web root.
+ *
+ * Never log tokens, codes, code verifiers, secrets or a user's personal
+ * data (email, names, location): log ids, client_ids, scopes and outcomes.
+ * The log used to live at __DIR__/auth_log, inside the web root, where the
+ * web server served it to anyone who asked.
  * ================================
  */
 
@@ -18,18 +23,23 @@ send_security_headers(true);
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
-$authLogFile = __DIR__ . '/auth_log';
+// One level above the web root, so the web server can never serve it.
+$authLogFile = dirname(__DIR__) . '/buwana-logs/auth.log';
 
 function auth_log($message) {
     global $authLogFile;
     $log_message = '[' . date('Y-m-d H:i:s') . "] TOKEN: " . $message;
 
-    if (!file_exists(dirname($authLogFile))) {
-        mkdir(dirname($authLogFile), 0750, true);
+    $dir = dirname($authLogFile);
+    if (!is_dir($dir) && !@mkdir($dir, 0750, true)) {
+        // Can't create the private log directory: fall back to PHP's own
+        // error log (also not web-served) rather than anywhere public.
+        error_log($log_message);
+        return;
     }
-
-    // Write ONLY to the dedicated auth log file
-    error_log($log_message . PHP_EOL, 3, $authLogFile);
+    if (!@error_log($log_message . PHP_EOL, 3, $authLogFile)) {
+        error_log($log_message);
+    }
 }
 
 /**
@@ -317,23 +327,8 @@ $resolved_emoji       = trim($earthling_emoji ?? '') ?: '🌏';
 // Canonical dark/light UI preference — see docs/color-mode-policy.md
 $resolved_color_mode  = ($color_mode === 'dark') ? 'dark' : 'light';
 
-auth_log(
-    "User lookup results for user_id=$user_id: " . json_encode([
-        'email'          => $email,
-        'first_name'     => $first_name,
-        'last_name'      => $last_name,
-        'earthling_emoji'=> $earthling_emoji,
-        'continent_code' => $continent_code,
-        'community_id'   => $community_id,
-        'location_full'  => $location_full,
-        'time_zone'      => $time_zone,
-        'country_name'   => $country_name,
-        'language_name'  => $language_name,
-        'continent_name' => $continent_name,
-        'community_name' => $community_name,
-        'watershed_name' => $watershed_name,
-    ])
-);
+// Whether the profile was found, not what's in it (no personal data in logs).
+auth_log("User lookup for user_id=$user_id: " . ($email !== null ? 'found' : 'NOT FOUND'));
 
 /**
  * ================================
@@ -436,8 +431,7 @@ try {
     echo json_encode(["error" => "jwt_generation_failed"]);
     exit;
 }
-auth_log("ID token payload: " . json_encode($id_token_payload));
-auth_log("Generated ID token: $id_token");
+auth_log("ID token issued for user_id=$user_id to $client_id with claims: " . implode(',', array_keys($id_token_payload)));
 
 $access_token_payload = [
     "iss"       => "https://buwana.ecobricks.org",
@@ -457,8 +451,7 @@ try {
     echo json_encode(["error" => "access_token_generation_failed"]);
     exit;
 }
-auth_log("Access token payload: " . json_encode($access_token_payload));
-auth_log("Generated access token: $access_token");
+auth_log("Access token issued for user_id=$user_id to $client_id");
 
 /**
  * ================================
@@ -478,7 +471,6 @@ $response = [
 ];
 
 auth_log("Returning tokens for user_id: $user_id");
-auth_log(json_encode($response, JSON_PRETTY_PRINT));
 
 echo json_encode($response);
 exit;

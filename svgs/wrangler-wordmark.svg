@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="114.4635mm"
+   height="26.374504mm"
+   viewBox="0 0 114.4635 26.374504"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4.4 (dcaf3e7d9e, 2026-05-05)"
+   sodipodi:docname="wrangler-wordmark.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="0.7198092"
+     inkscape:cx="-42.37234"
+     inkscape:cy="263.95884"
+     inkscape:window-width="1692"
+     inkscape:window-height="1058"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1">
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient1"
+       id="linearGradient2"
+       x1="370.69308"
+       y1="805.54456"
+       x2="760.39606"
+       y2="803.16833"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.26458333,0,0,0.26458333,24.116612,-121.86964)" />
+    <linearGradient
+       id="linearGradient1"
+       inkscape:collect="always">
+      <stop
+         style="stop-color:#f9f9f9;stop-opacity:1;"
+         offset="0"
+         id="stop1" />
+      <stop
+         style="stop-color:#ff4fff;stop-opacity:1;"
+         offset="1"
+         id="stop2" />
+    </linearGradient>
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-116.15208,-78.581251)">
+    <text
+       xml:space="preserve"
+       style="font-size:27.5021px;font-family:Mulish;-inkscape-font-specification:Mulish;writing-mode:lr-tb;direction:ltr;fill:url(#linearGradient2);fill-opacity:1;stroke-width:0.595085"
+       x="115.51957"
+       y="98.822746"
+       id="text128"><tspan
+         sodipodi:role="line"
+         id="tspan128"
+         x="115.51957"
+         y="98.822746"
+         style="fill:url(#linearGradient2);fill-opacity:1;stroke-width:0.595085">wrangler</tspan></text>
+  </g>
+</svg>

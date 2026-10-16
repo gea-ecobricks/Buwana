@@ -7,28 +7,14 @@ require_once '../vendor/autoload.php';
 require_once '../buwanaconn_env.php';
 require_once '../fetch_app_info.php';
 
-$scope_options = [
-    'openid',
-    'email',
-    'profile',
-    'address',
-    'phone',
-    'buwana:bioregion',
-    'buwana:earthlingEmoji',
-    'buwana:community',
-    'buwana:location.continent'
-];
-
-$scope_descriptions = [
-    'openid'                  => 'Unique identifier for user login',
-    'email'                   => 'Access to user email address',
-    'profile'                 => 'Basic profile information',
-    'address'                 => 'User postal address details',
-    'phone'                   => 'Telephone number information',
-    'buwana:bioregion'        => 'User watershed & bioregion',
-    'buwana:earthlingEmoji'   => 'Preferred emoji avatar',
-    'buwana:community'        => 'Community membership',
-    'buwana:location.continent' => 'Continent of residence'
+// Optional scopes — same vocabulary as edit-app-core.php and authorize.php.
+// openid + buwana:basic are always granted (see hidden inputs below).
+$scope_toggles = [
+    'buwana:profile'       => ['👤', 'Extended personal profile data', 'family_name, created_at, role, gea_status, profile_pic, language, country, birth_date, zoneinfo, community_id, brikcoin_balance, connected_app_ids'],
+    'buwana:community'     => ['🏘️', 'Resolved community membership name', 'buwana:community (resolved community name)'],
+    'buwana:bioregion'     => ['🌍', 'Geographic and watershed location data', 'continent, location_full, watershed_id, watershed_name, location_watershed, location_lat, location_long'],
+    'buwana:profile.read'  => ['📖', "API permission: read the user's profile from Buwana (for an in-app profile page). Does not add data to the token.", 'Grants access to the Buwana profile read API'],
+    'buwana:profile.write' => ['✏️', "API permission: update the user's profile in Buwana from within your app. Buwana remains the source of truth.", 'Grants access to the Buwana profile update API'],
 ];
 
 use Firebase\JWT\JWT;
@@ -124,6 +110,34 @@ try {
       .hidden-scope {
         display: none;
       }
+      .wizard-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+      }
+      .wizard-buttons .kick-ass-submit {
+        width: auto;
+        min-width: 140px;
+        flex: 1 1 0;
+        margin: 0;
+      }
+      /* Previous: same shape as Next, but quiet and without the power stripe */
+      .wizard-buttons .wizard-prev {
+        flex: 0 1 auto;
+        background: transparent;
+        color: var(--subdued-text);
+        border: 2px solid var(--subdued-text);
+        box-shadow: none;
+      }
+      .wizard-buttons .wizard-prev::before {
+        display: none;
+      }
+      .wizard-buttons .wizard-prev:hover {
+        background: transparent;
+        color: var(--text-color);
+        border-color: var(--text-color);
+        box-shadow: none;
+      }
     </style>
 <div id="form-submission-box" class="landing-page-form">
   <div class="form-container">
@@ -169,31 +183,24 @@ try {
         </div>
         <div class="form-item" style="border-radius:10px 10px 5px 5px;padding-bottom:10px;">
           <label for="scopes" style="padding:7px;"><h5>Scopes</h5></label>
+          <!-- Always-on: openid + buwana:basic -->
+          <input type="checkbox" class="hidden-scope" name="scopes[]" value="openid" checked style="display:none;" />
+          <input type="checkbox" class="hidden-scope" name="scopes[]" value="buwana:basic" checked style="display:none;" />
           <div id="scopes" class="scopes-list">
-<?php
-  $profile_scopes = ['openid','email','profile','phone','buwana:earthlingEmoji','buwana:location.continent'];
-?>
             <div class="scope-row">
               <div class="scope-info">
-                <span>🌐 <b>Buwana Profile</b></span>
-                <span class="scope-caption">Essential user data for logging in and using the app</span>
-                <span class="scope-subscopes">openId, Name, email, profile, phone, buwana:earthlingEmoji, buwana:location_continent</span>
+                <span>🔒 <b>openid + buwana:basic</b></span>
+                <span class="scope-caption">Required foundation for every Buwana login. Always granted — cannot be disabled.</span>
+                <span class="scope-subscopes">iss, sub, aud, exp, iat, nonce, scope · buwana_id, email, given_name, buwana:earthlingEmoji</span>
               </div>
-              <label class="toggle-switch">
-                <input type="checkbox" class="scope-checkbox scope-group" data-scopes="<?= implode(',', $profile_scopes) ?>" />
-                <span class="slider"></span>
-              </label>
-<?php foreach ($profile_scopes as $sc): ?>
-              <input type="checkbox" class="scope-checkbox hidden-scope" name="scopes[]" value="<?= htmlspecialchars($sc) ?>" style="display:none;" />
-<?php endforeach; ?>
+              <span style="font-size:1.3em;" title="Always enabled">🔒</span>
             </div>
-<?php foreach (['buwana:community','buwana:bioregion'] as $scope): ?>
+<?php foreach ($scope_toggles as $scope => [$icon, $caption, $fields]): ?>
             <div class="scope-row">
               <div class="scope-info">
-                <span>ℹ️ <b><?= htmlspecialchars($scope) ?></b></span>
-                <span class="scope-caption">
-                  <?= htmlspecialchars($scope_descriptions[$scope] ?? '') ?>
-                </span>
+                <span><?= $icon ?> <b><?= htmlspecialchars($scope) ?></b></span>
+                <span class="scope-caption"><?= htmlspecialchars($caption) ?></span>
+                <span class="scope-subscopes"><?= htmlspecialchars($fields) ?></span>
               </div>
               <label class="toggle-switch">
                 <input type="checkbox" class="scope-checkbox" name="scopes[]" value="<?= htmlspecialchars($scope) ?>" />
@@ -202,8 +209,7 @@ try {
             </div>
 <?php endforeach; ?>
           </div>
-          <p class="form-caption">OAuth scopes requested by your app</p>
-          <div id="scopes-error-required" class="form-field-error" style="display:none;">This field is required.</div>
+          <p class="form-caption">Only turn on the Buwana data your app really needs. <a href="https://github.com/gea-ecobricks/Buwana/wiki/Scopes" target="_blank" rel="noopener">See the wiki for a full breakdown</a>.</p>
         </div>
         <div class="form-item float-label-group">
           <input type="text" id="app_domain" name="app_domain" aria-label="App Domain" placeholder=" ">
@@ -385,8 +391,8 @@ try {
         <p>Review your details and submit to create the app.</p>
       </div>
       <div class="wizard-buttons">
-        <button type="button" id="prevBtn" class="simple-button">Previous</button>
-        <button type="button" id="nextBtn" class="simple-button">Next</button>
+        <button type="button" id="prevBtn" class="kick-ass-submit wizard-prev">Previous</button>
+        <button type="button" id="nextBtn" class="kick-ass-submit">Next</button>
         <button type="submit" id="submitBtn" class="kick-ass-submit" style="display:none;">Submit</button>
       </div>
     </form>
@@ -400,7 +406,6 @@ try {
   const prevBtn = document.getElementById('prevBtn');
   const submitBtn = document.getElementById('submitBtn');
   const form = document.getElementById('appWizardForm');
-  const groupToggles = document.querySelectorAll('.scope-group');
 
   function showStep(index) {
     steps.forEach((step,i)=>{
@@ -425,13 +430,17 @@ try {
     }
   });
 
-  groupToggles.forEach(tg => {
-    tg.addEventListener('change', () => {
-      const scopes = tg.dataset.scopes.split(',');
-      scopes.forEach(sc => {
-        const cb = document.querySelector('.hidden-scope[value="' + sc + '"]');
-        if (cb) cb.checked = tg.checked;
-      });
+  // Hover pulse for the kick-ass power stripe (Previous is excluded via CSS)
+  document.querySelectorAll('.wizard-buttons .kick-ass-submit').forEach(btn => {
+    btn.addEventListener('mouseenter', () => {
+      btn.setAttribute('data-hovered', 'true');
+      btn.classList.add('pulse-started');
+    });
+    btn.addEventListener('mouseleave', () => {
+      btn.removeAttribute('data-hovered');
+      btn.classList.remove('pulse-started');
+      btn.classList.add('returning');
+      setTimeout(() => btn.classList.remove('returning'), 500);
     });
   });
 
@@ -439,15 +448,25 @@ try {
     e.preventDefault();
     const formData = new FormData(form);
     fetch(form.action, { method: 'POST', body: formData })
-      .then(r => r.json())
+      .then(async r => {
+        const text = await r.text();
+        try {
+          return JSON.parse(text);
+        } catch (_) {
+          console.error('create_app.php returned non-JSON:', text);
+          throw new Error('Server returned an unexpected response (HTTP ' + r.status + '). See console for details.');
+        }
+      })
       .then(d => {
         if (d.success) {
           form.reset();
+          const appUrl = d.redirect || 'dashboard.php';
           document.getElementById('form-submission-box').innerHTML = `
 <div id="top-page-image" class="top-page-image" style="min-height:250px;" data-light-img="../svgs/confirmed-day.svg" data-dark-img="../svgs/confirmed-night.svg"></div>
 <h1>Your App is Setup!</h1>
-<p>To continue fine tuning the settings of your app, click through on your dashboard.  There you'll be able to tweak the full app configuation and add any missing details</p>
-<a href="dashboard.php"><button class="kick-ass">Dashboard</button></a>`;
+<p>Your app's client ID, secret and JWT signing keys have been generated. Continue to your app's page to fine tune its full configuration and add any missing details.</p>
+<a href="${appUrl}" class="kick-ass-submit">View Your App</a>
+<p style="margin-top:12px;"><a href="dashboard.php">Back to Dashboard</a></p>`;
         } else {
           document.getElementById('update-error').textContent = d.error || 'Unknown error';
         }

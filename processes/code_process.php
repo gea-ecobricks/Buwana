@@ -103,7 +103,7 @@ if ($stmt_credential) {
                     echo json_encode($response);
                     exit();
                 } else {
-                    file_put_contents('debug.log', "Failed to send email to: $credential_key\n", FILE_APPEND);
+                    error_log("[code_process] Failed to send a login code email");
                     $response['status'] = 'email_error';
                     $response['message'] = 'Failed to send the email verification code.';
                     echo json_encode($response);
@@ -111,14 +111,14 @@ if ($stmt_credential) {
                 }
 
             } else {
-                file_put_contents('debug.log', "SQL Update Execution Error: " . $stmt_update->error . "\n", FILE_APPEND);
+                error_log("[code_process] " . "SQL Update Execution Error: " . $stmt_update->error);
                 $response['status'] = 'error';
                 $response['message'] = 'Failed to update 2FA details: ' . $stmt_update->error;
                 echo json_encode($response);
                 exit();
             }
         } else {
-            file_put_contents('debug.log', "SQL Update Preparation Error: " . $buwana_conn->error . "\n", FILE_APPEND);
+            error_log("[code_process] " . "SQL Update Preparation Error: " . $buwana_conn->error);
             $response['status'] = 'error';
             $response['message'] = 'Failed to prepare SQL update: ' . $buwana_conn->error;
             echo json_encode($response);
@@ -131,7 +131,7 @@ if ($stmt_credential) {
         exit();
     }
 } else {
-    file_put_contents('debug.log', "SQL Credential Prep Error: " . $buwana_conn->error . "\n", FILE_APPEND);
+    error_log("[code_process] " . "SQL Credential Prep Error: " . $buwana_conn->error);
     $response['status'] = 'error';
     $response['message'] = 'Error preparing statement for credentials_tb: ' . $buwana_conn->error;
     echo json_encode($response);
