@@ -259,6 +259,24 @@ if (function_exists('updateBuwanaUserNotes')) {
 }
 
 // ---------------------------------------------------------
+// Resume an OAuth/OIDC login that was waiting on this connection
+//   check_user_app_connection() sends a not-yet-connected user here before
+//   the login process gets to pending_oauth_request, so it's still in the
+//   session. Hand it back to authorize.php, as login_process_jwt.php does,
+//   instead of dropping the user on the dashboard. Without this, PKCE clients
+//   (native apps like Wrangler) never get their code on a first connection.
+// ---------------------------------------------------------
+$pending = $_SESSION['pending_oauth_request'] ?? null;
+if (is_array($pending)
+    && ($pending['client_id'] ?? null) === $client_id
+    && (int) ($_SESSION['user_id'] ?? 0) === $buwana_id) {
+    unset($_SESSION['pending_oauth_request']);
+    error_log("↪️ Resuming OAuth flow after app connection for buwana_id={$buwana_id}, client_id={$client_id}");
+    header('Location: /authorize.php?' . http_build_query($pending));
+    exit;
+}
+
+// ---------------------------------------------------------
 // Generate JWT
 // ---------------------------------------------------------
 $private_key = '';
