@@ -1,6 +1,6 @@
 <?php
 /**
- * POST /api/profile_update.php  —  update the authenticated user's profile.
+ * POST /api/profile_update.php  —  update the authenticated user's profile. Ding
  *
  * Auth: Bearer access token + scope buwana:profile.write + registered connection.
  * Body: JSON or form-encoded with the editable fields (first_name, last_name,
