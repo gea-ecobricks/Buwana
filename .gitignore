@@ -4,3 +4,21 @@ error_log
 logs/*
 !logs/.gitkeep
 !logs/.htaccess
+
+# Server-only files: secrets, dependencies, generated and user-uploaded content
+/.htaccess
+*_env.php
+/config/
+/composer.json
+/composer.lock
+/vendor/
+/auth0/
+/auth_log
+/cs_system/attachments/
+# Language folders are copied from en/ at deploy (.cpanel.yml)
+/ar/
+/de/
+/es/
+/fr/
+/id/
+/zh/
