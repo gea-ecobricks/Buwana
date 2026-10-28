@@ -84,7 +84,7 @@
 }
 
 #map {
-    height: 40px;
+    height: 90px;
     width: 100%;
     border-radius: 0;
     transition: height 0.35s ease;

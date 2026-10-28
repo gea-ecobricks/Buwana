@@ -134,7 +134,7 @@ if (!empty($_SESSION['csrf_token'])): ?>
 <link rel="stylesheet" type="text/css" href="../styles/footer.css?v=<?php echo ($version); ;?>">
 
 <!-- Sidebar structural CSS — shared with GoBrik, no brand colours -->
-<link rel="stylesheet" href="../styles/header-2026.css?v=1">
+<link rel="stylesheet" href="../styles/header-2026.css?v=2">
 
 <script src="../js/earthcal-config.js?v=<?php echo ($version); ;?>"></script>
 <script src="../js/earthcal-init.js?v=<?php echo ($version); ;?>"></script>

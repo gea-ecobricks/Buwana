@@ -211,7 +211,7 @@ https://github.com/gea-ecobricks/buwana/-->
                             <?php endif; ?>
                         </select>
 
-                        <!-- Map preview wrapper: starts as 40px preview, expands on click -->
+                        <!-- Map preview wrapper: starts as 90px preview, expands on click -->
                         <div id="map-preview-wrapper" style="display:none;">
                             <div id="map"></div>
                             <div id="show-map-text">
@@ -475,7 +475,7 @@ $(function () {
             map.remove(); // Remove the previous map instance if it exists
         }
 
-        // Show the 40px preview wrapper so Leaflet has real dimensions to work with
+        // Show the 90px preview wrapper so Leaflet has real dimensions to work with
         $('#map-preview-wrapper').show();
         $('#map').removeClass('map-expanded');
         $('#show-map-text').show();
@@ -554,15 +554,6 @@ function fetchNearbyRivers(lat, lon) {
         })
     );
 
-    // Relations span entire watersheds (can be hundreds of km of geometry) and are
-    // the main cause of 504 timeouts. Way elements are sufficient for local rivers.
-    const overpassQuery = `[out:json][timeout:25];(way["waterway"="river"](around:5000,${lat},${lon});way["waterway"="stream"](around:5000,${lat},${lon}););out geom;`;
-
-    const overpassEndpoints = [
-        'https://overpass-api.de/api/interpreter',
-        'https://overpass.kumi.systems/api/interpreter'
-    ];
-
     function handleRiverData(data) {
         let rivers = data.elements;
         let uniqueRivers = new Set();
@@ -622,29 +613,20 @@ function fetchNearbyRivers(lat, lon) {
         }
     }
 
-    function tryOverpassEndpoint(index) {
-        if (index >= overpassEndpoints.length) {
+    // Buwana's own proxy queries Overpass (OpenStreetMap) with mirror fallback;
+    // the public Overpass servers now reject anonymous browser calls.
+    $.ajax({
+        url: '../api/nearby_rivers.php',
+        method: 'GET',
+        data: { lat: lat, lon: lon },
+        dataType: 'json',
+        timeout: 30000,
+        success: handleRiverData,
+        error: function (xhr) {
+            console.warn(`nearby_rivers.php failed (${xhr.status})`);
             handleRiverError();
-            return;
         }
-
-        $.ajax({
-            url: overpassEndpoints[index],
-            method: 'GET',
-            data: { data: overpassQuery },
-            dataType: 'json',
-            timeout: 20000, // 20s client-side cut-off
-            success: function (data) {
-                handleRiverData(data);
-            },
-            error: function (xhr) {
-                console.warn(`Overpass endpoint ${overpassEndpoints[index]} failed (${xhr.status}), trying next...`);
-                tryOverpassEndpoint(index + 1);
-            }
-        });
-    }
-
-    tryOverpassEndpoint(0);
+    });
 }
 
 
@@ -667,7 +649,7 @@ function fetchNearbyRivers(lat, lon) {
         }
     });
 
-    // Collapse map back to 40px preview when the map-info bar is clicked
+    // Collapse map back to the 90px preview when the map-info bar is clicked
     $('#map-info').on('click', function () {
         $('#map').removeClass('map-expanded');
         $('#map-info').hide();

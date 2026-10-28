@@ -372,7 +372,7 @@ document.addEventListener('DOMContentLoaded', function() {
         '<button type="button" id="delete-user-confirm-btn" class="alert-modal-btn alert-modal-btn-danger">Delete User</button>',
       onOpen: function () {
         var confirmBtn = document.getElementById('delete-user-confirm-btn');
-        confirmBtn.addEventListener('click', function () { confirmDeleteUser(id, confirmBtn); });
+        confirmBtn.addEventListener('click', function () { confirmDeleteUser(id, label, confirmBtn); });
       }
     });
   }
@@ -385,7 +385,19 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  function confirmDeleteUser(id, confirmBtn) {
+  function showDeleteSuccess(label, successes) {
+    var body = '<p>\u2705 <strong>' + esc(label) + '</strong> has been deleted.</p>';
+    if (successes && successes.length) {
+      body += '<ul>' + successes.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ul>';
+    }
+    openAlertModal({
+      title: 'Account deleted',
+      body: body,
+      actions: '<button type="button" class="alert-modal-btn alert-modal-btn-cancel" onclick="closeAlertModal()">Close</button>'
+    });
+  }
+
+  function confirmDeleteUser(id, label, confirmBtn) {
     confirmBtn.disabled = true;
     confirmBtn.textContent = 'Deleting\u2026';
     fetch('../api/admin_delete_user.php', {
@@ -405,9 +417,9 @@ document.addEventListener('DOMContentLoaded', function() {
     })
     .then(function (d) {
       if (d.success) {
-        closeAlertModal();
         var row = document.getElementById('user-row-' + id);
         if (row) latestUsersTable.row(row).remove().draw(false);
+        showDeleteSuccess(label, d.successes);
       } else if (d.failures) {
         showResult('Deleted with errors', d.failures.join('. '));
       } else {

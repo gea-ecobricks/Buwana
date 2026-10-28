@@ -329,7 +329,11 @@
 }
 
 .alert-modal-box {
-    background: var(--form-field-background, #fff);
+    /* --form-field-background is translucent; lay it over the page colour so
+       charts and other content don't show through the dialog */
+    background:
+        linear-gradient(var(--form-field-background, transparent), var(--form-field-background, transparent)),
+        var(--main-background, #fff);
     border-radius: 14px;
     box-shadow: 0 8px 40px rgba(0, 0, 0, 0.22);
     width: 100%;

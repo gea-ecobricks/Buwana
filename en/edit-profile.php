@@ -1088,9 +1088,8 @@ $(function () {
         $("#loading-spinner-watershed").show();
         $("#watershed-pin").hide();
 
-        const overpassUrl = `https://overpass-api.de/api/interpreter?data=[out:json];(way["waterway"="river"](around:5000,${lat},${lon});relation["waterway"="river"](around:5000,${lat},${lon}););out tags;`;
-
-        $.get(overpassUrl, function (data) {
+        // Buwana's proxy to Overpass (OpenStreetMap), with mirror fallback
+        $.getJSON('../api/nearby_rivers.php', { lat: lat, lon: lon }, function (data) {
             $("#loading-spinner-watershed").hide();
             updateWatershedPinVisibility();
 
@@ -1116,7 +1115,7 @@ $(function () {
                 minLength: 0 // Show suggestions even if no characters are typed
             }).autocomplete("search", ""); // Trigger the display of suggestions
         }).fail(function () {
-            console.error("Failed to fetch data from Overpass API.");
+            console.error("Failed to fetch nearby rivers.");
             $("#loading-spinner-watershed").hide();
             updateWatershedPinVisibility();
         });
