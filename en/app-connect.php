@@ -100,7 +100,7 @@ $scope_descriptions = [
 ?>
 
 <!DOCTYPE html>
-<html lang="<?= htmlspecialchars($lang) ?>">
+<html lang="<?= htmlspecialchars($lang ?? '') ?>">
 <head>
   <meta charset="UTF-8">
 
@@ -260,26 +260,26 @@ padding-top: 10px !important;
     <div style="text-align:center;width:100%;margin:auto;">
         <div class="app-connect-container">
           <div class="icon-box earthling-icon">
-            <?= htmlspecialchars($earthling_emoji) ?>
+            <?= htmlspecialchars($earthling_emoji ?? '') ?>
           </div>
           <div class="connect-arrow"></div>
           <div class="icon-box app-icon"
-               title="<?= htmlspecialchars($app_info['app_display_name']) ?> <?= htmlspecialchars($app_info['app_version']) ?> | <?= htmlspecialchars($app_info['app_slogan']) ?>">
-              <img src="<?= htmlspecialchars($app_info['app_square_icon_url']) ?>" alt="<?= htmlspecialchars($app_info['app_display_name']) ?> App Icon" />
+               title="<?= htmlspecialchars($app_info['app_display_name'] ?? '') ?> <?= htmlspecialchars($app_info['app_version'] ?? '') ?> | <?= htmlspecialchars($app_info['app_slogan'] ?? '') ?>">
+              <img src="<?= htmlspecialchars($app_info['app_square_icon_url'] ?? '') ?>" alt="<?= htmlspecialchars($app_info['app_display_name'] ?? '') ?> App Icon" />
           </div>
 
         </div>
 
       <h1>
-        <span data-lang-id="001-first-time-to-connect">Connect to</span> <?= htmlspecialchars($app_info['app_display_name']) ?>
+        <span data-lang-id="001-first-time-to-connect">Connect to</span> <?= htmlspecialchars($app_info['app_display_name'] ?? '') ?>
       </h1>
-  <p style="text-align:center; margin-top: 10px;color:green;font-size:1em;">✅ <?= htmlspecialchars($app_info['app_display_name']) ?> <span data-lang-id="001-authorized-app">is an authorized Buwana app</span></p>
+  <p style="text-align:center; margin-top: 10px;color:green;font-size:1em;">✅ <?= htmlspecialchars($app_info['app_display_name'] ?? '') ?> <span data-lang-id="001-authorized-app">is an authorized Buwana app</span></p>
 
 
 
         <p style="margin-top:15px;margin-bottom:20px;">
-             <?= htmlspecialchars($first_name) ?>, <span data-lang-id="002-looks-like"> it looks like you are trying to login to </span> <?= htmlspecialchars($app_info['app_display_name']) ?><?php if ($is_first_time_connection): ?><span data-lang-id="002b-first-time"> for the first time!  Nice. 👍</span><?php endif; ?>
-             <span data-lang-id="003-to-do-so">To do so, we will connect your Buwana account to </span> <?= htmlspecialchars($app_info['app_display_name']) ?> <span data-lang-id="003b-and">and allow it to access the following scopes:</span>
+             <?= htmlspecialchars($first_name ?? '') ?>, <span data-lang-id="002-looks-like"> it looks like you are trying to login to </span> <?= htmlspecialchars($app_info['app_display_name'] ?? '') ?><?php if ($is_first_time_connection): ?><span data-lang-id="002b-first-time"> for the first time!  Nice. 👍</span><?php endif; ?>
+             <span data-lang-id="003-to-do-so">To do so, we will connect your Buwana account to </span> <?= htmlspecialchars($app_info['app_display_name'] ?? '') ?> <span data-lang-id="003b-and">and allow it to access the following scopes:</span>
         </p>
 
         <?php
@@ -314,7 +314,7 @@ padding-top: 10px !important;
                 <span class="scope-icon">ℹ️</span>
 
                 <span class="scope-info">
-                    <span class="scope-name"><?= htmlspecialchars($scope) ?></span>
+                    <span class="scope-name"><?= htmlspecialchars($scope ?? '') ?></span>
                     <span class="scope-desc"><?= htmlspecialchars($scope_descriptions[$scope] ?? '') ?></span>
                 </span>
             </li>
@@ -322,14 +322,15 @@ padding-top: 10px !important;
         </ul>
         <?php endif; ?>
 
-        <p><span data-lang-id="004-will-be-granted">Connect to authorize and get rocking on </span> <?= htmlspecialchars($app_info['app_display_name']) ?></span>.</p>
+        <p><span data-lang-id="004-will-be-granted">Connect to authorize and get rocking on </span> <?= htmlspecialchars($app_info['app_display_name'] ?? '') ?></span>.</p>
 
 
 
         <form id="user-signup-form" method="post" action="app-connect_process.php" novalidate>
-            <input type="hidden" name="buwana_id" value="<?= htmlspecialchars($buwana_id) ?>">
-            <input type="hidden" name="client_id" value="<?= htmlspecialchars($app_info['client_id']) ?>">
-            <input type="hidden" name="redirect" value="<?= htmlspecialchars($redirect) ?>">
+            <input type="hidden" name="buwana_id" value="<?= htmlspecialchars($buwana_id ?? '') ?>">
+            <input type="hidden" name="client_id" value="<?= htmlspecialchars($app_info['client_id'] ?? '') ?>">
+            <input type="hidden" name="redirect" value="<?= htmlspecialchars($redirect ?? '') ?>">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
  <!-- Kick-Ass Submit Button -->
             <div id="submit-section" class="submit-button-wrapper">
 
@@ -343,13 +344,13 @@ padding-top: 10px !important;
             <div class="form-caption" >
 
 
-            <p style="text-align:center; margin-top: 10px;font-size:0.9em;">By connecting you agree to the <a href="#" onclick="openTermsModal(); return false;"><span><?= htmlspecialchars($app_info['app_display_name']) ?></span> <span data-lang-id="1000-terms-of-use">Terms of Use</span></a></p>
+            <p style="text-align:center; margin-top: 10px;font-size:0.9em;">By connecting you agree to the <a href="#" onclick="openTermsModal(); return false;"><span><?= htmlspecialchars($app_info['app_display_name'] ?? '') ?></span> <span data-lang-id="1000-terms-of-use">Terms of Use</span></a></p>
             </div>
         </form>
     </div>
   </div>
   <div id="browser-back-link" style="font-size: small; text-align: center; margin: auto; align-self: center; padding-top: 40px; padding-bottom: 40px; margin-top: -20px;">
-      <p style="line-height:1.3em;"><span data-lang-id="010-no-connect"> ↩ Or return to the </span> <a href="<?= htmlspecialchars($app_info['app_url']) ?>"><?= htmlspecialchars($app_info['app_display_name']) ?> <span data-lang-id="000-home">home</span></a>
+      <p style="line-height:1.3em;"><span data-lang-id="010-no-connect"> ↩ Or return to the </span> <a href="<?= htmlspecialchars($app_info['app_url'] ?? '') ?>"><?= htmlspecialchars($app_info['app_display_name'] ?? '') ?> <span data-lang-id="000-home">home</span></a>
       </p>
   </div>
 </div>

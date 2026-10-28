@@ -52,7 +52,6 @@ if ($stmt) {
 }
 $gobrik_conn->close();
 
-$static_code = 'AYYEW';
 $page_key = 'signup_3';
 ?>
 <!DOCTYPE html>
@@ -117,7 +116,6 @@ $page_key = 'signup_3';
 <?php require_once("../footer-2026.php"); ?>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const staticCode = "AYYEW";
     let generatedCode = "";
     const ecobricker_id = <?php echo json_encode($ecobricker_id); ?>;
     let buwana_id = <?php echo json_encode($buwana_id); ?>;
@@ -197,7 +195,7 @@ document.addEventListener('DOMContentLoaded', function() {
         let enteredCode = '';
         codeBoxes.forEach(box => enteredCode += box.value.toUpperCase());
         if (enteredCode.length === 5) {
-            if (enteredCode === staticCode || enteredCode === generatedCode) {
+            if (generatedCode !== '' && enteredCode === generatedCode) {
                 codeFeedback.textContent = feedbackMessages.confirmed;
                 codeFeedback.classList.add('success');
                 codeFeedback.classList.remove('error');

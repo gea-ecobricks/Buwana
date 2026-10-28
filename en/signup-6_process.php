@@ -121,6 +121,7 @@ $stmt = $buwana_conn->prepare("
         continent_code,
         location_full,
         location_watershed,
+        watershed_id,
         location_lat,
         location_long,
         community_id,

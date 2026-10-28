@@ -1,26 +1,20 @@
 <?php
+// One-off: give every account without an open_id the 'buwana_<id>' subject
+// that signup and token.php use. CLI only — this file sits in the web root.
+//   php tests/backfill.php
+if (PHP_SAPI !== 'cli') {
+    http_response_code(404);
+    exit();
+}
+
+chdir(__DIR__);
 require_once '../buwanaconn_env.php';
-require_once '../vendor/autoload.php';
 
-use Ramsey\Uuid\Uuid;
-
-$sql = "SELECT buwana_id FROM users_tb WHERE open_id IS NULL OR open_id = ''";
-$result = $buwana_conn->query($sql);
-
-if ($result && $result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        $uuid = Uuid::uuid4()->toString();
-        $buwana_id = $row['buwana_id'];
-
-        $stmt = $buwana_conn->prepare("UPDATE users_tb SET open_id = ? WHERE buwana_id = ?");
-        $stmt->bind_param("si", $uuid, $buwana_id);
-        $stmt->execute();
-        $stmt->close();
-    }
-    echo "UUIDs successfully backfilled.\n";
+$sql = "UPDATE users_tb SET open_id = CONCAT('buwana_', buwana_id) WHERE open_id IS NULL OR open_id = ''";
+if ($buwana_conn->query($sql)) {
+    echo "Backfilled open_id for {$buwana_conn->affected_rows} users.\n";
 } else {
-    echo "No users needed UUIDs.\n";
+    echo "Backfill failed: {$buwana_conn->error}\n";
 }
 
 $buwana_conn->close();
-?>

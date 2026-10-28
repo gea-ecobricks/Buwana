@@ -159,7 +159,7 @@ $current_lang_dir = $lang;            // language directory (e.g. 'en')
 $user_country_id  = $country_id;      // user's current country id
 
 echo '<!DOCTYPE html>
-<html lang="' . htmlspecialchars($lang, ENT_QUOTES, 'UTF-8') . '">
+<html lang="' . htmlspecialchars($lang ?? '', ENT_QUOTES, 'UTF-8') . '">
 <head>
 <meta charset="UTF-8">
 ';
@@ -178,13 +178,13 @@ echo '<!DOCTYPE html>
 
             <div id="top-page-image"
                  class="top-page-image"
-                 data-light-img="<?= htmlspecialchars($app_info['signup_1_top_img_light']) ?>"
-                 data-dark-img="<?= htmlspecialchars($app_info['signup_1_top_img_dark']) ?>">
+                 data-light-img="<?= htmlspecialchars($app_info['signup_1_top_img_light'] ?? '') ?>"
+                 data-dark-img="<?= htmlspecialchars($app_info['signup_1_top_img_dark'] ?? '') ?>">
             </div>
 
             <div style="text-align:center;width:100%;margin:auto;">
 
-            <div id="status-message" style="margin-top:30px;">⚙️ <?php echo htmlspecialchars($first_name); ?>'s <span data-lang-id="001-profile-settings-title">Profile Settings</span></div>
+            <div id="status-message" style="margin-top:30px;">⚙️ <?php echo htmlspecialchars($first_name ?? ''); ?>'s <span data-lang-id="001-profile-settings-title">Profile Settings</span></div>
             <div id="sub-status-message" data-lang-id="002-review-update-message">Review and update your Buwana account profile here:</div>
             <div id="update-status" style="font-size:1.3em; color:green;padding:10px;margin-top:10px;"></div>
             <div id="update-error" style="font-size:1.3em; color:red;padding:10px;margin-top:10px;"></div>
@@ -196,37 +196,37 @@ echo '<!DOCTYPE html>
     <!-- Non-editable Fields -->
     <div class="form-item">
         <p data-lang-id="004-full-name"><strong>Full Name:</strong></p>
-        <h3><?php echo htmlspecialchars($full_name); ?></h3>
+        <h3><?php echo htmlspecialchars($full_name ?? ''); ?></h3>
     </div>
 
     <!-- Email -->
     <div class="form-item">
         <p data-lang-id="005-email"><strong>Email:</strong></p>
-        <p><?php echo htmlspecialchars($email); ?></p>
+        <p><?php echo htmlspecialchars($email ?? ''); ?></p>
     </div>
 
     <!-- Account Created At -->
     <div class="form-item">
         <p data-lang-id="005-account-created-at"><strong>Account Created At:</strong></p>
-        <p><?php echo htmlspecialchars($created_at); ?></p>
+        <p><?php echo htmlspecialchars($created_at ?? ''); ?></p>
     </div>
 
     <!-- Last Login -->
     <div class="form-item">
         <p data-lang-id="006-last-login"><strong>Last Login:</strong></p>
-        <p><?php echo htmlspecialchars($last_login); ?></p>
+        <p><?php echo htmlspecialchars($last_login ?? ''); ?></p>
     </div>
 
 
     <!-- Account Status -->
     <div class="form-item">
         <p data-lang-id="009-account-status"><strong>Account Status:</strong></p>
-        <p><?php echo htmlspecialchars($account_status); ?></p>
+        <p><?php echo htmlspecialchars($account_status ?? ''); ?></p>
     </div>
 
     <!-- Account Notes -->
     <div class="form-item">
-        <p data-lang-id="010-account-notes"><strong>Account Notes:</strong> <?php echo htmlspecialchars($notes); ?></p>
+        <p data-lang-id="010-account-notes"><strong>Account Notes:</strong> <?php echo htmlspecialchars($notes ?? ''); ?></p>
     </div>
 
     <!-- Agreed to Terms of Service -->
@@ -236,22 +236,22 @@ echo '<!DOCTYPE html>
 
     <!-- Latitude -->
     <div class="form-item">
-        <p data-lang-id="011a-latitude"><strong>Latitude:</strong> <?php echo htmlspecialchars($latitude); ?></p>
+        <p data-lang-id="011a-latitude"><strong>Latitude:</strong> <?php echo htmlspecialchars($latitude ?? ''); ?></p>
     </div>
 
     <!-- Longitude -->
     <div class="form-item">
-        <p data-lang-id="011b-longitude"><strong>Longitude:</strong> <?php echo htmlspecialchars($longitude); ?></p>
+        <p data-lang-id="011b-longitude"><strong>Longitude:</strong> <?php echo htmlspecialchars($longitude ?? ''); ?></p>
     </div>
 
     <!-- Buwana ID -->
     <div class="form-item">
-        <p data-lang-id="022-buwana-id"><strong>Buwana ID:</strong> <?php echo htmlspecialchars($buwana_id); ?></p>
+        <p data-lang-id="022-buwana-id"><strong>Buwana ID:</strong> <?php echo htmlspecialchars($buwana_id ?? ''); ?></p>
     </div>
 
 <!-- Time ZOne -->
     <div class="form-item">
-        <p data-lang-id="022-buwana-id"><strong>Time Zone</strong> <?php echo htmlspecialchars($time_zone); ?></p>
+        <p data-lang-id="022-buwana-id"><strong>Time Zone</strong> <?php echo htmlspecialchars($time_zone ?? ''); ?></p>
     </div>
 
 
@@ -267,18 +267,18 @@ echo '<!DOCTYPE html>
 <!-- Profile Update Form -->
 <form action="profile_update_process.php" method="POST" id="main-buwana-update">
 
-    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? ''); ?>">
 
     <!-- First Name -->
     <div class="form-item">
         <label for="first_name" data-lang-id="012-first-name">First Name:</label>
-        <input type="text" name="first_name" id="first_name" value="<?php echo htmlspecialchars($first_name); ?>" required>
+        <input type="text" name="first_name" id="first_name" value="<?php echo htmlspecialchars($first_name ?? ''); ?>" required>
     </div>
 
     <!-- Last Name -->
     <div class="form-item">
         <label for="last_name" data-lang-id="013-last-name">Last Name:</label>
-        <input type="text" name="last_name" id="last_name" value="<?php echo htmlspecialchars($last_name); ?>" required>
+        <input type="text" name="last_name" id="last_name" value="<?php echo htmlspecialchars($last_name ?? ''); ?>" required>
     </div>
 
     <!-- Preferred Language-->
@@ -287,21 +287,21 @@ echo '<!DOCTYPE html>
         <select name="language_id" id="language_id">
             <option value="" data-lang-id="018-select-language">Select Language</option>
             <?php foreach ($languages as $language): ?>
-                <option value="<?php echo htmlspecialchars($language['language_id']); ?>" <?php if ($language['language_id'] == $language_id) echo 'selected'; ?>>
+                <option value="<?php echo htmlspecialchars($language['language_id'] ?? ''); ?>" <?php if ($language['language_id'] == $language_id) echo 'selected'; ?>>
                     <?php
                     switch (strtolower($lang)) {
                         case 'id':
-                            echo htmlspecialchars($language['language_name_id']);
+                            echo htmlspecialchars($language['language_name_id'] ?? '');
                             break;
                         case 'fr':
-                            echo htmlspecialchars($language['language_name_fr']);
+                            echo htmlspecialchars($language['language_name_fr'] ?? '');
                             break;
                         case 'es':
-                            echo htmlspecialchars($language['language_name_es']);
+                            echo htmlspecialchars($language['language_name_es'] ?? '');
                             break;
                         case 'en':
                         default:
-                            echo htmlspecialchars($language['language_name_en']);
+                            echo htmlspecialchars($language['language_name_en'] ?? '');
                             break;
                     }
                     ?>
@@ -313,7 +313,7 @@ echo '<!DOCTYPE html>
     <!-- Birth Date -->
     <div class="form-item">
         <label for="birth_date" data-lang-id="019-birth-date">Birth Date:</label>
-        <input type="date" name="birth_date" id="birth_date" value="<?php echo htmlspecialchars($birth_date); ?>">
+        <input type="date" name="birth_date" id="birth_date" value="<?php echo htmlspecialchars($birth_date ?? ''); ?>">
     </div>
 
 <!-- Earthling Emoji -->
@@ -324,7 +324,7 @@ echo '<!DOCTYPE html>
             type="text"
             name="earthling_emoji"
             id="earthling_emoji"
-            value="<?php echo htmlspecialchars($earthling_emoji); ?>"
+            value="<?php echo htmlspecialchars($earthling_emoji ?? ''); ?>"
             readonly
             style="flex: 1; padding: 10px; background-color: #f9f9f9; cursor: not-allowed;max-width: 57px;
             font-size: 1.5em;"
@@ -355,11 +355,11 @@ echo '<!DOCTYPE html>
     <div class="input-container">
         <!-- Visible field for community name with prepopulated value -->
         <input type="text" id="community_name" name="community_name"
-               value="<?= htmlspecialchars($user_community_name, ENT_QUOTES); ?>"
+               value="<?= htmlspecialchars($user_community_name ?? '', ENT_QUOTES); ?>"
                placeholder="Start typing your community..." style="padding-left:45px;">
         <!-- Hidden field for community_id with prepopulated value -->
         <input  id="community_id"  type="hidden" name="community_id"
-               value="<?= htmlspecialchars($community_id, ENT_QUOTES); ?>">
+               value="<?= htmlspecialchars($community_id ?? '', ENT_QUOTES); ?>">
         <div id="community-pin" class="pin-icon">📌</div>
     </div>
     <div id="community-suggestions" class="suggestions-box"></div>
@@ -376,7 +376,7 @@ echo '<!DOCTYPE html>
         <label for="location_full" data-lang-id="033-location-tag">Location:</label><br>
         <div class="input-container">
             <input type="text" id="location_full" name="location_full"
-                   value="<?= htmlspecialchars($user_location_full, ENT_QUOTES); ?>"
+                   value="<?= htmlspecialchars($user_location_full ?? '', ENT_QUOTES); ?>"
                    aria-label="Location Full" required style="padding-left:45px;">
             <div id="loading-spinner" class="spinner" style="display: none;"></div>
             <div id="location-pin" class="pin-icon">📍</div>
@@ -424,7 +424,7 @@ echo '<!DOCTYPE html>
 
             foreach ($timezones as $value => $label) {
                 $selected = ($value === $time_zone) ? 'selected' : '';
-                echo "<option value=\"" . htmlspecialchars($value) . "\" $selected>" . htmlspecialchars($label) . "</option>";
+                echo "<option value=\"" . htmlspecialchars($value ?? '') . "\" $selected>" . htmlspecialchars($label ?? '') . "</option>";
             }
             ?>
         </select>
@@ -440,7 +440,7 @@ echo '<!DOCTYPE html>
         <label for="location_watershed" data-lang-id="032-watershed-tag">Watershed:</label><br>
         <div class="input-container">
             <input type="text" id="location_watershed" name="location_watershed"
-                   value="<?= htmlspecialchars($user_location_watershed, ENT_QUOTES); ?>"
+                   value="<?= htmlspecialchars($user_location_watershed ?? '', ENT_QUOTES); ?>"
                    aria-label="Location Watershed" style="padding-left:45px;">
             <div id="loading-spinner-watershed" class="spinner" style="display: none;"></div>
             <div id="watershed-pin" class="pin-icon">💧</div>
@@ -449,8 +449,8 @@ echo '<!DOCTYPE html>
     </div>
 
     <!-- Hidden latitude and longitude fields -->
-    <input type="hidden" id="lat" name="latitude" value="<?= htmlspecialchars($user_location_lat, ENT_QUOTES); ?>">
-    <input type="hidden" id="lon" name="longitude" value="<?= htmlspecialchars($user_location_long, ENT_QUOTES); ?>">
+    <input type="hidden" id="lat" name="latitude" value="<?= htmlspecialchars($user_location_lat ?? '', ENT_QUOTES); ?>">
+    <input type="hidden" id="lon" name="longitude" value="<?= htmlspecialchars($user_location_long ?? '', ENT_QUOTES); ?>">
 
     <!-- Continent (Uneditable) -->
     <div class="form-item uneditable-select">
@@ -459,7 +459,7 @@ echo '<!DOCTYPE html>
             <option value="" data-lang-id="022-select-continent">Select Continent</option>
             <?php foreach ($continents as $continent): ?>
                 <option value="<?php echo $continent['continent_code']; ?>" <?php if ($continent['continent_code'] == $continent_code) echo 'selected'; ?>>
-                    <?php echo htmlspecialchars($continent['continent_name_en']); ?>
+                    <?php echo htmlspecialchars($continent['continent_name_en'] ?? ''); ?>
                 </option>
             <?php endforeach; ?>
         </select>
@@ -472,7 +472,7 @@ echo '<!DOCTYPE html>
             <option value="" data-lang-id="016-select-country">Select Country</option>
             <?php foreach ($countries as $country): ?>
                 <option value="<?php echo $country['country_id']; ?>" <?php if ($country['country_id'] == $country_id) echo 'selected'; ?>>
-                    <?php echo htmlspecialchars($country['country_name']); ?>
+                    <?php echo htmlspecialchars($country['country_name'] ?? ''); ?>
                 </option>
             <?php endforeach; ?>
         </select>
@@ -491,7 +491,7 @@ echo '<!DOCTYPE html>
     <!--EARTHEN ACCOUNT DB CHECK -->
 <div class="form-container" style="padding-top:20px">
     <h2 data-lang-id="021-earthen-status-title">Earthen Newsletter Subscription Status</h2>
-    <p><span data-lang-id="022-check-to-see">Check to see if your</span> <?php echo htmlspecialchars($email); ?> <span data-lang-id="023-is-subscribed">is subscribed to the Earthen newsletter</span></p>
+    <p><span data-lang-id="022-check-to-see">Check to see if your</span> <?php echo htmlspecialchars($email ?? ''); ?> <span data-lang-id="023-is-subscribed">is subscribed to the Earthen newsletter</span></p>
     <div id="earthen-status-message" style="display:none;"></div>
     <button id="check-earthen-status-button" class="submit-button enabled" data-lang-id="024-check-earthen-button">Check Earthen Status</button>
 
@@ -506,7 +506,7 @@ echo '<!DOCTYPE html>
     <!-- Status No -->
     <div id="earthen-status-no" style="display:none;">
         <p data-lang-id="026-not-subscribed">You're not yet subscribed.</p>
-        <a href="manage-subscriptions.php?id=<?php echo htmlspecialchars($buwana_id); ?>"  class="submit-button enabled" style="padding:4px;" data-lang-id="027-subscribe-button">Subscribe</a>
+        <a href="manage-subscriptions.php?id=<?php echo htmlspecialchars($buwana_id ?? ''); ?>"  class="submit-button enabled" style="padding:4px;" data-lang-id="027-subscribe-button">Subscribe</a>
     </div>
 </div>
 
@@ -907,7 +907,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <option value="" data-lang-id="024-select-country-option">Select Country...</option>
                     <?php foreach ($countries as $country) : ?>
                         <option value="<?php echo $country['country_id']; ?>">
-                            <?php echo htmlspecialchars($country['country_name'], ENT_QUOTES, 'UTF-8'); ?>
+                            <?php echo htmlspecialchars($country['country_name'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
                         </option>
                     <?php endforeach; ?>
                 </select>
@@ -916,7 +916,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <option value="" data-lang-id="026-select-language-option">Select Language...</option>
                     <?php foreach ($languages as $language) : ?>
                         <option value="<?php echo $language['language_id']; ?>">
-                            <?php echo htmlspecialchars($language['languages_native_name'], ENT_QUOTES, 'UTF-8'); ?>
+                            <?php echo htmlspecialchars($language['languages_native_name'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
                         </option>
                     <?php endforeach; ?>
                 </select>

@@ -3,6 +3,12 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 session_start();
 
+// fetch_app_info.php resolves the app from $_GET / the session, so point it at
+// the posted client_id; otherwise a stale session app (e.g. BAM) gets provisioned.
+if (!empty($_POST['client_id'])) {
+    $_GET['client_id'] = $_POST['client_id'];
+}
+
 require_once '../buwanaconn_env.php';
 require_once '../fetch_app_info.php';
 require_once '../scripts/create_user.php'; // createUserInClientApp()
@@ -13,13 +19,28 @@ use Firebase\JWT\JWT;
 // ---------------------------------------------------------
 // Inputs
 // ---------------------------------------------------------
-$buwana_id = isset($_POST['buwana_id']) ? (int) $_POST['buwana_id'] : null;
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    die("❌ Invalid request method.");
+}
+
+$csrf_token = $_POST['csrf_token'] ?? '';
+if (empty($_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $csrf_token)) {
+    die("❌ Your session expired. Please go back and try again.");
+}
+
+// 🔐 Identity comes ONLY from the authenticated session — never the form.
+$buwana_id = isset($_SESSION['buwana_id']) ? (int) $_SESSION['buwana_id'] : null;
 $client_id = $_POST['client_id'] ?? null;
 $redirect = isset($_POST['redirect']) ? filter_var($_POST['redirect'], FILTER_SANITIZE_SPECIAL_CHARS) : '';
 $is_first_time_connection = false;
 
 if (!$buwana_id || !$client_id) {
     die("❌ Missing Buwana ID or Client ID.");
+}
+
+// fetch_app_info.php falls back to GoBrik for an unknown client_id
+if (($app_info['client_id'] ?? null) !== $client_id) {
+    die("❌ Unknown app.");
 }
 
 // App info (from fetch_app_info.php)
@@ -107,6 +128,19 @@ $stmt->close();
 
 if (!$userData) {
     die("❌ Buwana user not found.");
+}
+
+// Accounts that never reached signup-6 have no open_id; give them the same
+// 'buwana_<id>' subject token.php already falls back to.
+if (empty($userData['open_id'])) {
+    $userData['open_id'] = 'buwana_' . $buwana_id;
+    $stmt_oid = $buwana_conn->prepare("UPDATE users_tb SET open_id = ? WHERE buwana_id = ? AND (open_id IS NULL OR open_id = '')");
+    if ($stmt_oid) {
+        $stmt_oid->bind_param('si', $userData['open_id'], $buwana_id);
+        $stmt_oid->execute();
+        $stmt_oid->close();
+    }
+    error_log('OpenID was missing for buwana_id ' . $buwana_id . '; set to ' . $userData['open_id']);
 }
 
 // ---------------------------------------------------------
@@ -215,7 +249,7 @@ if (!$response || empty($response['success'])) {
     $err = $response['error'] ?? 'unknown_error';
     echo "<h2>⚠️ Failed to connect your account</h2>";
     echo "<p>Error: " . htmlspecialchars($err) . "</p>";
-    echo "<p><a href='/en/app-connect.php?client_id=" . htmlspecialchars($client_id, ENT_QUOTES, 'UTF-8') . "'>Try again</a></p>";
+    echo "<p><a href='/en/app-connect.php?id=" . (int) $buwana_id . "&amp;client_id=" . htmlspecialchars(urlencode($client_id), ENT_QUOTES, 'UTF-8') . "'>Try again</a></p>";
     exit;
 }
 

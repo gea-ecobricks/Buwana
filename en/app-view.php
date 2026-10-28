@@ -186,7 +186,7 @@ if ($is_owner) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="<?= htmlspecialchars($lang) ?>">
+<html lang="<?= htmlspecialchars($lang ?? '') ?>">
 <head>
     <meta charset="UTF-8">
     <?php require_once("../meta/app-view-en.php"); ?>
@@ -262,19 +262,19 @@ if ($is_owner) {
     <div class="top-wrapper">
       <a class="back-arrow" href="dashboard.php" title="Back to Dashboard"></a>
       <div>
-        <div class="login-status"><?= htmlspecialchars($earthling_emoji) ?> Logged in as <?= htmlspecialchars($first_name) ?></div>
+        <div class="login-status"><?= htmlspecialchars($earthling_emoji ?? '') ?> Logged in as <?= htmlspecialchars($first_name ?? '') ?></div>
         <div style="font-size:0.9em;color:grey;margin-bottom: auto;">
           <?php if($app['is_active']): ?>
-            🟢 <?= htmlspecialchars($app['app_display_name']) ?> is active
+            🟢 <?= htmlspecialchars($app['app_display_name'] ?? '') ?> is active
           <?php else: ?>
-            ⚪ <?= htmlspecialchars($app['app_display_name']) ?> is not active
+            ⚪ <?= htmlspecialchars($app['app_display_name'] ?? '') ?> is not active
           <?php endif; ?>
         </div>
         <div style="font-size:0.9em;color:grey;">
           <?php if($app['allow_signup']): ?>
-            🟢 <?= htmlspecialchars($app['app_display_name']) ?> signups enabled
+            🟢 <?= htmlspecialchars($app['app_display_name'] ?? '') ?> signups enabled
           <?php else: ?>
-            ⚪ <?= htmlspecialchars($app['app_display_name']) ?> signups off
+            ⚪ <?= htmlspecialchars($app['app_display_name'] ?? '') ?> signups off
           <?php endif; ?>
         </div>
       </div>
@@ -282,17 +282,17 @@ if ($is_owner) {
           <div style="display:flex;align-items:center;margin-left:auto;">
 
                 <div style="text-align:right;margin-right:10px;">
-                  <div class="page-name">Manage: <?= htmlspecialchars($app['app_display_name']) ?></div>
-                  <div class="client-id">Client ID: <?= htmlspecialchars($app['client_id']) ?></div>
+                  <div class="page-name">Manage: <?= htmlspecialchars($app['app_display_name'] ?? '') ?></div>
+                  <div class="client-id">Client ID: <?= htmlspecialchars($app['client_id'] ?? '') ?></div>
                 </div>
-                <img src="<?= htmlspecialchars($app['app_square_icon_url']) ?>" alt="<?= htmlspecialchars($app['app_display_name']) ?> Icon" title="<?= htmlspecialchars($app['app_display_name']) ?>" width="60" height="60">
+                <img src="<?= htmlspecialchars($app['app_square_icon_url'] ?? '') ?>" alt="<?= htmlspecialchars($app['app_display_name'] ?? '') ?> Icon" title="<?= htmlspecialchars($app['app_display_name'] ?? '') ?>" width="60" height="60">
           </div>
       </div>
 
     </div>
     <div class="breadcrumb" style="text-align:right;margin-left:auto;margin-right: 15px;">
                           <a href="dashboard.php">Dashboard</a> &gt;
-                          Manage <?= htmlspecialchars($app['app_display_name']) ?>
+                          Manage <?= htmlspecialchars($app['app_display_name'] ?? '') ?>
                         </div>
     <div class="chart-container dashboard-module" style="margin-bottom:15px;">
       <canvas id="growthChart"></canvas>
@@ -322,12 +322,12 @@ if ($is_owner) {
         <tbody>
           <?php foreach ($recent_users as $u): ?>
             <tr data-user='<?= htmlspecialchars(json_encode($u), ENT_QUOTES, "UTF-8") ?>'>
-              <td><?= htmlspecialchars($u['full_name']) ?></td>
-              <td><?= htmlspecialchars($u['email']) ?></td>
-              <td><?= htmlspecialchars($u['country_name']) ?></td>
-              <td><?= htmlspecialchars($u['account_status']) ?></td>
-              <td><?= htmlspecialchars($u['created_at']) ?></td>
-              <td><?= htmlspecialchars($u['earthling_emoji']) ?></td>
+              <td><?= htmlspecialchars($u['full_name'] ?? '') ?></td>
+              <td><?= htmlspecialchars($u['email'] ?? '') ?></td>
+              <td><?= htmlspecialchars($u['country_name'] ?? '') ?></td>
+              <td><?= htmlspecialchars($u['account_status'] ?? '') ?></td>
+              <td><?= htmlspecialchars($u['created_at'] ?? '') ?></td>
+              <td><?= htmlspecialchars($u['earthling_emoji'] ?? '') ?></td>
             </tr>
           <?php endforeach; ?>
         </tbody>
@@ -349,10 +349,10 @@ if ($is_owner) {
         <h5 style="text-align:center;">App Owners</h5>
         <div id="current-owners" style="margin-bottom:10px;display:flex;flex-wrap:wrap;">
           <?php foreach ($current_owners as $co): ?>
-            <div class="owner-box current-owner" data-id="<?= intval($co['buwana_id']) ?>"><span class="remove-current-owner">✖</span><?= htmlspecialchars($co['full_name']) ?></div>
+            <div class="owner-box current-owner" data-id="<?= intval($co['buwana_id']) ?>"><span class="remove-current-owner">✖</span><?= htmlspecialchars($co['full_name'] ?? '') ?></div>
           <?php endforeach; ?>
         </div>
-        <p>Search, select and add app managers as owners of <?= htmlspecialchars($app['app_display_name']) ?>. Careful, owners will have full master admin privileges to edit the core settings, visibility and status of the app.</p>
+        <p>Search, select and add app managers as owners of <?= htmlspecialchars($app['app_display_name'] ?? '') ?>. Careful, owners will have full master admin privileges to edit the core settings, visibility and status of the app.</p>
         <div style="display:flex; gap:10px; align-items:center; position:relative;">
           <input type="text" id="owner-search" placeholder="Type a name" style="flex:1;">
           <button id="add-owner" class="simple-button" disabled>+ Select Admin</button>
@@ -364,7 +364,7 @@ if ($is_owner) {
 
       <div class="dashboard-module" style="margin-top:20px; border:1px solid red;">
         <div class="toggle-row" style="margin-bottom:10px;">
-          <span><h5>Enable <?= htmlspecialchars($app['app_display_name']) ?> Signups:</h5></span>
+          <span><h5>Enable <?= htmlspecialchars($app['app_display_name'] ?? '') ?> Signups:</h5></span>
           <label class="toggle-switch">
             <input type="checkbox" id="allow_signup" <?= $app['allow_signup'] ? 'checked' : '' ?>>
             <span class="slider"></span>
@@ -375,7 +375,7 @@ if ($is_owner) {
 
       <div class="dashboard-module" style="margin-top:20px; border:1px solid orange;">
         <div class="toggle-row" style="margin:10px 0;">
-          <span><h5>Activate <?= htmlspecialchars($app['app_display_name']) ?>:</h5></span>
+          <span><h5>Activate <?= htmlspecialchars($app['app_display_name'] ?? '') ?>:</h5></span>
           <label class="toggle-switch">
             <input type="checkbox" id="is_active" <?= $app['is_active'] ? 'checked' : '' ?>>
             <span class="slider"></span>

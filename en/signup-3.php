@@ -88,33 +88,6 @@ if (!$credential_key || !$credential_type) {
     die("⚠️ Missing or invalid credential information.");
 }
 
-// PART 5: Generate and update activation code in credentials_tb
-$generated_code = generateCode();
-
-$update_sql = "UPDATE credentials_tb SET activation_code = ? WHERE buwana_id = ?";
-$update_stmt = $buwana_conn->prepare($update_sql);
-$update_stmt->bind_param("si", $generated_code, $buwana_id);
-$update_stmt->execute();
-$update_stmt->close();
-
-// ✅ Allow skipping verification if delivery fails
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['skip_verification'])) {
-    $note_message = " Step 3: Email verification skipped (delivery failed) on " . date('Y-m-d H:i:s') . ".";
-    $update_note_sql = "UPDATE users_tb SET notes = CONCAT(IFNULL(notes, ''), ?) WHERE buwana_id = ?";
-    $update_note_stmt = $buwana_conn->prepare($update_note_sql);
-
-    if ($update_note_stmt) {
-        $update_note_stmt->bind_param("si", $note_message, $buwana_id);
-        $update_note_stmt->execute();
-        $update_note_stmt->close();
-    } else {
-        error_log("DB error updating users_tb.notes for skip: " . $buwana_conn->error);
-    }
-
-    header("Location: signup-4.php?id={$buwana_id}&email_unverified=1");
-    exit();
-}
-
 // ============================================================
 // 📩 PART 6: Send verification code (centralized emailer)
 //   - Mailgun primary (optional flag)
@@ -125,6 +98,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['skip_verification']))
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['send_email']) || isset($_POST['resend_email']))) {
 
     if ($credential_type === 'e-mail' || $credential_type === 'email') {
+
+        // PART 5: Generate a fresh code for each send. It stays on the server:
+        // signup-3_process.php checks what the user types against credentials_tb.
+        $generated_code = generateCode();
+
+        $update_sql = "UPDATE credentials_tb SET activation_code = ? WHERE buwana_id = ?";
+        $update_stmt = $buwana_conn->prepare($update_sql);
+        $update_stmt->bind_param("si", $generated_code, $buwana_id);
+        $update_stmt->execute();
+        $update_stmt->close();
+
+        // Only this browser session may try the code (see signup-3_process.php)
+        $_SESSION['signup_code'] = ['buwana_id' => (int) $buwana_id, 'attempts' => 0];
 
         $result = buwana_send_verification_email([
             'first_name' => $first_name,
@@ -226,12 +212,7 @@ if ($mode): ?><script>(function(){var m=<?php echo json_encode($mode, JSON_HEX_T
 
             <?php if ($email_delivery_failed): ?>
                 <div style="text-align:center;margin-top:20px;">
-                    <p style="color:#b45309;">⚠️ We couldn't deliver your verification email. You can continue signup, but your email will remain unverified.</p>
-                    <form method="post" action="">
-                        <button type="submit" name="skip_verification" class="kick-ass-submit" style="background:#f59e0b;">
-                            Continue without verification ➡
-                        </button>
-                    </form>
+                    <p style="color:#b45309;">⚠️ We couldn't deliver your verification email. Please try sending it again in a minute, or contact support@gobrik.com.</p>
                 </div>
             <?php endif; ?>
 
@@ -257,8 +238,6 @@ if ($mode): ?><script>(function(){var m=<?php echo json_encode($mode, JSON_HEX_T
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const staticCode = "AYYEW";
-    const generatedCode = <?php echo json_encode($generated_code); ?>;
 
     const lang = '<?php echo $lang; ?>';
     let timeLeft = 60;
@@ -281,40 +260,68 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     const messages = {
-        en: { confirmed: "👍 Code confirmed!", incorrect: "😕 Code incorrect. Try again." },
-        fr: { confirmed: "👍 Code confirmé!", incorrect: "😕 Code incorrect. Réessayez." },
-        es: { confirmed: "👍 Código confirmado!", incorrect: "😕 Código incorrecto. Inténtalo de nuevo." },
-        id: { confirmed: "👍 Kode dikonfirmasi!", incorrect: "😕 Kode salah. Coba lagi." },
-        de: { confirmed: "👍 Code bestätigt!", incorrect: "😕 Code falsch. Bitte erneut versuchen." },
-        zh: { confirmed: "👍 验证码确认成功！", incorrect: "😕 验证码错误，请重试。" },
-        ar: { confirmed: "👍 تم تأكيد الرمز!", incorrect: "😕 الرمز غير صحيح. حاول مرة أخرى." }
+        en: { confirmed: "👍 Code confirmed!", incorrect: "😕 Code incorrect. Try again.", resend: "Too many tries. Please request a new code." },
+        fr: { confirmed: "👍 Code confirmé!", incorrect: "😕 Code incorrect. Réessayez.", resend: "Trop d'essais. Veuillez demander un nouveau code." },
+        es: { confirmed: "👍 Código confirmado!", incorrect: "😕 Código incorrecto. Inténtalo de nuevo.", resend: "Demasiados intentos. Solicita un código nuevo." },
+        id: { confirmed: "👍 Kode dikonfirmasi!", incorrect: "😕 Kode salah. Coba lagi.", resend: "Terlalu banyak percobaan. Silakan minta kode baru." },
+        de: { confirmed: "👍 Code bestätigt!", incorrect: "😕 Code falsch. Bitte erneut versuchen.", resend: "Zu viele Versuche. Bitte fordere einen neuen Code an." },
+        zh: { confirmed: "👍 验证码确认成功！", incorrect: "😕 验证码错误，请重试。", resend: "尝试次数过多，请重新获取验证码。" },
+        ar: { confirmed: "👍 تم تأكيد الرمز!", incorrect: "😕 الرمز غير صحيح. حاول مرة أخرى.", resend: "محاولات كثيرة جدًا. يرجى طلب رمز جديد." }
     };
 
     const feedbackMessages = messages[lang] || messages.en;
     const codeFeedback = document.querySelector('#code-feedback');
     const codeBoxes = document.querySelectorAll('.code-box');
 
+    let checkingCode = false;
+    let lastCheckedCode = '';
+
+    function showCodeError(message) {
+        codeFeedback.textContent = message;
+        codeFeedback.classList.add('error');
+        codeFeedback.classList.remove('success');
+        shakeElement(document.getElementById('code-form'));
+    }
+
+    // The code is verified on the server; it is never sent to the browser.
     function checkCode() {
         let enteredCode = '';
         codeBoxes.forEach(box => enteredCode += box.value.toUpperCase());
 
-        if (enteredCode.length === 5) {
-            if (enteredCode === staticCode || enteredCode === generatedCode) {
+        // keyup also fires for Shift/arrows; don't spend an attempt re-sending the same code
+        if (enteredCode.length !== 5 || checkingCode || enteredCode === lastCheckedCode) return;
+        checkingCode = true;
+        lastCheckedCode = enteredCode;
+
+        fetch('signup-3_process.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({ buwana_id: buwana_id, code: enteredCode })
+        })
+        .then(r => r.json())
+        .then(d => {
+            if (d.success) {
                 codeFeedback.textContent = feedbackMessages.confirmed;
                 codeFeedback.classList.add('success');
                 codeFeedback.classList.remove('error');
                 document.getElementById('resend-code').style.display = 'none';
-
                 setTimeout(function() {
-                    window.location.href = "signup-3_process.php?id=" + buwana_id;
+                    window.location.href = d.redirect;
                 }, 300);
-            } else {
-                codeFeedback.textContent = feedbackMessages.incorrect;
-                codeFeedback.classList.add('error');
-                codeFeedback.classList.remove('success');
-                shakeElement(document.getElementById('code-form'));
+                return;
             }
-        }
+            checkingCode = false;
+            if (d.error === 'too_many_attempts' || d.error === 'no_code_requested') {
+                showCodeError(feedbackMessages.resend);
+            } else {
+                showCodeError(feedbackMessages.incorrect);
+            }
+        })
+        .catch(() => {
+            checkingCode = false;
+            lastCheckedCode = ''; // nothing was checked; let the same code be retried
+            showCodeError(feedbackMessages.incorrect);
+        });
     }
 
     codeBoxes.forEach((box, index) => {

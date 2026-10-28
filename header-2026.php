@@ -333,10 +333,10 @@ max-height: 200px;
   <div class="overlay-content-settings">
 
 <div class="the-app-logo"
-     alt="<?= htmlspecialchars($app_info['app_display_name']) ?> App Logo"
-     title="<?= htmlspecialchars($app_info['app_display_name']); ?> <?= htmlspecialchars($app_info['app_version']); ?> | <?= htmlspecialchars($app_info['app_slogan']) ?>"
-     data-light-logo="<?= htmlspecialchars($app_info['app_logo_url']); ?>"
-     data-dark-logo="<?= htmlspecialchars($app_info['app_logo_dark_url']) ?>">
+     alt="<?= htmlspecialchars($app_info['app_display_name'] ?? '') ?> App Logo"
+     title="<?= htmlspecialchars($app_info['app_display_name'] ?? ''); ?> <?= htmlspecialchars($app_info['app_version'] ?? ''); ?> | <?= htmlspecialchars($app_info['app_slogan'] ?? '') ?>"
+     data-light-logo="<?= htmlspecialchars($app_info['app_logo_url'] ?? ''); ?>"
+     data-dark-logo="<?= htmlspecialchars($app_info['app_logo_dark_url'] ?? '') ?>">
 </div>
 
 
@@ -344,8 +344,8 @@ max-height: 200px;
 
  <?php if (empty($_SESSION['buwana_id'])): ?>
    <div class="menu-page-item">
-     <a href="<?= htmlspecialchars($app_info['app_login_url']) ?>">
-       <?= htmlspecialchars($app_info['app_display_name']) ?> <span data-lang-id="1000-login" style="margin-left: 6px; margin-right:auto;text-align:left !important">Login</span>
+     <a href="<?= htmlspecialchars($app_info['app_login_url'] ?? '') ?>">
+       <?= htmlspecialchars($app_info['app_display_name'] ?? '') ?> <span data-lang-id="1000-login" style="margin-left: 6px; margin-right:auto;text-align:left !important">Login</span>
      </a>
      <span class="status-circle" style="background-color: limegreen;" title="Login directly"></span>
    </div>
@@ -387,12 +387,12 @@ max-height: 200px;
     }
    ?>
    <div class="menu-page-item" style="pointer-events:auto;">
-     <a href=""><span style="margin-right:5px;">Logged in as </span><span style="margin-right:auto;"><?= htmlspecialchars($first_name) ?></span></a>
-     <span style="margin-right:-8px;"><?= htmlspecialchars($earthling_emoji) ?></span>
+     <a href=""><span style="margin-right:5px;">Logged in as </span><span style="margin-right:auto;"><?= htmlspecialchars($first_name ?? '') ?></span></a>
+     <span style="margin-right:-8px;"><?= htmlspecialchars($earthling_emoji ?? '') ?></span>
    </div>
    <?php /* ?>
    <div class="menu-page-item">
-     <a href="<?= htmlspecialchars($logout_url) ?>">Log out</a>
+     <a href="<?= htmlspecialchars($logout_url ?? '') ?>">Log out</a>
      <span style="margin-right:-8px;" title="Log out">🐳</span>
 
    </div>
@@ -446,24 +446,24 @@ max-height: 200px;
     }
    ?>
     <div class="menu-page-item">
-        <a href="<?= htmlspecialchars($app_info['app_dashboard_url']) ?>">Dashboard</a>
+        <a href="<?= htmlspecialchars($app_info['app_dashboard_url'] ?? '') ?>">Dashboard</a>
           <span class="status-circle" style="background-color: GREEN;" title="Terms of Use"></span>
 
       </div>
    <?php if (!empty($support_chat_url)): ?>
       <div class="menu-page-item">
-        <a href="<?= htmlspecialchars($support_chat_url) ?>">Support Chats</a>
+        <a href="<?= htmlspecialchars($support_chat_url ?? '') ?>">Support Chats</a>
         <span class="status-circle" style="background-color: DODGERBLUE;" title="Support chats"></span>
       </div>
    <?php endif; ?>
    <?php if ($isAdminUser): ?>
       <div class="menu-page-item">
-        <a href="<?= htmlspecialchars($admin_chat_url) ?>">Admin Chat System</a>
+        <a href="<?= htmlspecialchars($admin_chat_url ?? '') ?>">Admin Chat System</a>
         <span class="status-circle" style="background-color: ORANGE;" title="Admin chats"></span>
       </div>
    <?php endif; ?>
    <div class="menu-page-item">
-     <a href="<?= htmlspecialchars($profile_url) ?>">Edit user profile</a>
+     <a href="<?= htmlspecialchars($profile_url ?? '') ?>">Edit user profile</a>
        <span class="status-circle" style="background-color: LIMEGREEN;" title="Terms of Use"></span>
 
    </div>
@@ -481,18 +481,18 @@ max-height: 200px;
       -->
 
 <div class="menu-page-item" style="text-align:left !important">
-<a href="#" onclick="openTermsModal(); return false;"><span><?= htmlspecialchars($app_info['app_display_name']) ?></span><span data-lang-id="1000-terms-of-use-X" style="margin-left: 6px;margin-right:auto;text-align:left !important">Terms</span></a>
+<a href="#" onclick="openTermsModal(); return false;"><span><?= htmlspecialchars($app_info['app_display_name'] ?? '') ?></span><span data-lang-id="1000-terms-of-use-X" style="margin-left: 6px;margin-right:auto;text-align:left !important">Terms</span></a>
 
   <span class="status-circle" style="background-color: YELLOW;" title="Terms of Use"></span>
 </div>
 <div class="menu-page-item">
         <a href="javascript:void(0);" onclick="openAboutApp()">
-          About <?= htmlspecialchars($app_info['app_display_name']) ?>
+          About <?= htmlspecialchars($app_info['app_display_name'] ?? '') ?>
         </a>
     <span class="status-circle" style="background-color: fuchsia;" title="About the app"></span>
     </div>
 
-<div class="app-slogan" style="margin-top:30px; font-size:1.1em; font-family: 'Mulish', sans-serif;"><?= htmlspecialchars($app_info['app_slogan']) ?></div>
+<div class="app-slogan" style="margin-top:30px; font-size:1.1em; font-family: 'Mulish', sans-serif;"><?= htmlspecialchars($app_info['app_slogan'] ?? '') ?></div>
 
 <div style="margin:auto;margin-bottom: 5px;font-size: smaller; text-align: center; font-family: 'Arvo', serif;" data-lang-id="1000-authentication-by">Authentication by Buwana</div>
 
@@ -525,10 +525,10 @@ max-height: 200px;
 
   <?php if (stripos($page, 'buwana') === false): ?>
       <div id="top-app-logo"
-             title="<?= htmlspecialchars($app_info['app_display_name']) ?> | v<?= htmlspecialchars($app_info['app_version']) ?>"
-             onclick="redirectToAppHome('<?= htmlspecialchars($app_info['app_url']) ?>')"
-             data-light-wordmark="<?= htmlspecialchars($app_info['app_wordmark_url']) ?>"
-             data-dark-wordmark="<?= htmlspecialchars($app_info['app_wordmark_dark_url']) ?>">
+             title="<?= htmlspecialchars($app_info['app_display_name'] ?? '') ?> | v<?= htmlspecialchars($app_info['app_version'] ?? '') ?>"
+             onclick="redirectToAppHome('<?= htmlspecialchars($app_info['app_url'] ?? '') ?>')"
+             data-light-wordmark="<?= htmlspecialchars($app_info['app_wordmark_url'] ?? '') ?>"
+             data-dark-wordmark="<?= htmlspecialchars($app_info['app_wordmark_dark_url'] ?? '') ?>">
         </div>
   <?php else: ?>
       <div id="buwana-top-logo"
@@ -565,7 +565,7 @@ max-height: 200px;
       <!-- Login Services -->
       <button type="button"
               class="top-login-button"
-              onclick="loginOrMenu('<?php echo htmlspecialchars($app_login_url); ?>', <?php echo $is_logged_in ? 'true' : 'false'; ?>)"
+              onclick="loginOrMenu('<?php echo htmlspecialchars($app_login_url ?? ''); ?>', <?php echo $is_logged_in ? 'true' : 'false'; ?>)"
               aria-haspopup="true"
               aria-expanded="false"
               aria-controls="login-menu-slider"
@@ -608,13 +608,13 @@ max-height: 200px;
   <div class="bap-grid" id="login-selector-box">
     <?php if ($is_logged_in && !empty($connected_apps)): ?>
         <?php foreach ($connected_apps as $connected_app): ?>
-            <a class="bap-app-tile" target="_blank" href="<?= htmlspecialchars($connected_app['app_login_url']) ?>"
-               title="<?= htmlspecialchars($connected_app['app_display_name']) ?> | <?= htmlspecialchars($connected_app['app_slogan']) ?>">
+            <a class="bap-app-tile" target="_blank" href="<?= htmlspecialchars($connected_app['app_login_url'] ?? '') ?>"
+               title="<?= htmlspecialchars($connected_app['app_display_name'] ?? '') ?> | <?= htmlspecialchars($connected_app['app_slogan'] ?? '') ?>">
               <div class="bap-app-icon"
-                   data-light-logo="<?= htmlspecialchars($connected_app['app_icon_url']) ?>"
-                   data-dark-logo="<?= htmlspecialchars($connected_app['app_icon_url']) ?>">
+                   data-light-logo="<?= htmlspecialchars($connected_app['app_icon_url'] ?? '') ?>"
+                   data-dark-logo="<?= htmlspecialchars($connected_app['app_icon_url'] ?? '') ?>">
               </div>
-              <span class="bap-app-name"><?= htmlspecialchars($connected_app['app_display_name']) ?></span>
+              <span class="bap-app-name"><?= htmlspecialchars($connected_app['app_display_name'] ?? '') ?></span>
             </a>
         <?php endforeach; ?>
     <?php endif; ?>

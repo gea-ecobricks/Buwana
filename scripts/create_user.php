@@ -22,6 +22,20 @@ function createUserInClientApp($buwana_id, $userData, $app_name, $client_conn, $
 
     error_log("📥 Creating user in client app: $app_name for Buwana ID $buwana_id");
 
+    // Buwana allows NULL for most profile fields (e.g. no river chosen at
+    // signup-4), but the client app tables declare many of them NOT NULL.
+    foreach (['username', 'first_name', 'last_name', 'full_name', 'email', 'notes',
+              'profile_pic', 'language_id', 'continent_code', 'location_full',
+              'location_watershed', 'earthling_emoji'] as $field) {
+        $userData[$field] = (string) ($userData[$field] ?? '');
+    }
+    foreach (['terms_of_service', 'country_id', 'watershed_id', 'community_id'] as $field) {
+        $userData[$field] = isset($userData[$field]) ? (int) $userData[$field] : null;
+    }
+    foreach (['location_lat', 'location_long'] as $field) {
+        $userData[$field] = isset($userData[$field]) ? (float) $userData[$field] : null;
+    }
+
     /**
      * ===========================================
      * SPECIAL CASE: GoBrik Legacy Table
@@ -155,7 +169,7 @@ function updateAppConnectionStatus($buwana_conn, $buwana_id, $client_id, $status
     $stmt = $buwana_conn->prepare($update_sql);
 
     if ($stmt) {
-        $stmt->bind_param('ssii', $status, $connected_at, $buwana_id, $client_id);
+        $stmt->bind_param('ssis', $status, $connected_at, $buwana_id, $client_id);
         $stmt->execute();
         $stmt->close();
         error_log("📌 App connection status updated to '$status' for client ID $client_id");

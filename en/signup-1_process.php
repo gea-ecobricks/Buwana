@@ -44,6 +44,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         if ($stmt_user->execute()) {
             $buwana_id = $buwana_conn->insert_id;
 
+            // open_id is the OIDC `sub`; set it now (it used to wait for signup-6),
+            // matching the 'buwana_<id>' format signup-6 and token.php use.
+            $buwana_conn->query("UPDATE users_tb SET open_id = CONCAT('buwana_', buwana_id) WHERE buwana_id = " . (int) $buwana_id . " AND (open_id IS NULL OR open_id = '')");
+
             // ➤ Register client app connection
             $client_id = $_SESSION['client_id'] ?? $default_client_id;
             $sql_connect = "INSERT INTO user_app_connections_tb (buwana_id, client_id) VALUES (?, ?)";

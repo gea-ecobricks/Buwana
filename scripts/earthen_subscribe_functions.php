@@ -87,6 +87,8 @@ function grabActiveEarthenSubs() {
             'Content-Type: application/json'
         ));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
         curl_setopt($ch, CURLOPT_HTTPGET, true); // Use GET to fetch data
 
         // Execute the cURL session
@@ -182,6 +184,8 @@ function checkEarthenEmailStatus($email) {
             'Content-Type: application/json'
         ));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
         curl_setopt($ch, CURLOPT_HTTPGET, true); // Use GET to fetch data
 
         // Execute the cURL session
@@ -298,6 +302,8 @@ function updateSubscribeUser($member_id, $newsletter_ids) {
             'Content-Type: application/json'
         ));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT'); // Use PUT to update
         curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
 
@@ -348,6 +354,8 @@ function updateUnsubscribeUser($member_id, $newsletter_id) {
             'Content-Type: application/json'
         ));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PATCH'); // Use PATCH to update
         curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData); // Send the JSON payload
 
@@ -405,6 +413,8 @@ function subscribeUserToNewsletter($email, $newsletter_ids) {
             'Content-Type: application/json'
         ));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
         curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
 
@@ -523,6 +533,8 @@ function checkEarthenEmailStatus2($email) {
         'Content-Type: application/json'
     ));
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
     curl_setopt($ch, CURLOPT_HTTPGET, true); // Use GET to fetch data
 
     // Execute the cURL session
@@ -599,6 +611,8 @@ function getMemberIdByEmail($email) {
         'Content-Type: application/json'
     ));
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
 
     $response   = curl_exec($ch);
     $http_code  = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -638,6 +652,8 @@ function earthenUnsubscribe($email) {
         'Content-Type: application/json'
     ));
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
 
     $response  = curl_exec($ch);

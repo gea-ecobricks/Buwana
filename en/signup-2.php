@@ -33,6 +33,12 @@ if (!empty($_SESSION['buwana_id'])) {
 $response = ['success' => false];
 $buwana_id = $_GET['id'] ?? null;
 
+// Without an id the form would post to signup-2_process.php?id= and fail; start over.
+if (!$buwana_id || !ctype_digit((string) $buwana_id)) {
+    header('Location: signup-1.php');
+    exit();
+}
+
 // Initialize user variables
 $credential_type = '';
 $credential_key = '';
@@ -78,7 +84,7 @@ if (!is_null($earthling_emoji) && trim($earthling_emoji) !== '') {
         'id'   => $buwana_id
     ]);
     echo "<script>
-        alert('Whoops! Looks like you’ve already completed your signup. No need to return to this page! Please login to your " . htmlspecialchars($app_info['app_display_name']) . " account.');
+        alert('Whoops! Looks like you’ve already completed your signup. No need to return to this page! Please login to your " . htmlspecialchars($app_info['app_display_name'] ?? '') . " account.');
         window.location.href = '$login_url';
     </script>";
     exit();
@@ -86,8 +92,8 @@ if (!is_null($earthling_emoji) && trim($earthling_emoji) !== '') {
 
 
 
-    $credential_type = htmlspecialchars($credential_type);
-    $first_name = htmlspecialchars($first_name);
+    $credential_type = htmlspecialchars($credential_type ?? '');
+    $first_name = htmlspecialchars($first_name ?? '');
 
     if ($account_status !== 'name set only') {
         $response['error'] = 'account_status';
@@ -98,7 +104,7 @@ $is_legacy = ($account_status === 'legacy account activated');
 
 // Echo the HTML structure
 echo '<!DOCTYPE html>
-<html lang="' . htmlspecialchars($lang, ENT_QUOTES, 'UTF-8') . '">
+<html lang="' . htmlspecialchars($lang ?? '', ENT_QUOTES, 'UTF-8') . '">
 <head>
 <meta charset="UTF-8">
 ';
@@ -153,7 +159,7 @@ if ($mode): ?><script>(function(){var m=<?php echo json_encode($mode, JSON_HEX_T
                 </p>
             </div>
 
-           <form id="user-signup-form" method="post" action="signup-2_process.php?id=<?php echo htmlspecialchars($buwana_id); ?>">
+           <form id="user-signup-form" method="post" action="signup-2_process.php?id=<?php echo htmlspecialchars($buwana_id ?? ''); ?>">
 
 
                 <div class="form-item" id="last-name-field">
@@ -166,7 +172,7 @@ if ($mode): ?><script>(function(){var m=<?php echo json_encode($mode, JSON_HEX_T
                  <div class="form-item float-label-group" id="credential-section">
                    <input type="text" id="credential_value" name="credential_value" required aria-label="Your email"
                    <?php if (!empty($credential_key)) : ?>
-                       value="<?php echo htmlspecialchars($credential_key); ?>"
+                       value="<?php echo htmlspecialchars($credential_key ?? ''); ?>"
                    <?php endif; ?>
                    placeholder=" "  />  <!--style="padding-left:35px;"-->
                    <label for="credential_value">
@@ -178,7 +184,7 @@ if ($mode): ?><script>(function(){var m=<?php echo json_encode($mode, JSON_HEX_T
                    </div>
                    <div id="duplicate-gobrik-email" class="form-warning">
                      <?php $dup_login = build_login_url('login.php', ['app' => $app_info['client_id']]); ?>
-                     <span data-lang-id="006-gobrik-duplicate">It looks like this email is already being used with a legacy GoBrik account. Please <a href="<?= htmlspecialchars($dup_login) ?>" class="underline-link">login with this email to upgrade your account.</a></span>
+                     <span data-lang-id="006-gobrik-duplicate">It looks like this email is already being used with a legacy GoBrik account. Please <a href="<?= htmlspecialchars($dup_login ?? '') ?>" class="underline-link">login with this email to upgrade your account.</a></span>
                   </div>
 
                    <div id="loading-spinner" class="spinner" style="display: none;margin-left: 10px;margin-top: 7px;"></div>

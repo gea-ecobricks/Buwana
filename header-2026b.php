@@ -412,12 +412,12 @@ $menu_app_slogan = htmlspecialchars($app_info['app_slogan'] ?? '');
     }
    ?>
    <div class="menu-page-item" style="pointer-events:auto;">
-     <a href=""><span style="margin-right:5px;">Logged in as </span><span style="margin-right:auto;"><?= htmlspecialchars($menu_first_name) ?></span></a>
-     <span style="margin-right:-8px;"><?= htmlspecialchars($menu_emoji) ?></span>
+     <a href=""><span style="margin-right:5px;">Logged in as </span><span style="margin-right:auto;"><?= htmlspecialchars($menu_first_name ?? '') ?></span></a>
+     <span style="margin-right:-8px;"><?= htmlspecialchars($menu_emoji ?? '') ?></span>
    </div>
 
    <div class="menu-page-item">
-     <a href="<?= htmlspecialchars($logout_url) ?>">Log out</a>
+     <a href="<?= htmlspecialchars($logout_url ?? '') ?>">Log out</a>
      <span style="margin-right:-8px;" title="Log out">🐳</span>
    </div>
 
@@ -427,7 +427,7 @@ $menu_app_slogan = htmlspecialchars($app_info['app_slogan'] ?? '');
    </div>
 
    <div class="menu-page-item">
-     <a href="<?= htmlspecialchars($profile_url) ?>">Edit user profile</a>
+     <a href="<?= htmlspecialchars($profile_url ?? '') ?>">Edit user profile</a>
      <span class="status-circle" style="background-color: LIMEGREEN;" title="Edit profile"></span>
    </div>
 
@@ -515,7 +515,7 @@ $menu_app_slogan = htmlspecialchars($app_info['app_slogan'] ?? '');
         <!-- Login Services -->
         <button type="button"
                 class="top-login-button"
-                onclick="loginOrMenu('<?php echo htmlspecialchars($app_login_url); ?>', <?php echo $is_logged_in ? 'true' : 'false'; ?>)"
+                onclick="loginOrMenu('<?php echo htmlspecialchars($app_login_url ?? ''); ?>', <?php echo $is_logged_in ? 'true' : 'false'; ?>)"
                 aria-haspopup="true"
                 aria-expanded="false"
                 aria-label="Login Services">
@@ -539,31 +539,31 @@ $menu_app_slogan = htmlspecialchars($app_info['app_slogan'] ?? '');
             <span class="bap-title">Switch Language</span>
           </div>
           <div class="bap-grid">
-            <a class="bap-lang-tile" href="../id/<?php echo htmlspecialchars($active_url); ?>" onclick="navigateTo('../id/<?php echo htmlspecialchars($active_url); ?>'); return false;">
+            <a class="bap-lang-tile" href="../id/<?php echo htmlspecialchars($active_url ?? ''); ?>" onclick="navigateTo('../id/<?php echo htmlspecialchars($active_url ?? ''); ?>'); return false;">
               <div class="bap-lang-flag">🇮🇩</div>
               <span class="bap-app-name">Bahasa</span>
             </a>
-            <a class="bap-lang-tile" href="../es/<?php echo htmlspecialchars($active_url); ?>" onclick="navigateTo('../es/<?php echo htmlspecialchars($active_url); ?>'); return false;">
+            <a class="bap-lang-tile" href="../es/<?php echo htmlspecialchars($active_url ?? ''); ?>" onclick="navigateTo('../es/<?php echo htmlspecialchars($active_url ?? ''); ?>'); return false;">
               <div class="bap-lang-flag">🇪🇸</div>
               <span class="bap-app-name">Español</span>
             </a>
-            <a class="bap-lang-tile" href="../fr/<?php echo htmlspecialchars($active_url); ?>" onclick="navigateTo('../fr/<?php echo htmlspecialchars($active_url); ?>'); return false;">
+            <a class="bap-lang-tile" href="../fr/<?php echo htmlspecialchars($active_url ?? ''); ?>" onclick="navigateTo('../fr/<?php echo htmlspecialchars($active_url ?? ''); ?>'); return false;">
               <div class="bap-lang-flag">🇫🇷</div>
               <span class="bap-app-name">Français</span>
             </a>
-            <a class="bap-lang-tile" href="../en/<?php echo htmlspecialchars($active_url); ?>" onclick="navigateTo('../en/<?php echo htmlspecialchars($active_url); ?>'); return false;">
+            <a class="bap-lang-tile" href="../en/<?php echo htmlspecialchars($active_url ?? ''); ?>" onclick="navigateTo('../en/<?php echo htmlspecialchars($active_url ?? ''); ?>'); return false;">
               <div class="bap-lang-flag">🇬🇧</div>
               <span class="bap-app-name">English</span>
             </a>
-            <a class="bap-lang-tile" href="../ar/<?php echo htmlspecialchars($active_url); ?>" onclick="navigateTo('../ar/<?php echo htmlspecialchars($active_url); ?>'); return false;">
+            <a class="bap-lang-tile" href="../ar/<?php echo htmlspecialchars($active_url ?? ''); ?>" onclick="navigateTo('../ar/<?php echo htmlspecialchars($active_url ?? ''); ?>'); return false;">
               <div class="bap-lang-flag">🇸🇦</div>
               <span class="bap-app-name">العربية</span>
             </a>
-            <a class="bap-lang-tile" href="../zh/<?php echo htmlspecialchars($active_url); ?>" onclick="navigateTo('../zh/<?php echo htmlspecialchars($active_url); ?>'); return false;">
+            <a class="bap-lang-tile" href="../zh/<?php echo htmlspecialchars($active_url ?? ''); ?>" onclick="navigateTo('../zh/<?php echo htmlspecialchars($active_url ?? ''); ?>'); return false;">
               <div class="bap-lang-flag">🇨🇳</div>
               <span class="bap-app-name">中文</span>
             </a>
-            <a class="bap-lang-tile" href="../de/<?php echo htmlspecialchars($active_url); ?>" onclick="navigateTo('../de/<?php echo htmlspecialchars($active_url); ?>'); return false;">
+            <a class="bap-lang-tile" href="../de/<?php echo htmlspecialchars($active_url ?? ''); ?>" onclick="navigateTo('../de/<?php echo htmlspecialchars($active_url ?? ''); ?>'); return false;">
               <div class="bap-lang-flag">🇩🇪</div>
               <span class="bap-app-name">Deutsch</span>
             </a>
@@ -579,13 +579,13 @@ $menu_app_slogan = htmlspecialchars($app_info['app_slogan'] ?? '');
           <div class="bap-grid" id="login-selector-box">
             <?php if ($is_logged_in && !empty($connected_apps)): ?>
                 <?php foreach ($connected_apps as $connected_app): ?>
-                    <a class="bap-app-tile" target="_blank" href="<?= htmlspecialchars($connected_app['app_login_url']) ?>"
-                       title="<?= htmlspecialchars($connected_app['app_display_name']) ?> | <?= htmlspecialchars($connected_app['app_slogan']) ?>">
+                    <a class="bap-app-tile" target="_blank" href="<?= htmlspecialchars($connected_app['app_login_url'] ?? '') ?>"
+                       title="<?= htmlspecialchars($connected_app['app_display_name'] ?? '') ?> | <?= htmlspecialchars($connected_app['app_slogan'] ?? '') ?>">
                       <div class="bap-app-icon"
-                           data-light-logo="<?= htmlspecialchars($connected_app['app_icon_url']) ?>"
-                           data-dark-logo="<?= htmlspecialchars($connected_app['app_icon_url']) ?>">
+                           data-light-logo="<?= htmlspecialchars($connected_app['app_icon_url'] ?? '') ?>"
+                           data-dark-logo="<?= htmlspecialchars($connected_app['app_icon_url'] ?? '') ?>">
                       </div>
-                      <span class="bap-app-name"><?= htmlspecialchars($connected_app['app_display_name']) ?></span>
+                      <span class="bap-app-name"><?= htmlspecialchars($connected_app['app_display_name'] ?? '') ?></span>
                     </a>
                 <?php endforeach; ?>
             <?php endif; ?>
