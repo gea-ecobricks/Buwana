@@ -1,0 +1,4 @@
+# Cron logs can contain personal data; never serve them.
+<FilesMatch "\.log$">
+    Require all denied
+</FilesMatch>

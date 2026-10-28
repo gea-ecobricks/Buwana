@@ -1,0 +1,6 @@
+# Server-written logs: never commit
+*.log
+error_log
+logs/*
+!logs/.gitkeep
+!logs/.htaccess
