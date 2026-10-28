@@ -12,11 +12,38 @@ require_once '../includes/user_deletion.php';
 
 header('Content-Type: application/json');
 
+$response_sent = false;
+
 function jsonError(string $msg): void {
+    global $response_sent;
     ob_end_clean();
+    $response_sent = true;
     echo json_encode(['success' => false, 'error' => $msg]);
     exit();
 }
+
+// The cascade calls into legacy Earthen helpers that may echo HTML or exit()
+// mid-request (e.g. createGhostJWT() when EARTHEN_KEY is missing), and a slow
+// Ghost API call can hit max_execution_time. Either way the user is usually
+// already deleted, so always answer with JSON instead of a stray body.
+register_shutdown_function(function () use (&$response_sent) {
+    if ($response_sent) {
+        return;
+    }
+    $stray = '';
+    while (ob_get_level() > 0) {
+        $stray .= ob_get_clean();
+    }
+    $fatal = error_get_last();
+    error_log('admin_delete_user.php ended early. Last error: ' . json_encode($fatal) . ' Output: ' . substr($stray, 0, 500));
+    if (!headers_sent()) {
+        header('Content-Type: application/json');
+    }
+    echo json_encode([
+        'success' => false,
+        'error'   => 'The server stopped before finishing. The account may already be deleted; refresh to check.',
+    ]);
+});
 
 $earthcal_conn = $client_conn ?? null; // Normalize EarthCal connection handle
 
@@ -91,19 +118,18 @@ try {
         'successes' => $cascade['successes'],
         'failures'  => $cascade['failures'],
     ];
-} catch (Exception $e) {
-    if ($buwana_conn->in_transaction) {
-        $buwana_conn->rollback();
-    }
-    if (isset($gobrik_conn) && $gobrik_conn instanceof mysqli && $gobrik_conn->in_transaction) {
+} catch (Throwable $e) {
+    // mysqli has no in_transaction flag; rolling back with no open transaction is a no-op.
+    $buwana_conn->rollback();
+    if (isset($gobrik_conn) && $gobrik_conn instanceof mysqli) {
         $gobrik_conn->rollback();
     }
-    if ($earthcal_conn->in_transaction) {
-        $earthcal_conn->rollback();
-    }
+    $earthcal_conn->rollback();
+    error_log("Admin {$admin_id} delete of Buwana user {$target_id} threw: " . $e->getMessage());
     $response = ['success' => false, 'error' => $e->getMessage()];
 }
 
 ob_end_clean();
+$response_sent = true;
 echo json_encode($response);
 exit();

@@ -237,34 +237,11 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('colorschemechange', () => updateLogoElements('.bap-app-icon'));
 });
 
-// 🔻 Hide dropdowns on scroll
+// 🔻 Hide dropdowns on scroll (the hide functions are defined on DOMContentLoaded)
 window.addEventListener('scroll', () => {
-    hideLangSelector();
-    hideLoginSelector();
+    if (typeof window.hideLangSelector === 'function') window.hideLangSelector();
+    if (typeof window.hideLoginSelector === 'function') window.hideLoginSelector();
 });
-
-
-
-// 🌐 Hide language selector with a slide-up animation
-function hideLangSelector() {
-    if (!langMenu) return;
-
-    if (langMenu.classList.contains('menu-slider-visible')) {
-        langMenu.style.maxHeight = '0';
-        langMenu.style.overflow = 'hidden';
-        langMenu.style.transition = 'max-height 0.4s ease';
-
-        setTimeout(() => {
-            langMenu.classList.remove('menu-slider-visible');
-            langMenu.style.removeProperty('max-height');
-            langMenu.style.removeProperty('overflow');
-            langMenu.style.removeProperty('transition');
-            updateHeaderVisuals(); // ✅ Update after animation
-        }, 400);
-    }
-
-    document.removeEventListener('click', documentClickListenerLang);
-}
 
 
 

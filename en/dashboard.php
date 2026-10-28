@@ -393,7 +393,16 @@ document.addEventListener('DOMContentLoaded', function() {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({ buwana_id: id, csrf_token: CSRF_TOKEN })
     })
-    .then(function (r) { return r.json(); })
+    .then(function (r) {
+      return r.text().then(function (text) {
+        try {
+          return JSON.parse(text);
+        } catch (_) {
+          console.error('admin_delete_user.php returned non-JSON (HTTP ' + r.status + '):', text);
+          return { success: false, error: 'The server returned an unexpected response (HTTP ' + r.status + '). The account may already be deleted; refresh to check.' };
+        }
+      });
+    })
     .then(function (d) {
       if (d.success) {
         closeAlertModal();
