@@ -235,6 +235,78 @@
   }
 }
 
+/* Admin: latest Buwana signups */
+.latest-users {
+  margin: 10px auto 30px auto;
+}
+
+.latest-users-scroll {
+  overflow-x: auto;
+}
+
+.status-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.status-pill {
+  border: none;
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-family: 'Mulish', sans-serif;
+  font-size: 0.85em;
+  font-weight: 700;
+  cursor: pointer;
+  color: #fff;
+  transition: opacity 0.2s;
+}
+.status-pill:hover { opacity: 0.8; }
+.pill-registered { background: #2e8b57; }
+.pill-legacy     { background: #2f7fb5; }
+.pill-pending    { background: #d48a10; }
+.pill-incomplete { background: #8a8a8a; }
+.pill-unknown    { background: #6c5b7b; }
+
+.delete-user-btn {
+  background: none;
+  border: 1px solid var(--subdued-text);
+  border-radius: 6px;
+  padding: 2px 7px;
+  cursor: pointer;
+  font-size: 0.95em;
+  line-height: 1.4;
+}
+.delete-user-btn:hover {
+  border-color: #c0392b;
+  background: rgba(192, 57, 43, 0.12);
+}
+
+.bot-rating { font-weight: 700; white-space: nowrap; }
+.bot-low  { color: #2e8b57; }
+.bot-med  { color: #d48a10; }
+.bot-high { color: #c0392b; }
+.bot-na   { color: var(--subdued-text); }
+
+.user-detail-table th {
+  text-align: left;
+  padding-right: 15px;
+  white-space: nowrap;
+}
+.user-detail-table td {
+  word-break: break-word;
+}
+
+.delete-app-warning {
+  background: rgba(192, 57, 43, 0.1);
+  border-left: 4px solid #c0392b;
+  padding: 12px 15px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+
 </style>
 
 <?php
